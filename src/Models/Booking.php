@@ -5,10 +5,6 @@ namespace ApproTickets\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
-use App\Models\Product;
-use App\Models\Scan;
-use App\Models\Rate;
-use App\Models\Order;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class Booking extends Model {
@@ -68,12 +64,10 @@ class Booking extends Model {
 	// 	return $this->seat;
 	// }
 
-	public function getSeatRowAttribute()
-	{
-		
-		return \App\Helpers\Common::seat($this->seat);
-		
-	}
+	// public function getSeatRowAttribute()
+	// {
+	// 	return \App\Helpers\Common::seat($this->seat);
+	// }
 
 	public function smallSeatAttribute($seient) {
 		return $seient->f.' / '.$seient->s;

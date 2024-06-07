@@ -10,6 +10,7 @@ use App\Scopes\AscorderScope;
 use Auth;
 use App\Models\Booking;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;
 
 class Product extends Model
 {
@@ -29,7 +30,9 @@ class Product extends Model
     protected static function boot()
     {
         parent::boot();
-        static::addGlobalScope(new AscorderScope);
+        static::addGlobalScope('order', function (Builder $builder) {
+            $builder->orderBy('order', 'asc');
+        });
     }
 
     protected static function booted()
@@ -85,17 +88,10 @@ class Product extends Model
 
     }
 
-    public function getPricezoneAttribute($value)
-    {
-        return $this->pivot ? $this->pivot->pricezone : null;
-    }
-
-
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
-
 
     // Si és un pack
     public function packs()

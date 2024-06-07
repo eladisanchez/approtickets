@@ -31,7 +31,7 @@ class CategoryResource extends Resource
                 TextInput::make('title')
                     ->label('Nom')
                     ->required(),
-                Textarea::make('summay')
+                Textarea::make('summary')
                     ->label('Resum'),
                 Select::make('target')->label('Tipus')
                     ->options(config('tickets.types'))

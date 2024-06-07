@@ -33,36 +33,41 @@ class ApproTicketsServiceProvider extends ServiceProvider
 
     }
 
+    public function panel(Panel $panel): Panel
+    {
+        return $panel
+        ->default()
+        ->id('admin')
+        ->path('admin')
+        ->login()
+        ->discoverResources(in: __DIR__ . '/Filament/Resources', for: 'ApproTickets\\Filament\\Resources')
+        ->discoverPages(in: __DIR__ . '/Filament/Resources', for: 'ApproTickets\\Filament\\Pages')
+        ->pages([])
+        ->discoverWidgets(in: __DIR__ . '/Filament/Widgets', for: 'ApproTickets\\Filament\\Widgets')
+        ->middleware([
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+            StartSession::class,
+            AuthenticateSession::class,
+            ShareErrorsFromSession::class,
+            VerifyCsrfToken::class,
+            SubstituteBindings::class,
+            DisableBladeIconComponents::class,
+            DispatchServingFilamentEvent::class,
+        ])
+        ->authMiddleware([
+            Authenticate::class,
+        ])
+        ->favicon(asset('favicon.png'))
+        ->font('Montserrat');
+    }
+
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/config/tickets.php', 'tickets');
-        
+
         Filament::registerPanel(
-            fn(): Panel => $panel
-                ->default()
-                ->id('admin')
-                ->path('admin')
-                ->login()
-                ->discoverResources(in: __DIR__ . '/Filament/Resources', for: 'ApproTickets\\Filament\\Resources')
-                ->discoverPages(in: __DIR__ . '/Filament/Resources', for: 'ApproTickets\\Filament\\Pages')
-                ->pages([])
-                ->discoverWidgets(in: __DIR__ . '/Filament/Widgets', for: 'ApproTickets\\Filament\\Widgets')
-                ->middleware([
-                    EncryptCookies::class,
-                    AddQueuedCookiesToResponse::class,
-                    StartSession::class,
-                    AuthenticateSession::class,
-                    ShareErrorsFromSession::class,
-                    VerifyCsrfToken::class,
-                    SubstituteBindings::class,
-                    DisableBladeIconComponents::class,
-                    DispatchServingFilamentEvent::class,
-                ])
-                ->authMiddleware([
-                    Authenticate::class,
-                ])
-                ->favicon(asset('favicon.png'))
-                ->font('Montserrat')
+            fn(): Panel => $this->panel(Panel::make())
         );
     }
 

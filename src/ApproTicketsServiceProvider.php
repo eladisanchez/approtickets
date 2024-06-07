@@ -13,13 +13,13 @@ class ApproTicketsServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/routes/web.php');
 
         $this->publishes([
-            __DIR__.'/../config/tickets.php' => config_path('tickets.php'),
+            __DIR__.'/config/tickets.php' => config_path('tickets.php'),
         ], 'config');
     }
 
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/approtickets.php', 'approtickets');
+        $this->mergeConfigFrom(__DIR__.'/config/tickets.php', 'tickets');
     }
 
     protected function getResources(): array

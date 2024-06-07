@@ -30,20 +30,23 @@ class CategoryResource extends Resource
             ->schema([
                 TextInput::make('title')
                     ->label('Nom')
-                    ->required(),
-                Textarea::make('summary')
-                    ->label('Resum'),
+                    ->required()
+                    ->columnSpan(4),
                 Select::make('target')->label('Tipus')
                     ->options(config('tickets.types'))
-                    ->required(),
+                    ->required()
+                    ->columnSpan(2),
+                Textarea::make('summary')
+                    ->label('Resum')
+                    ->columnSpan(6),
                 FileUpload::make('image')
                     ->label('Imatge de fons')
                     ->image()
                     ->imageEditor()
                     ->disk('public')
                     ->directory('products')
-                    ->columnSpan(6),
-            ]);
+                    ->columnSpan(3),
+            ])->columns(6);
     }
 
     public static function table(Table $table): Table

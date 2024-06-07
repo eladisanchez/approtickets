@@ -96,7 +96,7 @@ class ProductResource extends Resource
                                     ->searchable()
                                     ->helperText("Escollint un espai el producte serà un esdeveniment amb entrades numerades.")
                                     ->columnSpan(3),
-                                Components\TextInput::make('lloc')
+                                Components\TextInput::make('place')
                                     ->label("Lloc de l'esdeveniment / punt inicial de la visita")
                                     ->columnSpan(3),
                                 Components\TextInput::make('min_tickets')

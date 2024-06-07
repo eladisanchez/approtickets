@@ -5,8 +5,7 @@ namespace ApproTickets\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
-use App\Scopes\AscorderScope;
+use Illuminate\Database\Eloquent\Builder;
 
 class Category extends Model {
 
@@ -21,7 +20,9 @@ class Category extends Model {
     protected static function boot() 
     {
         parent::boot();
-        static::addGlobalScope(new AscorderScope);
+        static::addGlobalScope('order', function (Builder $builder) {
+            $builder->orderBy('order', 'asc');
+        });
     }
 
     public function products($target=NULL)

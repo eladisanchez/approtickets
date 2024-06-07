@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Session;
-use App\Scopes\AscorderScope;
 use Auth;
 use App\Models\Booking;
 use Illuminate\Support\Str;

@@ -38,7 +38,8 @@ class CategoryResource extends Resource
                     ->columnSpan(2),
                 Textarea::make('summary')
                     ->label('Resum')
-                    ->columnSpan(6),
+                    ->rows(3)
+                    ->columnSpan(3),
                 FileUpload::make('image')
                     ->label('Imatge de fons')
                     ->image()

@@ -53,7 +53,7 @@ class User extends Authenticatable implements HasName, FilamentUser
 
     public function getFilamentName(): string
     {
-        return $this->username;
+        return $this->name;
     }
 
     public function isSuperadmin(): bool

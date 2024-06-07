@@ -4,7 +4,7 @@ namespace ApproTickets\Filament\Resources;
 
 use ApproTickets\Filament\Resources\CouponResource\Pages;
 use ApproTickets\Filament\Resources\CouponResource\RelationManagers;
-use App\Models\Coupon;
+use ApproTickets\Models\Coupon;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

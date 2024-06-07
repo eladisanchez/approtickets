@@ -4,10 +4,10 @@ namespace ApproTickets\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Routing\Controller as BaseController;
-use App\Models\Category;
-use App\Models\Product;
-use App\Models\Ticket;
-use App\Models\Booking;
+use ApproTickets\Models\Category;
+use ApproTickets\Models\Product;
+use ApproTickets\Models\Ticket;
+use ApproTickets\Models\Booking;
 use Cart;
 use Session;
 use PDF;

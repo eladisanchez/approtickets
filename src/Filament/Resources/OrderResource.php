@@ -4,7 +4,7 @@ namespace ApproTickets\Filament\Resources;
 
 use ApproTickets\Filament\Resources\OrderResource\Pages;
 use ApproTickets\Filament\Resources\OrderResource\RelationManagers;
-use App\Models\Order;
+use ApproTickets\Models\Order;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

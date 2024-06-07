@@ -3,7 +3,7 @@
 namespace ApproTickets\Filament\Resources;
 
 use ApproTickets\Filament\Resources\VenueResource\Pages;
-use App\Models\Venue;
+use ApproTickets\Models\Venue;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

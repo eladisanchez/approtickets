@@ -4,7 +4,7 @@ namespace ApproTickets\Filament\Resources;
 
 use ApproTickets\Filament\Resources\BookingResource\Pages;
 use ApproTickets\Filament\Resources\BookingResource\RelationManagers;
-use App\Models\Booking;
+use ApproTickets\Models\Booking;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

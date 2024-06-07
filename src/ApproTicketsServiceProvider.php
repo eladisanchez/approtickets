@@ -1,6 +1,6 @@
 <?php
 
-namespace ApproTickets;
+namespace Eladisanchez\ApproTickets;
 
 use Illuminate\Support\ServiceProvider;
 

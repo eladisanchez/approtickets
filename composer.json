@@ -16,13 +16,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Eladisanchez\\ApproTickets\\": "src/"
+            "ApproTickets\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Eladisanchez\\ApproTickets\\ApproTicketsServiceProvider"
+                "ApproTickets\\ApproTicketsServiceProvider"
             ]
         }
     },

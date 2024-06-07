@@ -1,6 +1,6 @@
 <?php
 
-namespace Eladisanchez\ApproTickets\Controllers;
+namespace Approtickets\Controllers;
 
 use App\Http\Controllers\Controller;
 

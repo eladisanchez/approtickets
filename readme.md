@@ -38,6 +38,12 @@ I fer els canvis oportuns a l'arxiu tickets.php
 
 - Usuaris: El model ha d'extendre ApproTickets\Models\User
 
+### Filament
+
+Publicar assets:
+
+    php artisan filament:assets
+
 ### TODO
 
 - Filament

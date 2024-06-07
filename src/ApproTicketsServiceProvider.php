@@ -58,8 +58,7 @@ class ApproTicketsServiceProvider extends ServiceProvider
         ->authMiddleware([
             Authenticate::class,
         ])
-        ->favicon(asset('favicon.png'))
-        ->font('Montserrat');
+        ->font('Figtree');
     }
 
     public function register()

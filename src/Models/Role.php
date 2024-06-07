@@ -1,6 +1,6 @@
 <?php
 
-namespace ApproTickets\Models;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Shanmuga\LaravelEntrust\Models\EntrustRole;

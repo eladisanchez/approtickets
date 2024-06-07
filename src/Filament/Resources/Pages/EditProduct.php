@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\ProductResource\Pages;
+namespace ApproTickets\Filament\Resources\ProductResource\Pages;
 
-use App\Filament\Resources\ProductResource;
+use ApproTickets\Filament\Resources\ProductResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 

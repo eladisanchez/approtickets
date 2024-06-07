@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\ProductResource\Pages;
+namespace ApproTickets\Filament\Resources\ProductResource\Pages;
 
 use App\Filament\Resources\ProductResource;
 use Filament\Actions;
@@ -12,7 +12,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Get;
-use App\Models\Product;
+use ApproTickets\Models\Product;
 use Str;
 
 class CreateProduct extends CreateRecord

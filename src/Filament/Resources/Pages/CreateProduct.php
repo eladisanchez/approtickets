@@ -2,8 +2,7 @@
 
 namespace ApproTickets\Filament\Resources\ProductResource\Pages;
 
-use App\Filament\Resources\ProductResource;
-use Filament\Actions;
+use ApproTickets\Filament\Resources\ProductResource;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Components\RichEditor;
@@ -12,8 +11,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Get;
-use ApproTickets\Models\Product;
-use Str;
 
 class CreateProduct extends CreateRecord
 {

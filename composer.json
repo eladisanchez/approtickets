@@ -12,7 +12,8 @@
         "intervention/image-laravel": "^1.2",
         "redsys/tpv": "^2.3",
         "simplesoftwareio/simple-qrcode": "^4.2",
-        "shanmuga/laravel-entrust": "^5.0"
+        "shanmuga/laravel-entrust": "^5.0",
+        "laravel/sanctum": "^4.0"
     },
     "autoload": {
         "psr-4": {

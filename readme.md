@@ -34,6 +34,10 @@ Afegir a config/app.php (Aquest pas segurament no és necessari en les últimes 
 
 I fer els canvis oportuns a l'arxiu tickets.php
 
+### Models
+
+- Usuaris: El model ha d'extendre ApproTickets\Models\User
+
 ### TODO
 
 - Filament

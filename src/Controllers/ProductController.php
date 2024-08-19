@@ -33,12 +33,10 @@ class ProductController extends BaseController
 				abort(404);
 		}
 
-		dd($product);
-
 		return view('product', [
 			'product' => $product,
 			'availableDays' => $product->availableDays(),
-			'tickets' => $product->tickets,
+			//'tickets' => $product->tickets,
 			'rates' => $product->rates,
 			'day' => $day,
 			'hour' => $hour

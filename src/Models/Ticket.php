@@ -1,9 +1,10 @@
 <?php
 
-namespace ApproTickets\Models;
+namespace Approtickets\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Gloudemans\Shoppingcart\Facades\Cart;
+use Cart;
+use Approtickets\Models\Booking;
 
 class Ticket extends Model
 {
@@ -17,6 +18,13 @@ class Ticket extends Model
         'hour' => 'datetime:H:i',
         'seats' => 'array'
     ];
+
+
+    // public function getHourAttribute($value)
+    // {
+    //     return Carbon::createFromFormat('H:i:s', $value);
+    // }
+
 
     public function product()
     {
@@ -42,6 +50,9 @@ class Ticket extends Model
         return $bookings;
 
     }
+
+
+
 
     // Això resta les del cistell a les disponibles
     public function getAvailableAttribute()

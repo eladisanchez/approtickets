@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Approtickets\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
 use ApproTickets\Models\Rate;

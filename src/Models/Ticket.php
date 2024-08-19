@@ -14,8 +14,8 @@ class Ticket extends Model
     protected $appends = ['available', 'cartSeats', 'bookedSeats'];
     protected $guarded = ['id'];
     protected $casts = [
-        'day' => 'datetime:Y-m-d',
-        'hour' => 'datetime:H:i',
+        // 'day' => 'datetime:Y-m-d',
+        // 'hour' => 'datetime:H:i',
         'seats' => 'array'
     ];
 

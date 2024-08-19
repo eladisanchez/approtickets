@@ -183,13 +183,13 @@ class ProductController extends BaseController
 						]);
 					}
 
-					$minuts = 60 * $product->limitHores;
+					$minuts = 60 * $product->hour_limit;
 					$ara = Carbon::now()->addMinutes($minuts);
 					$horasessio = Carbon::parse($day . ' ' . $hora);
 
 					if ($ara > $horasessio) {
 
-						if ($product->limitHores) {
+						if ($product->hour_limit) {
 							$missatgeError = 'Ho sentim, la venda d\'entrades online per a <strong>' . $product->title . '</strong> es tanca ' . $product->limitHores . ' hores abans de l\'activitat. Si us plau, tria una altra sessió.';
 						} else {
 							$missatgeError = 'Ja no es poden comprar entrades per aquesta hora. Tria una altra sessió.';

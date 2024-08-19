@@ -159,7 +159,7 @@ class ProductResource extends Resource
                                             ->helperText('Habilita el bloqueig de butaques adjacents d\'una comanda.')
                                             ->live()
                                             ->columnSpan(2),
-                                        Components\TextInput::make('aforament')
+                                        Components\TextInput::make('capacity')
                                             ->label('Aforament màxim')
                                             ->numeric()
                                             ->minValue(0)

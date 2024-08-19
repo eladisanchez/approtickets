@@ -126,7 +126,7 @@ class CreateProduct extends CreateRecord
                                 ->helperText('Habilita el bloqueig de butaques adjacents d\'una comanda.')
                                 ->live()
                                 ->columnSpan(2),
-                            TextInput::make('aforament')
+                            TextInput::make('capacity')
                                 ->label('Aforament màxim')
                                 ->numeric()
                                 ->minValue(0)

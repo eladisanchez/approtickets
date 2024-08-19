@@ -345,7 +345,7 @@ class ProductController extends BaseController
 	{
 		$today = strtotime("today");
 		$nextMonth = date("Y-m-d", strtotime("+2 month", $today));
-		$tickets = Ticket::with('product:id,title,summary_ca,lloc,name,target')->where('day', '>=', $today)->where('day', '<', $nextMonth)->get();
+		$tickets = Ticket::with('product:id,title,summary_ca,place,name,target')->where('day', '>=', $today)->where('day', '<', $nextMonth)->get();
 		$cal = [];
 		foreach ($tickets as $item):
 			if (!$item->product) {
@@ -356,7 +356,7 @@ class ProductController extends BaseController
 				'title' => $item->product->title,
 				'description' => $item->product->summary_ca,
 				'start' => $item->day->format('Y-m-d') . ' ' . $item->hour->format('H:i:s'),
-				'location' => $item->product->lloc,
+				'location' => $item->product->place,
 				'url' => route('product', ['name' => $item->product->name, $item->day->format('Y-m-d'), $item->hour->format('H:i')]),
 				'color' => $item->product->target == 'individual' ? 'blue' : 'red'
 			];
@@ -371,7 +371,7 @@ class ProductController extends BaseController
 	public function ics(): JsonResponse
 	{
 
-		$tickets = Ticket::with('producte:id,title,resum,lloc,nom,target')->where('dia', '>=', date('Y-m-d'))->get();
+		$tickets = Ticket::with('producte:id,title,resum,place,nom,target')->where('dia', '>=', date('Y-m-d'))->get();
 		$events = [];
 		foreach ($tickets as $item):
 

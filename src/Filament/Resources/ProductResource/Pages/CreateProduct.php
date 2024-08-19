@@ -62,7 +62,7 @@ class CreateProduct extends CreateRecord
                         ->searchable()
                         ->helperText("Escollint un espai el producte serà un esdeveniment amb entrades numerades.")
                         ->columnSpan(3),
-                    TextInput::make('lloc')
+                    TextInput::make('place')
                         ->label("Lloc de l'esdeveniment / punt inicial de la visita")
                         ->columnSpan(3),
                     TextInput::make('min_tickets')

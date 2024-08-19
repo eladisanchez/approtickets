@@ -179,8 +179,8 @@ class ProductResource extends Resource
                                     ->collapsed()
                                     //->itemLabel(fn(array $state): ?string => $state['day'] ? ($state['day'] . ' - ' . $state['hour'] . ' (' . $state["tickets"] . ' entrades)' ?? null) : '')
                                     ->schema([
-                                        Components\DatePicker::make('day')->label('Dia')->required(),
-                                        Components\TimePicker::make('hour')->label('Hora')->required(),
+                                        // Components\DatePicker::make('day')->label('Dia')->required(),
+                                        // Components\TimePicker::make('hour')->label('Hora')->required(),
                                         Components\TextInput::make('tickets')
                                             ->label('Entrades')
                                             ->default(function ($record) use ($venue) {

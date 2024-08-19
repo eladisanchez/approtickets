@@ -119,7 +119,7 @@ class ProductResource extends Resource
                                     ->suffix('entrades')
                                     ->required()
                                     ->columnSpan(2),
-                                Components\TextInput::make('limitHores')
+                                Components\TextInput::make('hour_limit')
                                     ->label('Tancament venda')
                                     ->numeric()
                                     ->minValue(0)

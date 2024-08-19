@@ -35,7 +35,7 @@ class ProductController extends BaseController
 
 		return view('product', [
 			'product' => $product,
-			'availableDays' => $product->availableDays(),
+			// 'availableDays' => $product->availableDays(),
 			//'tickets' => $product->tickets,
 			'rates' => $product->rates,
 			'day' => $day,

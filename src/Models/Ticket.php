@@ -14,8 +14,8 @@ class Ticket extends Model
     protected $appends = ['available', 'cartSeats', 'bookedSeats'];
     protected $guarded = ['id'];
     protected $casts = [
-        // 'day' => 'datetime:Y-m-d',
-        // 'hour' => 'datetime:H:i',
+        'day' => 'datetime:Y-m-d',
+        'hour' => 'datetime:H:i',
         'seats' => 'array'
     ];
 
@@ -62,7 +62,6 @@ class Ticket extends Model
 
         if ($cistell) {
             foreach ($cistell as $row) {
-                //$prod = Cart::get($row);
                 $prod = $row;
                 $value -= $prod->qty;
                 $i++;
@@ -85,7 +84,7 @@ class Ticket extends Model
         // Al cistel
         $rcistell = Cart::search(function ($i) use ($self) {
             return $i->id == $self->producte_id &&
-                $i->options->dia == $self->dia->toDateString() &&
+                $i->options->day == $self->day->toDateString() &&
                 $i->options->hour == $self->hour->toTimeString();
         });
         if ($rcistell) {

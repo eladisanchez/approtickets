@@ -18,7 +18,7 @@ class Product extends Model
     protected $table = 'products';
     protected $guarded = ['id'];
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
-    protected $appends = ['price', 'pricezone'];
+    protected $appends = ['price'];
     protected $with = ['organizer', 'rates'];
     protected $attributes = [
         'name' => '',
@@ -122,7 +122,7 @@ class Product extends Model
     {
         return $this->belongsToMany(Rate::class, 'product_rate')
             ->using(ProductRate::class)
-            ->withPivot('price', 'pricezone');
+            ->withPivot('price');
     }
 
 

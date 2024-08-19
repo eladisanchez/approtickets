@@ -19,7 +19,7 @@ class Rate extends Model
     {
         return $this->belongsToMany(Product::class, 'product_rate')
             ->using(ProductRate::class)
-            ->withPivot('price', 'pricezone');
+            ->withPivot('price');
     }
 
     public function productRates()
@@ -67,25 +67,13 @@ class Rate extends Model
         }
     }
 
-
-    public function getPricezoneAttribute($value)
-    {
-
-        if ($this->pivot && $this->pivot->pricezone) {
-            return $this->pivot->pricezone;
-        } else {
-            return $this->pivot->price . ',' . $this->pivot->price . ',' . $this->pivot->price . ',' . $this->pivot->price;
-        }
-
-    }
-
     public function pricelocalitat($zona)
     {
 
         $i = $zona - 1;
 
-        if ($this->pivot && $this->pivot->pricezone) {
-            $prices = explode(',', $this->pricezone);
+        if ($this->pivot && $this->pivot->price) {
+            $prices = explode(',', $this->price);
             return $prices[$i];
         } else {
             return $this->pricevalue;

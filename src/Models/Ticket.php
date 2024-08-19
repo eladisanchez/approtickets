@@ -11,7 +11,7 @@ class Ticket extends Model
 
     protected $table = 'products_tickets';
     public $timestamps = false;
-    protected $appends = ['available', 'cartSeats', 'bookedSeats'];
+    //protected $appends = ['available', 'cartSeats', 'bookedSeats'];
     protected $guarded = ['id'];
     protected $casts = [
         'day' => 'datetime:Y-m-d',
@@ -51,7 +51,7 @@ class Ticket extends Model
     public function getAvailableAttribute()
     {
 
-        $value = $this->entrades - $this->bookings();
+        $value = $this->tickets - $this->bookings();
 
         $self = $this;
         $cistell = Cart::search(function ($k, $v) use ($self) {
@@ -79,12 +79,12 @@ class Ticket extends Model
 
         $self = $this;
 
-        $cistell = array();
+        $cistell = [];
 
         // Al cistel
         $rcistell = Cart::search(function ($i) use ($self) {
             return $i->id == $self->producte_id &&
-                $i->options->day == $self->day->toDateString() &&
+                $i->options->dia == $self->day->toDateString() &&
                 $i->options->hour == $self->hour->toTimeString();
         });
         if ($rcistell) {
@@ -101,7 +101,7 @@ class Ticket extends Model
             foreach ($fila->options->bookings as $booking) {
                 if (
                     $booking["product"] == $self->producte_id &&
-                    $booking["day"] == $self->dia->toDateString() &&
+                    $booking["day"] == $self->day->toDateString() &&
                     $booking["hour"] == $self->hour->toTimeString()
                 )
                     $cistell[] = $booking["seat"];

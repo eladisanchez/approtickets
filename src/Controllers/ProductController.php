@@ -4,7 +4,6 @@ namespace ApproTickets\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Routing\Controller as BaseController;
-use ApproTickets\Models\Category;
 use ApproTickets\Models\Product;
 use ApproTickets\Models\Ticket;
 use ApproTickets\Models\Booking;
@@ -13,7 +12,6 @@ use Session;
 use PDF;
 use Spatie\IcalendarGenerator\Components\Calendar;
 use Spatie\IcalendarGenerator\Components\Event;
-use Inertia\Inertia;
 use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
@@ -22,22 +20,6 @@ use Illuminate\Http\JsonResponse;
 
 class ProductController extends BaseController
 {
-
-
-	/**
-	 * Home with all products by category
-	 */
-	public function home(): View
-	{
-		$products = [];
-		foreach (config('tickets.types') as $type => $name) {
-			$products[$type] = Category::whereHas('products', function ($q) use ($type) {
-				$q->ofTarget($type)->active();
-			})->with('products')->orderBy('order', 'asc')->get();
-		}
-		return view('home', array('products' => $products));
-	}
-
 
 	/**
 	 * Product single page

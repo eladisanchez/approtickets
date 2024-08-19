@@ -19,13 +19,6 @@ class Ticket extends Model
         'seats' => 'array'
     ];
 
-
-    // public function getHourAttribute($value)
-    // {
-    //     return Carbon::createFromFormat('H:i:s', $value);
-    // }
-
-
     public function product()
     {
         return $this->belongsTo(Product::class);

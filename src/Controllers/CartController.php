@@ -133,7 +133,7 @@ class CartController extends BaseController
 	public function add(): RedirectResponse
 	{
 
-		$data = json_decode(request()->input('data'), true);
+		$data = request()->all();
 
 		$product_id = $data['product_id'] ?? null;
 		$product = Product::find($product_id);

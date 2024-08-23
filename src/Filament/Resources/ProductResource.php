@@ -190,10 +190,10 @@ class ProductResource extends Resource
                                                 return 0;
                                             })
                                             ->readOnly(!!$venue),
-                                        Components\Select::make('language')->label('Idioma')->options([
-                                            'ca' => 'Català',
-                                            'es' => 'Castellà'
-                                        ]),
+                                        // Components\Select::make('language')->label('Idioma')->options([
+                                        //     'ca' => 'Català',
+                                        //     'es' => 'Castellà'
+                                        // ]),
                                         Forms\Components\Hidden::make('seats')->default(function () use ($venue) {
                                             return $venue ? $venue->seats : [];
                                         })->hidden(!$venue),

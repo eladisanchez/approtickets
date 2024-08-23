@@ -158,17 +158,10 @@ class Product extends Model
     public function ticketsDay($day, $hour = NULL)
     {
 
-        $ref = $this;
-        if ($this->parent_id > 0) {
-            $ref = $this->parent;
-        }
-
         if ($hour) {
-            return $ref->hasMany(Ticket::class)->where('day', $day)->where('hour', $hour)->whereNull('cancelled')->first();
+            return $this->hasMany(Ticket::class)->where('day', $day)->where('hour', $hour)->whereNull('cancelled')->first();
         }
-
-        return $ref->hasMany(Ticket::class)->where('day', $day)->whereNull('cancelled')->get();
-
+        return $this->hasMany(Ticket::class)->where('day', $day)->whereNull('cancelled')->get();
 
     }
 

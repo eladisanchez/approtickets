@@ -44,9 +44,6 @@ class Ticket extends Model
 
     }
 
-
-
-
     // Això resta les del cistell a les disponibles
     public function getAvailableAttribute()
     {

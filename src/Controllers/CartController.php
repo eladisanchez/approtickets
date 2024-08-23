@@ -260,7 +260,7 @@ class CartController extends BaseController
 					'hour' => $hour,
 					'rate' => $rate->title,
 					'rate_id' => $rate->id,
-					'seat' => ['s' => $seat['s'], 'f' => $seat['f']]
+					'seat' => ['s' => $seat->s, 'f' => $seat->f]
 				]
 			)->associate('\App\Models\Product');
 

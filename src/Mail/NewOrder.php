@@ -1,12 +1,12 @@
 <?php
 
-namespace Approtickets\Mail;
+namespace ApproTickets\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Approtickets\Models\Order;
-use Approtickets\Helpers\Common;
+use ApproTickets\Models\Order;
+use ApproTickets\Helpers\Common;
 
 class NewOrder extends Mailable
 {

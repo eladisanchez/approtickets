@@ -1,14 +1,14 @@
 <?php
 
-namespace Approtickets\Controllers;
+namespace ApproTickets\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
 use Redsys\Tpv\Tpv;
 use Mail;
 use Log;
-use Approtickets\Mail\NewOrder;
-use Approtickets\Models\Order;
-use Approtickets\Mail\NewOrderAlert;
+use ApproTickets\Mail\NewOrder;
+use ApproTickets\Models\Order;
+use ApproTickets\Mail\NewOrderAlert;
 
 class TPVController extends BaseController
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace Approtickets\Controllers;
+namespace ApproTickets\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
-use Approtickets\Models\Booking;
-use Approtickets\Models\Scan;
-use Approtickets\Models\User;
+use ApproTickets\Models\Booking;
+use ApproTickets\Models\Scan;
+use ApproTickets\Models\User;
 use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;

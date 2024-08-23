@@ -1,10 +1,10 @@
 <?php
 
-namespace Approtickets\Models;
+namespace ApproTickets\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Cart;
-use Approtickets\Models\Booking;
+use ApproTickets\Models\Booking;
 
 class Ticket extends Model
 {

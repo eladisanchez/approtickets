@@ -1,11 +1,11 @@
 <?php
 
-namespace Approtickets\Mail;
+namespace ApproTickets\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Approtickets\Models\Order;
+use ApproTickets\Models\Order;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Content;
 

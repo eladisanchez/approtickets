@@ -1,6 +1,6 @@
 <?php
 
-namespace Approtickets\Controllers;
+namespace ApproTickets\Controllers;
 
 class OrderController extends Controller
 {

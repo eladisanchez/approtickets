@@ -1,6 +1,6 @@
 <?php
 
-namespace Approtickets\Controllers;
+namespace ApproTickets\Controllers;
 
 abstract class Controller
 {

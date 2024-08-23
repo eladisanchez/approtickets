@@ -1,5 +1,5 @@
 <?php
-namespace Approtickets\Helpers;
+namespace ApproTickets\Helpers;
 
 use DB;
 

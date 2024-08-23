@@ -28,20 +28,12 @@ class ApproTicketsServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
         $this->loadViewsFrom(__DIR__ . '/resources/views', 'approtickets');
 
-        FilamentAsset::register([
-            Css::make('venue-map-editor', asset('vendor/approtickets/css/admin.css')),
-        ], 'approtickets');
-
         $this->publishes([
             __DIR__ . '/resources/views' => resource_path('views/vendor/approtickets'),
         ], 'views');
         $this->publishes([
             __DIR__ . '/config/tickets.php' => config_path('tickets.php'),
         ], 'config');
-        $this->publishes([
-            __DIR__.'/resources/css' => public_path('vendor/approtickets/css'),
-            __DIR__.'/resources/js' => public_path('vendor/approtickets/js'),
-        ], 'public');
 
         // Filament
         Model::unguard();

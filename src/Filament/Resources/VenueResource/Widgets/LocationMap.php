@@ -82,12 +82,4 @@ class LocationMap extends Widget
             ->with('gridItems', $gridItems);
     }
 
-    protected static function registerAssets(): array
-    {
-        return [
-            FilamentAsset::get('venue-map-editor'),
-        ];
-    }
-
-
 }

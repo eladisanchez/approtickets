@@ -16,6 +16,8 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Facades\Filament;
+use Filament\Support\Facades\FilamentAsset;
+use Filament\Support\Assets\Css;
 
 
 class ApproTicketsServiceProvider extends ServiceProvider
@@ -24,11 +26,22 @@ class ApproTicketsServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/migrations');
         $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
-        $this->loadViewsFrom(__DIR__.'/resources/views', 'approtickets');
-        
+        $this->loadViewsFrom(__DIR__ . '/resources/views', 'approtickets');
+
+        FilamentAsset::register([
+            Css::make('venue-map-editor', asset('vendor/approtickets/css/admin.css')),
+        ], 'approtickets');
+
+        $this->publishes([
+            __DIR__ . '/resources/views' => resource_path('views/vendor/approtickets'),
+        ], 'views');
         $this->publishes([
             __DIR__ . '/config/tickets.php' => config_path('tickets.php'),
         ], 'config');
+        $this->publishes([
+            __DIR__.'/resources/css' => public_path('vendor/approtickets/css'),
+            __DIR__.'/resources/js' => public_path('vendor/approtickets/js'),
+        ], 'public');
 
         // Filament
         Model::unguard();
@@ -38,29 +51,29 @@ class ApproTicketsServiceProvider extends ServiceProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-        ->default()
-        ->id('admin')
-        ->path('admin')
-        ->login()
-        ->discoverResources(in: __DIR__ . '/Filament/Resources', for: 'ApproTickets\\Filament\\Resources')
-        ->discoverPages(in: __DIR__ . '/Filament/Resources', for: 'ApproTickets\\Filament\\Pages')
-        ->pages([])
-        ->discoverWidgets(in: __DIR__ . '/Filament/Widgets', for: 'ApproTickets\\Filament\\Widgets')
-        ->middleware([
-            EncryptCookies::class,
-            AddQueuedCookiesToResponse::class,
-            StartSession::class,
-            AuthenticateSession::class,
-            ShareErrorsFromSession::class,
-            VerifyCsrfToken::class,
-            SubstituteBindings::class,
-            DisableBladeIconComponents::class,
-            DispatchServingFilamentEvent::class,
-        ])
-        ->authMiddleware([
-            Authenticate::class,
-        ])
-        ->font('Figtree');
+            ->default()
+            ->id('admin')
+            ->path('admin')
+            ->login()
+            ->discoverResources(in: __DIR__ . '/Filament/Resources', for: 'ApproTickets\\Filament\\Resources')
+            ->discoverPages(in: __DIR__ . '/Filament/Resources', for: 'ApproTickets\\Filament\\Pages')
+            ->pages([])
+            ->discoverWidgets(in: __DIR__ . '/Filament/Widgets', for: 'ApproTickets\\Filament\\Widgets')
+            ->middleware([
+                EncryptCookies::class,
+                AddQueuedCookiesToResponse::class,
+                StartSession::class,
+                AuthenticateSession::class,
+                ShareErrorsFromSession::class,
+                VerifyCsrfToken::class,
+                SubstituteBindings::class,
+                DisableBladeIconComponents::class,
+                DispatchServingFilamentEvent::class,
+            ])
+            ->authMiddleware([
+                Authenticate::class,
+            ])
+            ->font('Figtree');
     }
 
     public function register()

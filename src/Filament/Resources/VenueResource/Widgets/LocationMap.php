@@ -5,6 +5,7 @@ namespace ApproTickets\Filament\Resources\VenueResource\Widgets;
 use Filament\Widgets\Widget;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
+use Filament\Support\Facades\FilamentAsset;
 
 class LocationMap extends Widget
 {
@@ -79,6 +80,13 @@ class LocationMap extends Widget
         }
         return view(static::$view)
             ->with('gridItems', $gridItems);
+    }
+
+    protected static function registerAssets(): array
+    {
+        return [
+            FilamentAsset::get('venue-map-editor'),
+        ];
     }
 
 

@@ -8,7 +8,7 @@ use Filament\Notifications\Notification;
 
 class LocationMap extends Widget
 {
-    protected static string $view = 'filament.resources.venue-resource.widgets.location-map';
+    protected static string $view = 'approtickets::filament.resources.venue-resource.widgets.location-map';
     protected int | string | array $columnSpan = 'full';
 
     public ?Model $record = null;

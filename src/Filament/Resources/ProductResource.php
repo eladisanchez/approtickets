@@ -94,6 +94,7 @@ class ProductResource extends Resource
                                     ->label('Espai')
                                     ->relationship(name: 'venue', titleAttribute: 'name')
                                     ->searchable()
+                                    ->preload()
                                     ->helperText("Escollint un espai el producte serà un esdeveniment amb entrades numerades.")
                                     ->columnSpan(3),
                                 Components\TextInput::make('place')

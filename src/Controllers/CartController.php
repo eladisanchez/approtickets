@@ -148,7 +148,7 @@ class CartController extends BaseController
 
 		$seats = $data['seats'] ?? null;
 		if ($seats) {
-			$this->addEvent($seats, $product, $data['rate'], $day, $hour);
+			$this->addEvent(json_decode($seats), $product, $data['rate'], $day, $hour);
 		}
 
 		if (!$qtys) {

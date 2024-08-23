@@ -262,7 +262,9 @@ class CartController extends BaseController
 					'rate_id' => $rate->id,
 					'seat' => ['s' => $seat->s, 'f' => $seat->f]
 				]
-			)->associate('\App\Models\Product');
+			)->associate('\ApproTickets\Models\Product');
+
+			@dd($seat);
 
 		}
 

@@ -135,7 +135,7 @@ class CartController extends BaseController
 
 		$data = request()->all();
 
-		$product_id = $data['product_id'] ?? null;
+		$product_id = $data['product'] ?? null;
 		$product = Product::find($product_id);
 		if (!$product) {
 			return redirect()->back();

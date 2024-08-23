@@ -177,14 +177,17 @@ class ProductResource extends Resource
                                     ->label('Entrades')
                                     ->relationship('tickets')
                                     ->collapsed()
-                                    //->itemLabel(fn(array $state): ?string => $state['day'] ? ($state['day'] . ' - ' . $state['hour'] . ' (' . $state["tickets"] . ' entrades)' ?? null) : '')
+                                    ->itemLabel(fn(array $state): ?string => $state['day'] ? ($state['day'] . ' - ' . $state['hour'] . ' (' . $state["tickets"] . ' entrades)' ?? null) : '')
                                     ->schema([
-                                        // Components\DatePicker::make('day')->label('Dia')->required(),
-                                        // Components\TimePicker::make('hour')->label('Hora')->required(),
+                                        Components\DatePicker::make('day')->label('Dia')->required(),
+                                        Components\TimePicker::make('hour')->label('Hora')->required(),
                                         Components\TextInput::make('tickets')
                                             ->label('Entrades')
-                                            ->default(function ($record) use ($venue) {
-                                                return $venue ?? 0 ? count($venue->seats) : 0;
+                                            ->default(function () use ($venue) {
+                                                if ($venue) {
+                                                    return count($venue->seats);
+                                                }
+                                                return 0;
                                             })
                                             ->readOnly(!!$venue),
                                         Components\Select::make('language')->label('Idioma')->options([
@@ -192,7 +195,7 @@ class ProductResource extends Resource
                                             'es' => 'Castellà'
                                         ]),
                                         Forms\Components\Hidden::make('seats')->default(function () use ($venue) {
-                                            return $venue->seats;
+                                            return $venue ? $venue->seats : [];
                                         })->hidden(!$venue),
                                         Components\Placeholder::make('sold')
                                             ->label('Venudes')

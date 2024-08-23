@@ -105,7 +105,7 @@ class Ticket extends Model
             }
         }
 
-        return json_encode($cistell);
+        return $cistell;
 
     }
 

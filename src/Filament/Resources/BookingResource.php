@@ -46,7 +46,7 @@ class BookingResource extends Resource
                 Tables\Columns\TextColumn::make('product.title')->label('Producte')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('rate.title')->label('Tarifa')->sortable(),
                 Tables\Columns\TextColumn::make('tickets')->label('Quantitat')->sortable(),
-                Tables\Columns\TextColumn::make('seat')->label('Localitat')->sortable(),
+                Tables\Columns\TextColumn::make('formattedSeat')->label('Localitat')->sortable(),
                 Tables\Columns\TextColumn::make('scans.scan_id')->label('QR')->badge()->color('success'),
             ])
             ->filters([

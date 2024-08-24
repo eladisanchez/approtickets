@@ -74,7 +74,7 @@ class Ticket extends Model
     public function getCartSeatsAttribute()
     {
         $cartItems = Booking::where('product_id', $this->producte_id)
-            ->where('day', $this->day->toDateString())
+            ->where('day', $this->day)
             ->where('hour', $this->hour)
             ->where('order_id', NULL)
             ->where('session', session()->getId())

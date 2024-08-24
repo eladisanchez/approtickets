@@ -284,34 +284,16 @@ class CartController extends BaseController
 	 */
 	public function removeRow(Request $request): RedirectResponse
 	{
-		$this->initializeCart($request);
-
+		$this->initializeCart();
 		$rowId = request()->input('rowid');
 		$cartItem = $this->cartItems->filter(function ($item) use ($rowId) {
 			return $item->id == $rowId;
 		});
 		if ($cartItem) {
-			$cartItem->delete();
+			$cartItem->map->delete();
 		}
 		return redirect()->back();
 	}
-
-
-	/**
-	 * Update cart row (not using)
-	 */
-	public function updateItem($rowId): RedirectResponse
-	{
-		$this->initializeCart();
-		$cartItem = $this->cartItems->filter(function ($item) use ($rowId) {
-			return $item->id == $rowId;
-		});
-		if ($cartItem) {
-			Cart::instance('shopping')->remove($rowId);
-		}
-		return redirect()->route('cart');
-	}
-
 
 	/**
 	 * Delete all cart rows

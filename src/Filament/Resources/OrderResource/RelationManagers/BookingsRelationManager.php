@@ -56,7 +56,7 @@ class BookingsRelationManager extends RelationManager
                     ->badge(),
                 Tables\Columns\TextColumn::make('tickets')
                     ->label('Quantitat'),
-                Tables\Columns\TextColumn::make('seat')
+                Tables\Columns\TextColumn::make('formattedSeat')
                     ->label('Localitat')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('day')

@@ -19,6 +19,8 @@ use Filament\Facades\Filament;
 use ApproTickets\Console\Commands\CleanCartCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Filament\Support\Colors\Color;
+use ApproTickets\Models\Booking;
+use Illuminate\Support\Facades\View;
 
 
 class ApproTicketsServiceProvider extends ServiceProvider
@@ -41,6 +43,15 @@ class ApproTicketsServiceProvider extends ServiceProvider
                 CleanCartCommand::class,
             ]);
         }
+
+        $cartItems = Booking::where('order_id', NULL)
+            ->where('session', session()->getId())
+            ->get();
+        $cartTotal = $cartItems->sum(function ($item) {
+            return $item->price;
+        });
+        View::share('cart', $cartItems);
+        View::share('total', $cartTotal);
 
         $this->app->booted(function () {
             $schedule = $this->app->make(Schedule::class);

@@ -55,7 +55,7 @@ class CartController extends Controller
 	public function add(): RedirectResponse
 	{
 
-		//$this->initializeCart();
+		$this->initializeCart();
 
 		$data = request()->all();
 
@@ -285,7 +285,7 @@ class CartController extends Controller
 	 */
 	public function removeRow(Request $request): RedirectResponse
 	{
-		//$this->initializeCart();
+		$this->initializeCart();
 		$rowId = request()->input('rowid');
 		$cartItem = $this->cartItems->filter(function ($item) use ($rowId) {
 			return $item->id == $rowId;
@@ -301,7 +301,7 @@ class CartController extends Controller
 	 */
 	public function destroy(): RedirectResponse
 	{
-		//$this->initializeCart();
+		$this->initializeCart();
 		$this->cartItems->map->delete();
 		Session::forget('coupon');
 		Session::forget('qty');

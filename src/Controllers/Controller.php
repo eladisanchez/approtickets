@@ -15,11 +15,6 @@ class Controller extends BaseController
     protected $cartItems;
     protected $cartTotal;
 
-    public function __construct()
-    {
-        $this->initializeCart();
-    }
-
     protected function initializeCart()
     {
         $this->cartItems = Booking::where('order_id', NULL)
@@ -32,7 +27,6 @@ class Controller extends BaseController
 
         view()->share('cart', $this->cartItems);
         view()->share('total', $this->cartTotal);
-
-        dd($this->cartItems, $this->cartTotal);
+        
     }
 }

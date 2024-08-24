@@ -8,6 +8,8 @@
             background: #eee;
             border: 1px solid #eee;
             font-family: 'arial', sans-serif;
+            grid-template-columns: repeat(90, 1fr); 
+            grid-template-rows: repeat(90, 1fr);
         }
 
         .seat {
@@ -30,7 +32,7 @@
     </style>
     <x-filament::section>
         <div class="gap-4">
-            <div class="map" style="grid-template-columns: repeat(90, 1fr);">
+            <div class="map">
                 @foreach ($gridItems as $square)
                     @php
                         $squareSeat = $this->isSeat($square);

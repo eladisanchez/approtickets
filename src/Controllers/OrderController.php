@@ -11,6 +11,8 @@ use Session;
 use Mail;
 use ApproTickets\Mail\NewOrder;
 use Redsys\Tpv\Tpv;
+use Barryvdh\DomPDF\Facade\Pdf;
+use ApproTickets\Models\Option;
 
 class OrderController extends Controller
 {
@@ -164,6 +166,31 @@ class OrderController extends Controller
 			->firstOrFail();
 
 		return view('order.error')->with('order', $order);
+
+	}
+
+	/**
+	 * Generate order PDF with tickets
+	 */
+	public function pdf(string $session, string $id)
+	{
+		$order = Order::findOrFail($id);
+
+		if ($order->session != $session || !($order->paid == 1 || $order->payment == 'credit')) {
+			return abort('404');
+		}
+
+		$conditions = Option::where('key','condicions-venda')->pluck('value')->first();
+
+		$pdf = Pdf::setOptions(['isRemoteEnabled' => true])->loadView(
+			'pdf.order',
+			[
+				'order' => $order,
+				'conditions' => $conditions
+			]
+		);
+
+		return $pdf->stream("entrades-{$id}.pdf");
 
 	}
 

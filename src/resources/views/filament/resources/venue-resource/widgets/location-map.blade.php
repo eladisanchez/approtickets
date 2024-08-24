@@ -2,7 +2,7 @@
     <x-slot name="heading">Localitats</x-slot>
     <style>
         .map {
-            width: 800px;
+            width: 100%;
             display: grid;
             gap: 1px;
             background: #eee;

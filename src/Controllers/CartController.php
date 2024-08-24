@@ -21,8 +21,8 @@ class CartController extends Controller
 
 	protected $layout = 'cistell';
 
-	public $cartItems;
-	public float $cartTotal;
+	// public $cartItems;
+	// public float $cartTotal;
 
 
 	// protected function initializeCart()

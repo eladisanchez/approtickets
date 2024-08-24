@@ -22,7 +22,8 @@ class ListOrders extends ListRecords
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make('Comandes confirmades'),
+            'all' => Tab::make('Comandes confirmades')
+                ->modifyQueryUsing(fn(Builder $query) => $query->withoutTrashed()),
             'trashed' => Tab::make('Comandes eliminades')
                 ->modifyQueryUsing(fn(Builder $query) => $query->onlyTrashed()),
         ];

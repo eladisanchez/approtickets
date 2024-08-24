@@ -21,10 +21,9 @@ class CleanCartCommand extends Command
         $this->info("Cleaning old cart items");
 
         // Cleaning cart items
-        $cartItems = Booking::where('order_id', NULL)
+        Booking::where('order_id', NULL)
             ->where('created_at', '<', date('Y-m-d H:i:s', strtotime('-30 minutes')))
-            ->get();
-        $cartItems->delete();
+            ->delete();
 
         // Cleaning non paid orders
         $date = new \DateTime;

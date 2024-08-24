@@ -58,10 +58,10 @@ class ProductController extends BaseController
 	{
 		$product = Product::findOrFail($id);
 		$tickets = $product->ticketsDay($day, $hour);
-		return response()->json([
+		return [
 			'cart' => $tickets->cartSeats,
-			'booked' => $tickets->bookedSeats->toArray(),
-		]);
+			'booked' => $tickets->bookedSeats,
+		];
 	}
 
 	// Dia triat

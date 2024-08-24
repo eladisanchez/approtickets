@@ -77,9 +77,9 @@ class ApproTicketsServiceProvider extends ServiceProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->font('Figtree')
+            ->font(config('approtickets.admin.font'))
             ->colors([
-                'primary' => Color::hex(config('approtickets.colors.primary')),
+                'primary' => Color::hex(config('approtickets.admin.colors.primary')),
             ]);
     }
 

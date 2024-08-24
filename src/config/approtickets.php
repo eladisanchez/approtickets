@@ -7,8 +7,12 @@ return [
         'payment' => env('AT_TIMEOUT_PAYMENT', 15),
     ],
 
-    'colors' => [
-        'primary' => env('AT_COLORS_PRIMARY', '#5cacb0'),
-    ],
+    'admin' => [
+        'colors' => [
+            'primary' => env('AT_COLORS_PRIMARY', '#5cacb0'),
+        ],
+        'font' => env('AT_FONT', 'Inter'),
+    ]
+
 
 ];

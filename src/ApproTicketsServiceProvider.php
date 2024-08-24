@@ -16,8 +16,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Facades\Filament;
-use Filament\Support\Facades\FilamentAsset;
-use Filament\Support\Assets\Css;
+use ApproTickets\Console\Commands\CleanCartCommand;
 
 
 class ApproTicketsServiceProvider extends ServiceProvider
@@ -34,6 +33,12 @@ class ApproTicketsServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/config/tickets.php' => config_path('tickets.php'),
         ], 'config');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                CleanCartCommand::class,
+            ]);
+        }
 
         // Filament
         Model::unguard();

@@ -34,7 +34,7 @@ class Ticket extends Model
             $query->where('product_id', $product->product_id)
                 ->orWhere('product_id', $product->parent_id);
         })->where('day', $this->day)
-            ->where('hour', $this->hour)
+            ->where('hour', $this->hour->format('H:i:s'))
             ->whereHas('order', function ($query) {
                 $query->whereNull('deleted_at');
             })

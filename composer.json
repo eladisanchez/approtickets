@@ -34,5 +34,8 @@
             "name": "Eladi Sánchez",
             "email": "eladisanchez@gmail.com"
         }
-    ]
+    ],
+    "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.13"
+    }
 }

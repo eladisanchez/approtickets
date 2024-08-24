@@ -47,6 +47,10 @@ class ApproTicketsServiceProvider extends ServiceProvider
             $schedule->command('approtickets:clean-cart')->everyMinute();
         });
 
+        view()->share([
+            'cartSummary' => Cart::summary(),
+        ])
+
         // Filament
         Model::unguard();
 

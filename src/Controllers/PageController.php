@@ -2,7 +2,6 @@
 
 namespace ApproTickets\Controllers;
 
-use ApproTickets\Common;
 use Illuminate\View\View;
 use ApproTickets\Models\Option;
 

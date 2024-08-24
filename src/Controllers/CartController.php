@@ -2,7 +2,6 @@
 
 namespace ApproTickets\Controllers;
 
-use Illuminate\Routing\Controller as BaseController;
 use ApproTickets\Models\Rate;
 use ApproTickets\Models\Order;
 use ApproTickets\Models\Product;
@@ -14,8 +13,9 @@ use Auth;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use ApproTickets\Controllers\Controller;
 
-class CartController extends BaseController
+class CartController extends Controller
 {
 
 
@@ -25,27 +25,28 @@ class CartController extends BaseController
 	public float $cartTotal;
 
 
-	protected function initializeCart()
-    {
-        $this->cartItems = Booking::where('order_id', NULL)
-            ->where('session', session()->getId())
-            ->get();
+	// protected function initializeCart()
+    // {
+    //     $this->cartItems = Booking::where('order_id', NULL)
+    //         ->where('session', session()->getId())
+    //         ->get();
 
-        $this->cartTotal = $this->cartItems->sum(function ($item) {
-            return $item->price;
-        });
-    }
+    //     $this->cartTotal = $this->cartItems->sum(function ($item) {
+    //         return $item->price;
+    //     });
+    // }
 
 	/**
 	 * Cart user page
 	 */
 	public function show(): View
 	{
-		$this->initializeCart();
-		return view('cart', [
-			'cart' => $this->cartItems,
-			'total' => $this->cartTotal
-		]);
+		// $this->initializeCart();
+		// return view('cart', [
+		// 	'cart' => $this->cartItems,
+		// 	'total' => $this->cartTotal
+		// ]);
+		return view('cart');
 	}
 
 	/**
@@ -54,7 +55,7 @@ class CartController extends BaseController
 	public function add(): RedirectResponse
 	{
 
-		$this->initializeCart();
+		//$this->initializeCart();
 
 		$data = request()->all();
 
@@ -284,7 +285,7 @@ class CartController extends BaseController
 	 */
 	public function removeRow(Request $request): RedirectResponse
 	{
-		$this->initializeCart();
+		//$this->initializeCart();
 		$rowId = request()->input('rowid');
 		$cartItem = $this->cartItems->filter(function ($item) use ($rowId) {
 			return $item->id == $rowId;
@@ -300,7 +301,7 @@ class CartController extends BaseController
 	 */
 	public function destroy(): RedirectResponse
 	{
-		$this->initializeCart();
+		//$this->initializeCart();
 		$this->cartItems->map->delete();
 		Session::forget('coupon');
 		Session::forget('qty');

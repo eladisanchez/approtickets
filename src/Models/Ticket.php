@@ -80,7 +80,7 @@ class Ticket extends Model
             ->where('session', session()->getId())
             ->pluck('seat');
         $cartItems->map(function ($item) {
-            return json_decode($item, true);
+            return json_decode($item);
         });
         return $cartItems;
     }
@@ -93,7 +93,7 @@ class Ticket extends Model
             ->where('session', '!=', session()->getId())
             ->pluck('seat');
         $bookings->map(function ($item) {
-            return json_decode($item, true);
+            return json_decode($item);
         });
         return $bookings;
 

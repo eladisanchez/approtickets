@@ -56,23 +56,11 @@ class ProductController extends BaseController
 
 	public function availability($id, $day, $hour)
 	{
-
-		$cartItems = Cart::instance('shopping')->search(function ($key, $value) use ($id, $day, $hour) {
-			return $key->id == $id && $key->options->day == $day && $key->options->hour == $hour;
-		});
-
-		// Map cartItems to return only the seat
-		$cart = [];
-		foreach ($cartItems as $item) {
-			$cart[] = $item->options->seat;
-		}
-		;
-		// Get seats from bookings for product, day and hour
-		$bookings = Booking::where('product_id', $id)->where('day', $day)->where('hour', $hour)->pluck('seat');
-
+		$product = Product::findOrFail($id);
+		$tickets = $product->ticketsDay($day, $hour);
 		return response()->json([
-			'cart' => $cart,
-			'booked' => $bookings
+			'cart' => $tickets->cartSeats,
+			'booked' => $tickets->bookedSeats
 		]);
 	}
 

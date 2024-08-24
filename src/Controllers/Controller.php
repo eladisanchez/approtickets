@@ -32,5 +32,7 @@ class Controller extends BaseController
 
         view()->share('cart', $this->cartItems);
         view()->share('total', $this->cartTotal);
+
+        dd($this->cartItems, $this->cartTotal);
     }
 }

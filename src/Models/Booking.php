@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use ApproTickets\Helpers\Common;
 
 class Booking extends Model {
 
@@ -45,6 +46,10 @@ class Booking extends Model {
 	public function rate()
 	{
 		return $this->belongsTo(Rate::class);
+	}
+
+	public function getFormattedSeat() {
+		return Common::seat($this->seat);
 	}
 
 	public function scopeProductDayHour($query,$id,$day,$hour)

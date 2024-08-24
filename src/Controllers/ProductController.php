@@ -2,7 +2,7 @@
 
 namespace ApproTickets\Controllers;
 
-use Carbon\Carbon;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller as BaseController;
 use ApproTickets\Models\Product;
 use ApproTickets\Models\Ticket;
@@ -24,7 +24,7 @@ class ProductController extends BaseController
 	/**
 	 * Product single page
 	 */
-	public function show($name, $day = NULL, $hour = NULL): View
+	public function show($name, $day = NULL, $hour = NULL): View | RedirectResponse
 	{
 
 		$product = Product::withoutGlobalScopes()->where('name', $name)->firstOrFail();

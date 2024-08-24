@@ -168,8 +168,8 @@ class CartController extends BaseController
 			$booking->tickets = 1;
 			$booking->price = $price;
 			$booking->session = Session::getId();
-			$booking->seat = $seat->s;
-			$booking->row = $seat->f;
+			$booking->seat = intval($seat->s);
+			$booking->row = intval($seat->f);
 			$booking->save();
 
 		}

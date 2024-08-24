@@ -28,7 +28,7 @@ class OrderResource extends Resource
     {
         return $form
             ->schema([
-                
+
                 Forms\Components\DateTimePicker::make('created_at')->label('Data')->disabled()->columnSpan(3),
                 Forms\Components\TextInput::make('total')->label('Total')->disabled()->columnSpan(3),
                 Forms\Components\TextInput::make('name')->label('Client')->columnSpan(2),
@@ -112,4 +112,13 @@ class OrderResource extends Resource
             'edit' => Pages\EditOrder::route('/{record}/edit'),
         ];
     }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
+
 }

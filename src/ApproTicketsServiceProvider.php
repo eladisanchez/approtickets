@@ -17,6 +17,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Facades\Filament;
 use ApproTickets\Console\Commands\CleanCartCommand;
+use Illuminate\Console\Scheduling\Schedule;
 
 
 class ApproTicketsServiceProvider extends ServiceProvider
@@ -25,7 +26,6 @@ class ApproTicketsServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/migrations');
         $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
-        $this->loadRoutesFrom(__DIR__ . '/routes/console.php');
         $this->loadViewsFrom(__DIR__ . '/resources/views', 'approtickets');
 
         $this->publishes([
@@ -40,6 +40,11 @@ class ApproTicketsServiceProvider extends ServiceProvider
                 CleanCartCommand::class,
             ]);
         }
+
+        $this->app->booted(function () {
+            $schedule = $this->app->make(Schedule::class);
+            $schedule->command('approtickets:clean-cart')->everyMinute();
+        });
 
         // Filament
         Model::unguard();

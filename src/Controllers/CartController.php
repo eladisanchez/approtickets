@@ -26,7 +26,7 @@ class CartController extends BaseController
 	public function __construct()
 	{
 		$this->cartItems = Booking::where('order_id', NULL)
-			//->where('session', Session::getId())
+			->where('session', Session::getId())
 			->get();
 		$this->cartTotal = $this->cartItems->sum(function ($item) {
 			return $item->price;
@@ -291,7 +291,7 @@ class CartController extends BaseController
 	 */
 	public function destroy(): RedirectResponse
 	{
-		$this->cartItems->delete();
+		$this->cartItems->map->delete();
 		Session::forget('coupon');
 		Session::forget('qty');
 		return redirect()->back();

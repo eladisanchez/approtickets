@@ -30,13 +30,4 @@ class Common
         return 'F' . $seient->f . '/S' . $seient->s;
     }
 
-    public static function option($key)
-    {
-        $text = DB::table('options')->select('value')->where('key', $key)->first();
-        if (!$text) {
-            return '';
-        }
-        return $text->value;
-    }
-
 }

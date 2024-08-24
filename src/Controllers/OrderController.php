@@ -27,6 +27,7 @@ class OrderController extends Controller
 			->orderBy('created_at', 'desc')
 			->first();
 		if ($failedOrder) {
+			dd('ja hi ha una comanda pendent');
 			return redirect()->route('order.payment', ['id' => $failedOrder->id]);
 		}
 
@@ -60,6 +61,7 @@ class OrderController extends Controller
 
 		$validator = validator(request()->all(), $rules);
 		if ($validator->fails()) {
+			dd('ha fallat la validació')
 			return redirect()->back()->withErrors($validator)->withInput();
 		}
 

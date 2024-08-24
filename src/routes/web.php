@@ -5,6 +5,7 @@ use ApproTickets\Controllers\CartController;
 use ApproTickets\Controllers\OrderController;
 use ApproTickets\Controllers\ProductController;
 use ApproTickets\Controllers\TPVController;
+use ApproTickets\Controllers\PageController;
 
 Route::middleware([
     'web',
@@ -33,5 +34,7 @@ Route::middleware([
     Route::get('image/{path}', [ProductController::class, 'image'])->name('image')->where('path', '.*\.(jpg|jpeg|png|gif|bmp|webp)');
 
     Route::post('tpv-notification', [TPVController::class, 'notification'])->name('tpv-notification');
+
+    Route::get('{slug}', [PageController::class, '__invoke'])->name('page');
 
 });

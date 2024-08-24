@@ -39,7 +39,7 @@ class CartController extends BaseController
 	/**
 	 * Cart user page
 	 */
-	public function show(Request $request): View
+	public function show(): View
 	{
 		$this->initializeCart();
 		return view('cart', [
@@ -51,7 +51,7 @@ class CartController extends BaseController
 	/**
 	 * Add standard item
 	 */
-	public function add(Request $request): RedirectResponse
+	public function add(): RedirectResponse
 	{
 
 		$this->initializeCart();

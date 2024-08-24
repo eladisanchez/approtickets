@@ -81,7 +81,7 @@ class ApproTicketsServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/config/tickets.php', 'tickets');
+        $this->mergeConfigFrom(__DIR__ . '/config/approtickets.php', 'approtickets');
 
         Filament::registerPanel(
             fn(): Panel => $this->panel(Panel::make())

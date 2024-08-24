@@ -58,7 +58,6 @@ class ProductController extends BaseController
 	{
 		$product = Product::findOrFail($id);
 		$tickets = $product->ticketsDay($day, $hour);
-		dd($tickets->bookedSeats);
 		return response()->json([
 			'cart' => $tickets->cartSeats,
 			'booked' => $tickets->bookedSeats->toArray(),

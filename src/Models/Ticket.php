@@ -78,10 +78,7 @@ class Ticket extends Model
             ->where('hour', $this->hour)
             ->where('order_id', NULL)
             ->where('session', session()->getId())
-            ->pluck('seat');
-        $cartItems->map(function ($item) {
-            return json_decode($item);
-        });
+            ->get(['seat'])->toArray();
         return $cartItems;
     }
 
@@ -91,10 +88,10 @@ class Ticket extends Model
             ->where('day', $this->day)
             ->where('hour', $this->hour)
             ->where('session', '!=', session()->getId())
-            ->pluck('seat');
-        $bookings->map(function ($item) {
-            return json_decode($item);
-        });
+            ->get(['seat'])->toArray();
+        // $bookings->map(function ($item) {
+        //     return json_decode($item);
+        // });
         return $bookings;
 
     }

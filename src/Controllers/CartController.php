@@ -42,9 +42,11 @@ class CartController extends BaseController
 	public function show(): View
 	{
 		$this->initializeCart();
+		$pendingOrder = Order::where('session', Session::getId())->where('paid', 0)->first();
 		return view('cart', [
 			'cart' => $this->cartItems,
-			'total' => $this->cartTotal
+			'total' => $this->cartTotal,
+			'pendingOrder' => $pendingOrder
 		]);
 	}
 

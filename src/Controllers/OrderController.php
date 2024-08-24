@@ -90,20 +90,13 @@ class OrderController extends BaseController
 
 		if ($order) {
 
-			if ($order->payment == 'credit') {
+			if ($order->paid) {
 				try {
 					Mail::to($order->email)->send(new NewOrder($order));
 				} catch (\Exception $e) {
 					Log::error($e->getMessage());
 				}
-				Session::forget('coupon');
-				Session::forget('coupon_name');
-				return view('order.thanks')->with('order', $order);
-			}
-
-			if (config('app.env') != 'production') {
-				$order->paid = 1;
-				$order->save();
+				return redirect()->route('order.thanks', ['session' => $order->session, 'id' => $order->id]);
 			}
 
 			return redirect()->route('order.payment', ['id' => $order->id]);
@@ -181,7 +174,7 @@ class OrderController extends BaseController
 			return abort('404');
 		}
 
-		$conditions = Option::where('key','condicions-venda')->pluck('value')->first();
+		$conditions = Option::where('key', 'condicions-venda')->pluck('value')->first();
 
 		$pdf = Pdf::setOptions(['isRemoteEnabled' => true])->loadView(
 			'pdf.order',

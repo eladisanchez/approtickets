@@ -34,10 +34,8 @@ class OrderResource extends Resource
                 Forms\Components\TextInput::make('name')->label('Client')->columnSpan(2),
                 Forms\Components\TextInput::make('email')->label('Correu electrònic')->columnSpan(2),
                 Forms\Components\TextInput::make('phone')->label('Telèfon')->columnSpan(2),
-                Forms\Components\Select::make('payment')->label('Mètode de pagament')->options([
-                    'card' => 'Targeta de crèdit',
-                    'credit' => 'Offline (transferència, efectiu...)',
-                ])->required()->columnSpan(2),
+                Forms\Components\Select::make('payment')->label('Mètode de pagament')
+                    ->options(config('approtickets.payment_methods'))->required()->columnSpan(2),
                 Forms\Components\Select::make('paid')->label('Pagat')->options([
                     '0' => 'Pendent',
                     '1' => 'Pagat',

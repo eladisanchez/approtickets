@@ -19,6 +19,8 @@ class LocationMap extends Widget
     public $seat = 1;
     public $row = 1;
 
+    public $gridSize = 90;
+
     public function mount()
     {
         $this->map = $this->record->seats ?? [];
@@ -73,8 +75,8 @@ class LocationMap extends Widget
     public function render(): \Illuminate\View\View
     {
         $gridItems = [];
-        for ($y = 1; $y <= 45; $y++) {
-            for ($x = 1; $x <= 45; $x++) {
+        for ($y = 1; $y <= $this->gridSize; $y++) {
+            for ($x = 1; $x <= $this->gridSize; $x++) {
                 $gridItems[] = ['x' => $x, 'y' => $y];
             }
         }

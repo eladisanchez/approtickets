@@ -29,8 +29,8 @@
         }
     </style>
     <x-filament::section>
-        <div class="flex gap-4">
-            <div class="map" style="grid-template-columns: repeat(45, 1fr);">
+        <div class="gap-4">
+            <div class="map" style="grid-template-columns: repeat(90, 1fr);">
                 @foreach ($gridItems as $square)
                     @php
                         $squareSeat = $this->isSeat($square);

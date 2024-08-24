@@ -115,7 +115,7 @@ class OrderController extends Controller
         });
 
 		$order = Order::create([
-			'language' => 'ca',
+			//'lang' => 'ca',
 			'session' => Session::getId(),
 			'total' => $total,
 			'coupon' => Session::get('coupon.name'),

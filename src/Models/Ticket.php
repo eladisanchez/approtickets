@@ -34,7 +34,7 @@ class Ticket extends Model
             $query->where('product_id', $product->product_id)
                 ->orWhere('product_id', $product->parent_id);
         })->where('day', $this->day)
-            ->where('hour', $this->hour->format('H:i:s'))
+            ->where('hour', $this->hour)
             ->whereHas('order', function ($query) {
                 $query->whereNull('deleted_at');
             })
@@ -43,33 +43,6 @@ class Ticket extends Model
         return $bookings;
 
     }
-
-    // Això resta les del cistell a les disponibles
-    public function getAvailableAttribute()
-    {
-
-        $value = $this->tickets - $this->bookings();
-
-        $self = $this;
-        $cistell = Cart::search(function ($k, $v) use ($self) {
-            return $k->model && $k->model->id == $self->product_id && $k->options->day == $self->day->format('Y-m-d') && $k->options->hour == $self->hour->format('H:i:s');
-        });
-
-        $i = 0;
-
-        if ($cistell) {
-            foreach ($cistell as $row) {
-                $prod = $row;
-                $value -= $prod->qty;
-                $i++;
-            }
-        }
-
-        return $value;
-
-
-    }
-
 
     public function getCartSeatsAttribute()
     {
@@ -95,6 +68,7 @@ class Ticket extends Model
         $seats = $bookings->map(function ($booking) {
             return ['s' => $booking->seat, 'f' => $booking->row];
         })->toArray();
+        dd($seats);
         return $seats;
 
     }

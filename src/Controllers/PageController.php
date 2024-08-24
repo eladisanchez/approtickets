@@ -4,8 +4,9 @@ namespace ApproTickets\Controllers;
 
 use Illuminate\View\View;
 use ApproTickets\Models\Option;
+use Illuminate\Routing\Controller as BaseController;
 
-class PageController extends Controller
+class PageController extends BaseController
 {
 
     public function __invoke($slug): View

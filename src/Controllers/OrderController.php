@@ -13,8 +13,9 @@ use ApproTickets\Mail\NewOrder;
 use Redsys\Tpv\Tpv;
 use Barryvdh\DomPDF\Facade\Pdf;
 use ApproTickets\Models\Option;
+use Illuminate\Routing\Controller as BaseController;
 
-class OrderController extends Controller
+class OrderController extends BaseController
 {
 
 	public function store(): RedirectResponse

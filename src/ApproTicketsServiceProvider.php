@@ -44,15 +44,6 @@ class ApproTicketsServiceProvider extends ServiceProvider
             ]);
         }
 
-        $cartItems = Booking::where('order_id', NULL)
-            ->where('session', session()->getId())
-            ->get();
-        $cartTotal = $cartItems->sum(function ($item) {
-            return $item->price;
-        });
-        View::share('cart', $cartItems);
-        View::share('total', $cartTotal);
-
         $this->app->booted(function () {
             $schedule = $this->app->make(Schedule::class);
             $schedule->command('approtickets:clean-cart')->everyMinute();

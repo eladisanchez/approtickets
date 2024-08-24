@@ -13,40 +13,39 @@ use Auth;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use ApproTickets\Controllers\Controller;
+use Illuminate\Routing\Controller as BaseController;
 
-class CartController extends Controller
+
+class CartController extends BaseController
 {
 
 
 	protected $layout = 'cistell';
 
-	// public $cartItems;
-	// public float $cartTotal;
+	public $cartItems;
+	public float $cartTotal;
 
+	protected function initializeCart()
+    {
+        $this->cartItems = Booking::where('order_id', NULL)
+            ->where('session', session()->getId())
+            ->get();
 
-	// protected function initializeCart()
-    // {
-    //     $this->cartItems = Booking::where('order_id', NULL)
-    //         ->where('session', session()->getId())
-    //         ->get();
-
-    //     $this->cartTotal = $this->cartItems->sum(function ($item) {
-    //         return $item->price;
-    //     });
-    // }
+        $this->cartTotal = $this->cartItems->sum(function ($item) {
+            return $item->price;
+        });
+    }
 
 	/**
 	 * Cart user page
 	 */
 	public function show(): View
 	{
-		// $this->initializeCart();
-		// return view('cart', [
-		// 	'cart' => $this->cartItems,
-		// 	'total' => $this->cartTotal
-		// ]);
-		return view('cart');
+		$this->initializeCart();
+		return view('cart', [
+			'cart' => $this->cartItems,
+			'total' => $this->cartTotal
+		]);
 	}
 
 	/**

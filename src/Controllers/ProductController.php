@@ -16,8 +16,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controller as BaseController;
 
-class ProductController extends Controller
+class ProductController extends BaseController
 {
 
 	/**

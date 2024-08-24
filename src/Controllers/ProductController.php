@@ -61,7 +61,7 @@ class ProductController extends BaseController
 		dd($tickets->bookedSeats);
 		return response()->json([
 			'cart' => $tickets->cartSeats,
-			'booked' => $tickets->bookedSeats
+			'booked' => $tickets->bookedSeats->toArray(),
 		]);
 	}
 

@@ -176,7 +176,7 @@ class CartController extends BaseController
 
 		if (count($takenSeats)) {
 			return redirect()->back()
-				->with('error', trans('textos.seats_taken', ['seats' => $takenSeats]));
+				->with('error', "Algunes localitats no s'han pogut afegir al cistell perquè ja no estan disponibles");
 		}
 
 		return redirect()->back()->with('itemAdded', true);

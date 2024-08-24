@@ -134,7 +134,7 @@ class OrderController extends Controller
 			]
 		);
 
-		return view('approtickets::order.tpv', [
+		return view('order.tpv', [
 			'TPV' => $TPV
 		]);
 	}

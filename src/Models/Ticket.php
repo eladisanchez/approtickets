@@ -90,7 +90,7 @@ class Ticket extends Model
         $bookings = Booking::where('product_id', $this->product_id)
             ->where('day', $this->day)
             ->where('hour', $this->hour)
-            ->where('session', '!=', session()->getId())
+            //->where('session', '!=', session()->getId())
             ->get(['seat']);
         $seats = $bookings->map(function ($booking) {
             return json_decode($booking->seat, true);

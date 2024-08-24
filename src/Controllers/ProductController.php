@@ -3,7 +3,6 @@
 namespace ApproTickets\Controllers;
 
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Controller as BaseController;
 use ApproTickets\Models\Product;
 use ApproTickets\Models\Ticket;
 use ApproTickets\Models\Booking;
@@ -18,7 +17,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 
-class ProductController extends BaseController
+class ProductController extends Controller
 {
 
 	/**

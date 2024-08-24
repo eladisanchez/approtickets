@@ -14,7 +14,7 @@ class Order extends Model {
 	protected $hidden = ['updated_at'];
     protected $append = ['number'];
 
-    public function booted()
+    protected static function booted()
     {
         static::deleting(function($order) {
             foreach ($order->bookings()->get() as $booking) {

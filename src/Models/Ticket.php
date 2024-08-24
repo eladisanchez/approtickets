@@ -73,16 +73,15 @@ class Ticket extends Model
 
     public function getCartSeatsAttribute()
     {
-        $cartItems = Booking::where('product_id', $this->producte_id)
+        $cartItems = Booking::where('product_id', $this->product_id)
             ->where('day', $this->day)
             ->where('hour', $this->hour)
             ->where('order_id', NULL)
             ->where('session', session()->getId())
             ->get(['seat']);
-            dd($cartItems);
         $seats = $cartItems->map(function ($booking) {
-                return json_decode($booking->seat, true);
-            })->toArray();
+            return json_decode($booking->seat, true);
+        })->toArray();
         return $seats;
     }
 
@@ -94,8 +93,8 @@ class Ticket extends Model
             ->where('session', '!=', session()->getId())
             ->get(['seat']);
         $seats = $bookings->map(function ($booking) {
-                return json_decode($booking->seat, true);
-            })->toArray();
+            return json_decode($booking->seat, true);
+        })->toArray();
         return $seats;
 
     }

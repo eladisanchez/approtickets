@@ -150,10 +150,10 @@ class CartController extends BaseController
 
 			// Check if seat is available
 			$booking = Booking::where('product_id', $product->id)
-				->where('rate_id', $rate->id)
 				->where('day', $day)
 				->where('hour', $hour)
-				->where('seat', json_encode($seat))
+				->where('seat', $seat->s)
+				->where('row', $seat->f)
 				->first();
 			if ($booking) {
 				$takenSeats[] = $seat;
@@ -168,7 +168,8 @@ class CartController extends BaseController
 			$booking->tickets = 1;
 			$booking->price = $price;
 			$booking->session = Session::getId();
-			$booking->seat = json_encode($seat);
+			$booking->seat = $seat->s;
+			$booking->row = $seat->f;
 			$booking->save();
 
 		}

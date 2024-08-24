@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use ApproTickets\Models\Order;
-use ApproTickets\Helpers\Common;
+use ApproTickets\Models\Option;
 
 class NewOrder extends Mailable
 {
@@ -21,7 +21,7 @@ class NewOrder extends Mailable
      */
     public function __construct(Order $order)
     {
-        $text = Common::option('email_comanda');
+        $text = Option::value('new-order-text');
         $this->text = strtr($text, [
             '[nom_client]' => $order->name,
             '[link_pdf]' => route('order.pdf', [$order->session, $order->id])

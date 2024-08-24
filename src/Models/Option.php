@@ -12,7 +12,7 @@ class Option extends Model
     protected $table = 'options';
     protected $guarded = ['id'];
 
-    public function scopeOption($query, $option)
+    public function scopeValue($query, $option)
     {
         return $query->where('key', $option)->first()->pluck('value');
     }

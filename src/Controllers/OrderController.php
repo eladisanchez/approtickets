@@ -5,16 +5,12 @@ namespace ApproTickets\Controllers;
 use Log;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-use Gloudemans\Shoppingcart\Facades\Cart;
-use Redsys\Tpv\Tpv;
 use ApproTickets\Models\Order;
-use ApproTickets\Models\User;
 use ApproTickets\Models\Booking;
-use ApproTickets\Models\Product;
 use Session;
-use ApproTickets\Helpers\Common;
 use Mail;
 use ApproTickets\Mail\NewOrder;
+use Redsys\Tpv\Tpv;
 
 class OrderController extends Controller
 {
@@ -64,55 +60,9 @@ class OrderController extends Controller
 			return redirect()->back()->withErrors($validator)->withInput();
 		}
 
-		// Create new user if password is submitted
-		// if (request()->has('password') && !empty(request()->input('password'))) {
-		// 	$validatorU = validator(request()->all(), [
-		// 		'password' => 'confirmed|min:6',
-		// 		'email' => 'unique:users,email'
-		// 	]);
-		// 	if ($validatorU->fails()) {
-		// 		return redirect()->back()->withErrors($validatorU)->withInput();
-		// 	}
-		// 	$user = new User;
-		// 	$user->username = request()->input('name');
-		// 	$user->email = request()->input('email');
-		// 	$user->password = request()->input('password');
-		// 	$user->save();
-		// }
-
-
-		// Check availabilities before checkout
-		// foreach ($cartItems as $row) {
-
-		// 	// Venue events
-		// 	if ($row->seat) {
-		// 		$booked = Booking::where('product_id', $row->model->id)
-		// 			->where('day', $row->options->dia)
-		// 			->where('hour', $row->options->hora)
-		// 			->where('seat', json_encode($row->options->seat))
-		// 			->whereHas('order', function ($query) {
-		// 				$query->whereNull('deleted_at');
-		// 			})
-		// 			->first();
-		// 		if ($booked) {
-		// 			return redirect()->back()->withErrors('Ho sentim, la localitat <strong>' . Common::seat($row->options->seat) . '</strong> per a <strong>' . $row->model->title . '</strong> ja ha sigut adquirida per un altre usuari. Si us plau, esculli una altra localitat.')->withInput();
-		// 		}
-		// 	} else {
-		// 		if ($row->model->is_pack) {
-		// 			// TODO: Programar que per cada producte del pack comprovi si queden entrades disponibles.
-		// 		} else {
-		// 			$tickets_day = $row->model->ticketsDay($row->options->day, $row->options->hour);
-		// 			if ($tickets_day->available < 0) {
-		// 				return redirect()->back()->with('message', 'Ho sentim, ja no hi ha entrades disponibles per al producte ' . $row->model->title . '. Redueixi la quantitat d\'entrades o canvii l\'hora o el dia de la visita.')->withInput();
-		// 			}
-		// 		}
-		// 	}
-
-		// }
-
 		$total = $cartItems->sum(function ($item) {
-            return $item->price;
-        });
+			return $item->price;
+		});
 
 		$order = Order::create([
 			//'lang' => 'ca',
@@ -160,4 +110,61 @@ class OrderController extends Controller
 		return redirect()->back()->withErrors('Error al processar la comanda. Si us plau, torni a intentar-ho.');
 
 	}
+
+	public function payment($id): View
+	{
+		$order = Order::findOrFail($id);
+		if ($order->paid == 1) {
+			return redirect()->route('home');
+		}
+
+		$uniqid = str_pad(mt_rand(0, 99), 2, '0', STR_PAD_LEFT);
+
+		$TPV = new Tpv(config('redsys'));
+		$appName = config('app.name');
+		$TPV->setFormHiddens(
+			[
+				'TransactionType' => '0',
+				'MerchantData' => "Comanda {$appName} {$order->id}",
+				'MerchantURL' => config('app.url') . '/tpv-notification',
+				'Order' => "{$order->id}{$uniqid}1",
+				'Amount' => $order->total,
+				'UrlOK' => route('order.thanks', ['session' => $order->session, 'id' => $order->id]),
+				'UrlKO' => route('order.error', ['session' => $order->session, 'id' => $order->id])
+			]
+		);
+
+		return view('approtickets::order.tpv', [
+			'TPV' => $TPV
+		]);
+	}
+
+	public function thanks(string $session, string $id): RedirectResponse|View
+	{
+		if (!$session == Session::getId()) {
+			return redirect()->route('home');
+		}
+		$order = Order::where('session', Session::getId())
+			->where('id', $id)
+			->isPaid()
+			->orderBy('created_at', 'desc')
+			->firstOrFail();
+
+		Session::forget('coupon');
+		Session::forget('coupon_name');
+		return view('order.thanks')->with('order', $order);
+
+	}
+
+	public function error(string $session, string $id): View
+	{
+
+		$order = Order::where('session', Session::getId())
+			->orderBy('created_at', 'desc')->where('paid', '!=', 1)
+			->firstOrFail();
+
+		return view('order.error')->with('order', $order);
+
+	}
+
 }

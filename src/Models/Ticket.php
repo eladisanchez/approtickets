@@ -51,7 +51,7 @@ class Ticket extends Model
             ->where('hour', $this->hour)
             ->where('order_id', NULL)
             ->where('session', session()->getId())
-            ->get(['seat']);
+            ->get(['seat', 'row']);
         $seats = $cartItems->map(function ($booking) {
             return ['s' => $booking->seat, 'f' => $booking->row];
         })->toArray();
@@ -64,7 +64,7 @@ class Ticket extends Model
             ->where('day', $this->day)
             ->where('hour', $this->hour)
             //->where('session', '!=', session()->getId())
-            ->get(['seat']);
+            ->get(['seat', 'row']);
         $seats = $bookings->map(function ($booking) {
             return ['s' => $booking->seat, 'f' => $booking->row];
         })->toArray();

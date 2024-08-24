@@ -1,6 +1,14 @@
 <?php
 
 return [
-    'ticket_timeout' => env('APPROTICKETS_TICKET_TIMEOUT', 10),
-    'payment_timeout' => env('APPROTICKETS_PAYMENT_TIMEOUT', 15),
+
+    'timeout' => [
+        'ticket' => env('AT_TIMEOUT_TICKET', 10),
+        'payment' => env('AT_TIMEOUT_PAYMENT', 15),
+    ],
+
+    'colors' => [
+        'primary' => env('AT_COLORS_PRIMARY', '#5cacb0'),
+    ],
+
 ];

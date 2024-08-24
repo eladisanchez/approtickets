@@ -8,20 +8,18 @@ use ApproTickets\Models\Order;
 
 class CleanCartCommand extends Command
 {
-    // El nom i la signatura de la comanda Artisan.
+
     protected $signature = 'approtickets:clean-cart';
 
-    // La descripció de la comanda Artisan.
     protected $description = 'Cleans abandoned cart items';
 
-    // Execució de la comanda.
     public function handle()
     {
 
         $this->info("Cleaning old cart items");
 
-        $ticketTimeout = config('approtickets.ticket_timeout');
-        $paymentTimeout = config('approtickets.payment_timeout');
+        $ticketTimeout = config('approtickets.timeout.ticket');
+        $paymentTimeout = config('approtickets.timeout.payment');
 
         // Cleaning cart items
         Booking::where('order_id', NULL)

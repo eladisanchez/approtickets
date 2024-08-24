@@ -18,6 +18,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Facades\Filament;
 use ApproTickets\Console\Commands\CleanCartCommand;
 use Illuminate\Console\Scheduling\Schedule;
+use Filament\Support\Colors\Color;
 
 
 class ApproTicketsServiceProvider extends ServiceProvider
@@ -76,7 +77,10 @@ class ApproTicketsServiceProvider extends ServiceProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->font('Figtree');
+            ->font('Figtree')
+            ->colors([
+                'primary' => Color::hex(config('approtickets.colors.primary')),
+            ]);
     }
 
     public function register()

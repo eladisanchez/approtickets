@@ -80,7 +80,7 @@ class Ticket extends Model
             ->where('session', session()->getId())
             ->get(['seat']);
         $seats = $cartItems->map(function ($booking) {
-            return json_decode($booking->seat, true);
+            return ['s' => $booking->seat, 'f' => $booking->row];
         })->toArray();
         return $seats;
     }
@@ -93,7 +93,7 @@ class Ticket extends Model
             //->where('session', '!=', session()->getId())
             ->get(['seat']);
         $seats = $bookings->map(function ($booking) {
-            return json_decode($booking->seat, true);
+            return ['s' => $booking->seat, 'f' => $booking->row];
         })->toArray();
         return $seats;
 

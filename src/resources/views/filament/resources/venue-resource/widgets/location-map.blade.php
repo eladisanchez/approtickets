@@ -13,7 +13,7 @@
         }
 
         .seat {
-            /*aspect-ratio: 1;*/
+            aspect-ratio: 1;
             background: #FFF;
             position: relative;
             font-size: 5px;

@@ -20,14 +20,17 @@ class CleanCartCommand extends Command
 
         $this->info("Cleaning old cart items");
 
+        $ticketTimeout = config('approtickets.ticket_timeout');
+        $paymentTimeout = config('approtickets.payment_timeout');
+
         // Cleaning cart items
         Booking::where('order_id', NULL)
-            ->where('created_at', '<', date('Y-m-d H:i:s', strtotime('-30 minutes')))
+            ->where('created_at', '<', date('Y-m-d H:i:s', strtotime("-{$ticketTimeout} minutes")))
             ->delete();
 
         // Cleaning non paid orders
         $date = new \DateTime;
-        $date->modify('-15 minutes');
+        $date->modify("-{$paymentTimeout} minutes");
         $formatted = $date->format('Y-m-d H:i:s');
         $abandonedOrders = Order::where('paid', '!=', 1)
             ->where('payment', 'card')

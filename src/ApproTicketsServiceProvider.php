@@ -32,7 +32,7 @@ class ApproTicketsServiceProvider extends ServiceProvider
             __DIR__ . '/resources/views' => resource_path('views/vendor/approtickets'),
         ], 'views');
         $this->publishes([
-            __DIR__ . '/config/tickets.php' => config_path('tickets.php'),
+            __DIR__ . '/config/approtickets.php' => config_path('approtickets.php'),
         ], 'config');
 
         if ($this->app->runningInConsole()) {

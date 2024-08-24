@@ -8,16 +8,16 @@
             background: #eee;
             border: 1px solid #eee;
             font-family: 'arial', sans-serif;
-            grid-template-columns: repeat(90, 1fr); 
+            grid-template-columns: repeat(90, 1fr);
             grid-template-rows: repeat(90, 1fr);
         }
 
         .seat {
-            aspect-ratio: 1;
+            /*aspect-ratio: 1;*/
             background: #FFF;
             position: relative;
-            font-size: 9px;
-            line-height: 8px;
+            font-size: 5px;
+            line-height: 5px;
             text-align: center;
         }
 

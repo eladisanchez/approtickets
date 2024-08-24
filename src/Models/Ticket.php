@@ -78,8 +78,11 @@ class Ticket extends Model
             ->where('hour', $this->hour)
             ->where('order_id', NULL)
             ->where('session', session()->getId())
-            ->get(['seat'])->toArray();
-        return $cartItems;
+            ->get(['seat']);
+        $seats = $cartItems->map(function ($booking) {
+                return json_decode($booking->seat, true);
+            })->toArray();
+        return $seats;
     }
 
     public function getBookedSeatsAttribute()
@@ -88,11 +91,11 @@ class Ticket extends Model
             ->where('day', $this->day)
             ->where('hour', $this->hour)
             ->where('session', '!=', session()->getId())
-            ->get(['seat'])->toArray();
-        // $bookings->map(function ($item) {
-        //     return json_decode($item);
-        // });
-        return $bookings;
+            ->get(['seat']);
+        $seats = $bookings->map(function ($booking) {
+                return json_decode($booking->seat, true);
+            })->toArray();
+        return $seats;
 
     }
 

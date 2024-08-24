@@ -70,10 +70,7 @@ class OrderResource extends Resource
                         '1' => 'success',
                         '2' => 'danger',
                     }),
-                Tables\Columns\IconColumn::make('payment')->label('Mètode')->icon(fn(string $state): string => match ($state) {
-                    'card' => 'heroicon-o-credit-card',
-                    'credit' => 'heroicon-o-banknotes',
-                }),
+                Tables\Columns\TextColumn::make('payment')->label('Mètode'),
 
             ])
             ->filters([

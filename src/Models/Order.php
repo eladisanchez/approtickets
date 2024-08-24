@@ -16,6 +16,10 @@ class Order extends Model {
 
     public function bookings()
     {
+        // Check if order is trashed
+        if ($this->trashed()) {
+            return $this->hasMany(Booking::class)->withTrashed();
+        }
         return $this->hasMany(Booking::class);
     }
 

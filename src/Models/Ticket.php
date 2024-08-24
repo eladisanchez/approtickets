@@ -73,40 +73,13 @@ class Ticket extends Model
 
     public function getCartSeatsAttribute($value)
     {
-
-        $self = $this;
-
-        $cistell = [];
-
-        // Al cistel
-        $rcistell = Cart::search(function ($i) use ($self) {
-            return $i->id == $self->producte_id &&
-                $i->options->dia == $self->day->toDateString() &&
-                $i->options->hour == $self->hour->toTimeString();
-        });
-        if ($rcistell) {
-            foreach ($rcistell as $fila) {
-                $cistell[] = $fila->options->seat;
-            }
-        }
-
-        // Als packs
-        $packscistell = Cart::search(function ($i) use ($self) {
-            return is_array($i->options->bookings);
-        });
-        foreach ($packscistell as $fila) {
-            foreach ($fila->options->bookings as $booking) {
-                if (
-                    $booking["product"] == $self->producte_id &&
-                    $booking["day"] == $self->day->toDateString() &&
-                    $booking["hour"] == $self->hour->toTimeString()
-                )
-                    $cistell[] = $booking["seat"];
-            }
-        }
-
-        return $cistell;
-
+        $cartItems = Booking::where('product_id', $this->producte_id)
+            ->where('day', $this->day->toDateString())
+            ->where('hour', $this->hour)
+            ->where('order_id', NULL)
+            ->where('session', session()->getId())
+        ->pluck('seat');
+        return $cartItems;
     }
 
     public function getBookedSeatsAttribute($value)
@@ -114,9 +87,7 @@ class Ticket extends Model
         $bookings = Booking::where('product_id', $this->product_id)
             ->where('day', $this->day)
             ->where('hour', $this->hour)
-            ->whereHas('order', function ($query) {
-                $query->whereNull('deleted_at');
-            })
+            ->where('session', '!=', session()->getId())
             ->pluck('seat')->toArray();
         return $bookings;
 

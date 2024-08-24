@@ -50,7 +50,7 @@ class OrderController extends Controller
 		$rules = !(auth()->check() && auth()->user()->hasRole('admin')) ? [
 			'condicions' => 'accepted',
 			'name' => 'required',
-			'tel' => 'required',
+			'phone' => 'required',
 			'email' => 'required|email',
 			'cp' => 'required|size:5'
 		] : [
@@ -114,25 +114,25 @@ class OrderController extends Controller
             return $item->price;
         });
 
-		$payment = ($total == 0 || (auth()->check() && auth()->user()->hasRole('admin'))) ? 'card' : 'card';
-
-		request()->merge([
+		$order = Order::create([
 			'language' => 'ca',
 			'session' => Session::getId(),
 			'total' => $total,
 			'coupon' => Session::get('coupon.name'),
-			'payment' => $payment,
-			'paid' => $payment == 'card' ? 0 : 1,
-			'user_id' => $user->id ?? null
+			'payment' => request()->input('payment'),
+			'paid' => request()->input('payment') == 'card' ? 0 : 1,
+			'user_id' => $user->id ?? null,
+			'name' => request()->input('name'),
+			'email' => request()->input('email'),
+			'phone' => request()->input('phone'),
+			'cp' => request()->input('cp'),
+			'observations' => request()->input('observations'),
 		]);
 
-		$values = request()->except(['conditions', 'password', 'password_confirmation']);
-		$order = Order::create($values);
-
-		foreach ($cartItems as $row) {
-			$row->order_id = $order->id;
-			$row->uniqid = substr(bin2hex(random_bytes(20)), -5);
-			$row->save();
+		foreach ($cartItems as $booking) {
+			$booking->order_id = $order->id;
+			$booking->uniqid = substr(bin2hex(random_bytes(20)), -5);
+			$booking->save();
 		}
 
 		if ($order) {

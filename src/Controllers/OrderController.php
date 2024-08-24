@@ -61,7 +61,6 @@ class OrderController extends Controller
 
 		$validator = validator(request()->all(), $rules);
 		if ($validator->fails()) {
-			dd('ha fallat la validació');
 			return redirect()->back()->withErrors($validator)->withInput();
 		}
 

@@ -36,7 +36,7 @@ class ProductController extends BaseController
 		$availableDays = $product->availableDays();
 
 		if (!$day && $availableDays->count() == 1) {
-			return redirect()->route('product.show', [
+			return redirect()->route('product', [
 				'name' => $name,
 				'day' => $availableDays->first()->format('Y-m-d')
 			]);

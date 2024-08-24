@@ -25,11 +25,11 @@ class CartController extends BaseController
 	public float $cartTotal;
 
 
-	protected function initializeCart(Request $request)
+	protected function initializeCart()
     {
         // Assegura't que la sessió s'hagi inicialitzat abans de cridar a Session::getId()
         $this->cartItems = Booking::where('order_id', NULL)
-            ->where('session', $request->session()->getId())
+            ->where('session', session()->getId())
             ->get();
 
         $this->cartTotal = $this->cartItems->sum(function ($item) {
@@ -42,7 +42,7 @@ class CartController extends BaseController
 	 */
 	public function show(Request $request): View
 	{
-		$this->initializeCart($request);
+		$this->initializeCart();
 		return view('cart', [
 			'cart' => $this->cartItems,
 			'total' => $this->cartTotal
@@ -55,7 +55,7 @@ class CartController extends BaseController
 	public function add(Request $request): RedirectResponse
 	{
 
-		$this->initializeCart($request);
+		$this->initializeCart();
 
 		$data = request()->all();
 
@@ -285,7 +285,7 @@ class CartController extends BaseController
 	 */
 	public function updateItem($rowId): RedirectResponse
 	{
-		$this->initializeCart(request());
+		$this->initializeCart();
 		$cartItem = $this->cartItems->filter(function ($item) use ($rowId) {
 			return $item->id == $rowId;
 		});
@@ -301,7 +301,7 @@ class CartController extends BaseController
 	 */
 	public function destroy(): RedirectResponse
 	{
-		$this->initializeCart(request());
+		$this->initializeCart();
 		$this->cartItems->map->delete();
 		Session::forget('coupon');
 		Session::forget('qty');

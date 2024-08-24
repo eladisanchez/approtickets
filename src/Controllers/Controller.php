@@ -30,7 +30,7 @@ class Controller extends BaseController
             return $item->price;
         });
 
-        view()->share('cartItems', $this->cartItems);
-        view()->share('cartTotal', $this->cartTotal);
+        view()->share('cart', $this->cartItems);
+        view()->share('total', $this->cartTotal);
     }
 }

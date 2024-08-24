@@ -88,7 +88,7 @@ class Ticket extends Model
             ->where('day', $this->day)
             ->where('hour', $this->hour)
             ->where('session', '!=', session()->getId())
-            ->pluck('seat')->toArray();
+            ->pluck('seat');
         return $bookings;
 
     }

@@ -28,19 +28,20 @@ class OrderResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('tpv_id')->label('Resposta TPV')->disabled()->columnSpan(2),
-                Forms\Components\DateTimePicker::make('created_at')->label('Data')->disabled()->columnSpan(2),
-                Forms\Components\TextInput::make('total')->label('Total')->disabled()->columnSpan(2),
+                
+                Forms\Components\DateTimePicker::make('created_at')->label('Data')->disabled()->columnSpan(3),
+                Forms\Components\TextInput::make('total')->label('Total')->disabled()->columnSpan(3),
                 Forms\Components\TextInput::make('name')->label('Client')->columnSpan(2),
                 Forms\Components\TextInput::make('email')->label('Correu electrònic')->columnSpan(2),
                 Forms\Components\TextInput::make('phone')->label('Telèfon')->columnSpan(2),
                 Forms\Components\Select::make('payment')->label('Mètode de pagament')
                     ->options(config('approtickets.payment_methods'))->required()->columnSpan(2),
-                Forms\Components\Select::make('paid')->label('Pagat')->options([
+                Forms\Components\Select::make('paid')->label('Estat pagament')->options([
                     '0' => 'Pendent',
                     '1' => 'Pagat',
                     '2' => 'Cancel·lat',
                 ])->required()->columnSpan(2),
+                Forms\Components\TextInput::make('tpv_id')->label('Resposta TPV')->disabled()->columnSpan(2),
                 Forms\Components\Grid::make([
                     Forms\Components\TextInput::make('bookings')->label('Productes')->disabled()->columnSpan(6),
                 ])

@@ -79,6 +79,7 @@ class Ticket extends Model
             ->where('order_id', NULL)
             ->where('session', session()->getId())
             ->get(['seat']);
+            dd($cartItems);
         $seats = $cartItems->map(function ($booking) {
                 return json_decode($booking->seat, true);
             })->toArray();

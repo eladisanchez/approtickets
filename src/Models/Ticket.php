@@ -71,24 +71,30 @@ class Ticket extends Model
     }
 
 
-    public function getCartSeatsAttribute($value)
+    public function getCartSeatsAttribute()
     {
         $cartItems = Booking::where('product_id', $this->producte_id)
             ->where('day', $this->day->toDateString())
             ->where('hour', $this->hour)
             ->where('order_id', NULL)
             ->where('session', session()->getId())
-        ->pluck('seat');
+            ->pluck('seat');
+        $cartItems->map(function ($item) {
+            return json_decode($item, true);
+        });
         return $cartItems;
     }
 
-    public function getBookedSeatsAttribute($value)
+    public function getBookedSeatsAttribute()
     {
         $bookings = Booking::where('product_id', $this->product_id)
             ->where('day', $this->day)
             ->where('hour', $this->hour)
             ->where('session', '!=', session()->getId())
             ->pluck('seat');
+        $bookings->map(function ($item) {
+            return json_decode($item, true);
+        });
         return $bookings;
 
     }

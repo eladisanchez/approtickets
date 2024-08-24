@@ -13,6 +13,7 @@ use Session;
 use Auth;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class CartController extends BaseController
 {
@@ -23,21 +24,25 @@ class CartController extends BaseController
 	public $cartItems;
 	public float $cartTotal;
 
-	public function __construct()
-	{
-		$this->cartItems = Booking::where('order_id', NULL)
-			->where('session', Session::getId())
-			->get();
-		$this->cartTotal = $this->cartItems->sum(function ($item) {
-			return $item->price;
-		});
-	}
+
+	protected function initializeCart(Request $request)
+    {
+        // Assegura't que la sessió s'hagi inicialitzat abans de cridar a Session::getId()
+        $this->cartItems = Booking::where('order_id', NULL)
+            ->where('session', $request->session()->getId())
+            ->get();
+
+        $this->cartTotal = $this->cartItems->sum(function ($item) {
+            return $item->price;
+        });
+    }
 
 	/**
 	 * Cart user page
 	 */
-	public function show(): View
+	public function show(Request $request): View
 	{
+		$this->initializeCart($request);
 		return view('cart', [
 			'cart' => $this->cartItems,
 			'total' => $this->cartTotal
@@ -47,8 +52,10 @@ class CartController extends BaseController
 	/**
 	 * Add standard item
 	 */
-	public function add(): RedirectResponse
+	public function add(Request $request): RedirectResponse
 	{
+
+		$this->initializeCart($request);
 
 		$data = request()->all();
 
@@ -258,8 +265,10 @@ class CartController extends BaseController
 	/**
 	 * Remove item from cart
 	 */
-	public function removeRow(): RedirectResponse
+	public function removeRow(Request $request): RedirectResponse
 	{
+		$this->initializeCart($request);
+
 		$rowId = request()->input('rowid');
 		$cartItem = $this->cartItems->filter(function ($item) use ($rowId) {
 			return $item->id == $rowId;
@@ -276,6 +285,7 @@ class CartController extends BaseController
 	 */
 	public function updateItem($rowId): RedirectResponse
 	{
+		$this->initializeCart(request());
 		$cartItem = $this->cartItems->filter(function ($item) use ($rowId) {
 			return $item->id == $rowId;
 		});
@@ -291,6 +301,7 @@ class CartController extends BaseController
 	 */
 	public function destroy(): RedirectResponse
 	{
+		$this->initializeCart(request());
 		$this->cartItems->map->delete();
 		Session::forget('coupon');
 		Session::forget('qty');

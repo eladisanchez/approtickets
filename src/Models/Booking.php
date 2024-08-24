@@ -48,7 +48,7 @@ class Booking extends Model {
 		return $this->belongsTo(Rate::class);
 	}
 
-	public function getFormattedSeat() {
+	public function getFormattedSeatAttribute() {
 		return Common::seat($this->seat);
 	}
 

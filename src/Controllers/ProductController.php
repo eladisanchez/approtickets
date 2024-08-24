@@ -39,7 +39,8 @@ class ProductController extends BaseController
 			'tickets' => $day ? $product->ticketsDay($day, $hour) : null,
 			'rates' => $product->rates,
 			'day' => $day,
-			'hour' => $hour
+			'hour' => $hour,
+			'productCart' => $product->inCart()
 		]);
 
 		// Is a pack

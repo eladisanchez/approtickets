@@ -153,8 +153,6 @@ class Product extends Model
         });
     }
 
-
-
     public function ticketsDay($day, $hour = NULL)
     {
 
@@ -164,7 +162,6 @@ class Product extends Model
         return $this->hasMany(Ticket::class)->where('day', $day)->whereNull('cancelled')->get();
 
     }
-
 
     public function bookings()
     {
@@ -188,6 +185,14 @@ class Product extends Model
     public function getBuyablePrice($options = null)
     {
         return $this->price;
+    }
+
+    public function inCart()
+    {
+        return $this->hasMany(Booking::class, 'product_id')
+            ->where('session', session()->getId())
+            ->where('order_id', NULL)
+            ->get();
     }
 
 }

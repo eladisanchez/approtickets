@@ -19,20 +19,7 @@ use ApproTickets\Mail\NewOrder;
 class OrderController extends Controller
 {
 
-
-    public static function cleanNonProcessed(): void
-	{
-		$date = new \DateTime;
-		$date->modify('-60 minutes');
-		$formatted = $date->format('Y-m-d H:i:s');
-		Order::where('paid', '!=', 1)
-			->where('payment', 'card')
-			->where('created_at', '<=', $formatted)
-			->delete();
-		return;
-	}
-
-    public function store(): RedirectResponse
+	public function store(): RedirectResponse
 	{
 
 		$failedOrder = Order::where('session', Session::getId())
@@ -43,9 +30,11 @@ class OrderController extends Controller
 			return redirect()->route('order.payment', ['id' => $failedOrder->id]);
 		}
 
-		$this->cleanNonProcessed();
+		$cartItems = Booking::where('order_id', NULL)
+			->where('session', Session::getId())
+			->get();
 
-		if (!Cart::instance('shopping')->count()) {
+		if (!$cartItems->count()) {
 			return redirect()->route('home');
 		}
 
@@ -75,53 +64,56 @@ class OrderController extends Controller
 		}
 
 		// Create new user if password is submitted
-		if (request()->has('password') && !empty(request()->input('password'))) {
-			$validatorU = validator(request()->all(), [
-				'password' => 'confirmed|min:6',
-				'email' => 'unique:users,email'
-			]);
-			if ($validatorU->fails()) {
-				return redirect()->back()->withErrors($validatorU)->withInput();
-			}
-			$user = new User;
-			$user->username = request()->input('name');
-			$user->email = request()->input('email');
-			$user->password = request()->input('password');
-			$user->save();
-		}
+		// if (request()->has('password') && !empty(request()->input('password'))) {
+		// 	$validatorU = validator(request()->all(), [
+		// 		'password' => 'confirmed|min:6',
+		// 		'email' => 'unique:users,email'
+		// 	]);
+		// 	if ($validatorU->fails()) {
+		// 		return redirect()->back()->withErrors($validatorU)->withInput();
+		// 	}
+		// 	$user = new User;
+		// 	$user->username = request()->input('name');
+		// 	$user->email = request()->input('email');
+		// 	$user->password = request()->input('password');
+		// 	$user->save();
+		// }
 
 
 		// Check availabilities before checkout
-		foreach (Cart::content() as $row) {
+		// foreach ($cartItems as $row) {
 
-			// Venue events
-			if ($row->options->seat) {
-				$booked = Booking::where('product_id', $row->model->id)
-					->where('day', $row->options->dia)
-					->where('hour', $row->options->hora)
-					->where('seat', json_encode($row->options->seat))
-					->whereHas('order', function ($query) {
-						$query->whereNull('deleted_at');
-					})
-					->first();
-				if ($booked) {
-					return redirect()->back()->withErrors('Ho sentim, la localitat <strong>' . Common::seat($row->options->seat) . '</strong> per a <strong>' . $row->model->title . '</strong> ja ha sigut adquirida per un altre usuari. Si us plau, esculli una altra localitat.')->withInput();
-				}
-			} else {
-				if ($row->model->is_pack) {
-					// TODO: Programar que per cada producte del pack comprovi si queden entrades disponibles.
-				} else {
-					$tickets_day = $row->model->ticketsDay($row->options->day, $row->options->hour);
-					if ($tickets_day->available < 0) {
-						return redirect()->back()->with('message', 'Ho sentim, ja no hi ha entrades disponibles per al producte ' . $row->model->title . '. Redueixi la quantitat d\'entrades o canvii l\'hora o el dia de la visita.')->withInput();
-					}
-				}
-			}
+		// 	// Venue events
+		// 	if ($row->seat) {
+		// 		$booked = Booking::where('product_id', $row->model->id)
+		// 			->where('day', $row->options->dia)
+		// 			->where('hour', $row->options->hora)
+		// 			->where('seat', json_encode($row->options->seat))
+		// 			->whereHas('order', function ($query) {
+		// 				$query->whereNull('deleted_at');
+		// 			})
+		// 			->first();
+		// 		if ($booked) {
+		// 			return redirect()->back()->withErrors('Ho sentim, la localitat <strong>' . Common::seat($row->options->seat) . '</strong> per a <strong>' . $row->model->title . '</strong> ja ha sigut adquirida per un altre usuari. Si us plau, esculli una altra localitat.')->withInput();
+		// 		}
+		// 	} else {
+		// 		if ($row->model->is_pack) {
+		// 			// TODO: Programar que per cada producte del pack comprovi si queden entrades disponibles.
+		// 		} else {
+		// 			$tickets_day = $row->model->ticketsDay($row->options->day, $row->options->hour);
+		// 			if ($tickets_day->available < 0) {
+		// 				return redirect()->back()->with('message', 'Ho sentim, ja no hi ha entrades disponibles per al producte ' . $row->model->title . '. Redueixi la quantitat d\'entrades o canvii l\'hora o el dia de la visita.')->withInput();
+		// 			}
+		// 		}
+		// 	}
 
-		}
+		// }
 
-		$total = Cart::instance('shopping')->total();
-		$payment = ( $total == 0 || (auth()->check() && auth()->user()->hasRole('admin')) ) ? 'card' : 'card';
+		$total = $cartItems->sum(function ($item) {
+            return $item->price;
+        });
+
+		$payment = ($total == 0 || (auth()->check() && auth()->user()->hasRole('admin'))) ? 'card' : 'card';
 
 		request()->merge([
 			'language' => 'ca',
@@ -136,63 +128,10 @@ class OrderController extends Controller
 		$values = request()->except(['conditions', 'password', 'password_confirmation']);
 		$order = Order::create($values);
 
-		foreach (Cart::content() as $row) {
-
-			// Reserves dels packs
-			if ($row->model->is_pack) {
-
-				$booking = new Booking;
-				$booking->tickets = $row->qty;
-				$booking->price = $row->price;
-				$booking->is_pack = 1;
-				$booking->product()->associate($row->model);
-				$booking->rate()->associate($row->options->rate_id);
-				$booking->order()->associate($order);
-
-				$isr = true;
-
-				foreach ($row->options->bookings as $subreserva) {
-
-					$subproducte = Product::find($subreserva["producte"]);
-
-					if ($isr == true) {
-						$booking->day = $subreserva["day"];
-						$booking->hour = $subreserva["hour"];
-						$booking->save();
-						$isr = false;
-					}
-
-					$sreserva = new Booking;
-					$sreserva->day = $subreserva["day"];
-					$sreserva->hour = $subreserva["hour"];
-					$sreserva->tickets = $row->qty;
-					$sreserva->price = 0;
-					$sreserva->uniqid = substr(bin2hex(random_bytes(20)), -5);
-					$sreserva->product()->associate($subproducte);
-					$sreserva->rate()->associate($row->options->rate_id);
-					$sreserva->order()->associate($order);
-					$sreserva->save();
-
-				}
-
-			} else {
-
-				$booking = new Booking;
-				$booking->day = $row->options->day;
-				$booking->hour = $row->options->hour;
-				$booking->tickets = $row->qty;
-				$booking->price = $row->price;
-				$booking->uniqid = substr(bin2hex(random_bytes(20)), -5);
-				if ($row->options->seat) {
-					$booking->seat = json_encode($row->options->seat);
-				}
-				$booking->product()->associate($row->model);
-				$booking->rate()->associate($row->options->rate_id);
-				$booking->order()->associate($order);
-				$booking->save();
-
-			}
-
+		foreach ($cartItems as $row) {
+			$row->order_id = $order->id;
+			$row->uniqid = substr(bin2hex(random_bytes(20)), -5);
+			$row->save();
 		}
 
 		if ($order) {
@@ -203,7 +142,6 @@ class OrderController extends Controller
 				} catch (\Exception $e) {
 					Log::error($e->getMessage());
 				}
-				Cart::destroy();
 				Session::forget('coupon');
 				Session::forget('coupon_name');
 				return view('order.thanks')->with('order', $order);

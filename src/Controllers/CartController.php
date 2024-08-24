@@ -27,7 +27,6 @@ class CartController extends BaseController
 
 	protected function initializeCart()
     {
-        // Assegura't que la sessió s'hagi inicialitzat abans de cridar a Session::getId()
         $this->cartItems = Booking::where('order_id', NULL)
             ->where('session', session()->getId())
             ->get();
@@ -145,7 +144,21 @@ class CartController extends BaseController
 			$price *= 1 - Session::get('coupon.discount') / 100;
 		}
 
+		$takenSeats = [];
+
 		foreach ($seats as $seat) {
+
+			// Check if seat is available
+			$booking = Booking::where('product_id', $product->id)
+				->where('rate_id', $rate->id)
+				->where('day', $day)
+				->where('hour', $hour)
+				->where('seat', json_encode($seat))
+				->first();
+			if ($booking) {
+				$takenSeats[] = $seat;
+				continue;
+			}
 
 			$booking = new Booking();
 			$booking->product_id = $product->id;
@@ -158,6 +171,10 @@ class CartController extends BaseController
 			$booking->seat = json_encode($seat);
 			$booking->save();
 
+		}
+
+		if (count($takenSeats)) {
+			return redirect()->back()->with('error', trans('textos.seats_taken', ['seats' => implode(', ', $takenSeats)]));
 		}
 
 		return redirect()->back()->with('itemAdded', true);

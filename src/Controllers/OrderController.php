@@ -111,7 +111,7 @@ class OrderController extends Controller
 
 	}
 
-	public function payment($id): View
+	public function payment($id)
 	{
 		$order = Order::findOrFail($id);
 		if ($order->paid == 1) {

@@ -35,6 +35,6 @@ Route::middleware([
 
     Route::post('tpv-notification', [TPVController::class, 'notification'])->name('tpv-notification');
 
-    Route::get('{slug}', [PageController::class, '__invoke'])->name('page');
+    Route::get('legal/{slug}', [PageController::class, '__invoke'])->name('page');
 
 });

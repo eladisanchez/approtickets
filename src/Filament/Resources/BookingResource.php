@@ -43,7 +43,7 @@ class BookingResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('created_at')->label('Data')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('order.email')->label('Client')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('product.title')->label('Producte')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('product.title')->label('Producte')->sortable()->searchable()->wrap(),
                 Tables\Columns\TextColumn::make('rate.title')->label('Tarifa')->sortable(),
                 Tables\Columns\TextColumn::make('tickets')->label('Quantitat')->sortable(),
                 Tables\Columns\TextColumn::make('formattedSeat')->label('Localitat')->sortable(),

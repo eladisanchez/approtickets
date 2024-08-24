@@ -26,15 +26,15 @@ class CartController extends BaseController
 	public float $cartTotal;
 
 	protected function initializeCart()
-    {
-        $this->cartItems = Booking::where('order_id', NULL)
-            ->where('session', session()->getId())
-            ->get();
+	{
+		$this->cartItems = Booking::where('order_id', NULL)
+			->where('session', session()->getId())
+			->get();
 
-        $this->cartTotal = $this->cartItems->sum(function ($item) {
-            return $item->price;
-        });
-    }
+		$this->cartTotal = $this->cartItems->sum(function ($item) {
+			return $item->price;
+		});
+	}
 
 	/**
 	 * Cart user page
@@ -156,7 +156,7 @@ class CartController extends BaseController
 				->where('row', $seat->f)
 				->first();
 			if ($booking) {
-				$takenSeats[] = $seat;
+				$takenSeats[] = [$seat->s, $seat->f];
 				continue;
 			}
 
@@ -175,7 +175,8 @@ class CartController extends BaseController
 		}
 
 		if (count($takenSeats)) {
-			return redirect()->back()->with('error', trans('textos.seats_taken', ['seats' => implode(', ', $takenSeats)]));
+			return redirect()->back()
+				->with('error', trans('textos.seats_taken', ['seats' => $takenSeats]));
 		}
 
 		return redirect()->back()->with('itemAdded', true);

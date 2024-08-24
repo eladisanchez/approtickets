@@ -35,9 +35,6 @@ class CleanCartCommand extends Command
             ->where('created_at', '<=', $formatted)
             ->get();
         foreach ($abandonedOrders as $order) {
-            foreach ($order->bookings as $booking) {
-                $booking->delete();
-            }
             $order->delete();
         }
 

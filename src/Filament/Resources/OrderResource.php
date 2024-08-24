@@ -88,6 +88,7 @@ class OrderResource extends Resource
                         ]);
                     })
                     ->openUrlInNewTab(),
+                Tables\Actions\RestoreAction::make()
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

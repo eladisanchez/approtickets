@@ -327,7 +327,7 @@ class ProductResource extends Resource
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->url(function ($record) {
                         return route('product', [
-                            'id' => $record->id,
+                            'name' => $record->name,
                         ]);
                     })
                     ->openUrlInNewTab(),

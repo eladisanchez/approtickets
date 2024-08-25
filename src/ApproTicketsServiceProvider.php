@@ -82,7 +82,8 @@ class ApproTicketsServiceProvider extends ServiceProvider
             ->font(config('approtickets.admin.font'))
             ->colors([
                 'primary' => Color::hex(config('approtickets.admin.colors.primary')),
-            ]);
+            ])
+            ->favicon(asset('/favicon.png'));
     }
 
     public function register()

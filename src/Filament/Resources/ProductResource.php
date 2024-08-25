@@ -314,7 +314,7 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('organizer.username')->label('Organitzador'),
                 Tables\Columns\TextColumn::make('category.title')->label('Categoria'),
                 Tables\Columns\TextColumn::make('bookings_count')->counts('bookings')->badge()->sortable()
-                    ->badge()->label('Entrades venudes'),
+                    ->badge()->label('Vendes'),
                 Tables\Columns\ToggleColumn::make('active')->label('Actiu')->sortable(),
             ])
             ->filters([

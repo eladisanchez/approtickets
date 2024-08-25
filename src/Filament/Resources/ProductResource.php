@@ -322,6 +322,15 @@ class ProductResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('open')
+                    ->label('Obre')
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->url(function ($record) {
+                        return route('product', [
+                            'id' => $record->id,
+                        ]);
+                    })
+                    ->openUrlInNewTab(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

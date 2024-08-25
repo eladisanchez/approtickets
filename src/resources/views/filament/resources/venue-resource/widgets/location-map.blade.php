@@ -79,6 +79,12 @@
             const seatMap = document.getElementById('seatMap');
             const selectedSeats = new Set();
 
+            // Ensure Livewire is loaded
+            if (typeof Livewire === 'undefined') {
+                console.error('Livewire is not loaded. Please make sure Livewire is properly set up.');
+                return;
+            }
+
             seatMap.addEventListener('click', function (e) {
                 if (e.target.classList.contains('seat')) {
                     const x = e.target.dataset.x;
@@ -93,6 +99,8 @@
                         e.target.classList.add('selected');
                     }
 
+                    console.log('Selected seats:', selectedSeats); // Log for debugging
+
                     // Send bulk updates to Livewire after modifications
                     sendBulkUpdate(selectedSeats);
                 }
@@ -103,6 +111,8 @@
                     const [x, y] = key.split('-');
                     return { x: parseInt(x), y: parseInt(y) };
                 });
+
+                console.log('Sending seats to Livewire:', seats); // Log for debugging
 
                 // Emit event to Livewire with the updated seats
                 Livewire.emit('handleSelectBulk', seats);

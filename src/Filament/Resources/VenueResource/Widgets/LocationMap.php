@@ -36,18 +36,18 @@ class LocationMap extends Widget
         return null;
     }
 
-    public function handleSelectBulk($selectedSeats)
+    public function handleSelect($square)
     {
-        foreach ($selectedSeats as $square) {
-            if ($seat = $this->isSeat($square)) {
-                // If the seat exists in the map, remove it
-                $this->map = array_filter($this->map, function ($s) use ($square) {
-                    return $s['x'] != $square['x'] || $s['y'] != $square['y'];
-                });
-            } else {
-                // If the seat doesn't exist, add it to the map
-                $this->map[] = $square;
-            }
+        $newMap = $this->map;
+        if ($seat = $this->isSeat($square)) {
+            $this->map = array_filter($newMap, function ($s) use ($square) {
+                return $s['x'] != $square['x'] || $s['y'] != $square['y'];
+            });
+        } else {
+            $newSeat = $this->seat + 1;
+            $this->seat = $newSeat;
+            $newMap[] = $square;
+            $this->map = $newMap;
         }
     }
 
@@ -83,4 +83,5 @@ class LocationMap extends Widget
         return view(static::$view)
             ->with('gridItems', $gridItems);
     }
+
 }

@@ -19,7 +19,6 @@
             font-size: 5px;
             line-height: 5px;
             text-align: center;
-            cursor: pointer;
         }
 
         .seat.selected {
@@ -31,20 +30,43 @@
             display: block;
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const seatMap = document.getElementById('seatMap');
+
+            seatMap.addEventListener('click', function(e) {
+                if (e.target.classList.contains('seat')) {
+                    const x = e.target.dataset.x;
+                    const y = e.target.dataset.y;
+
+                    // Perform seat selection using JavaScript
+                    toggleSeatSelection(x, y);
+                }
+            });
+
+            function toggleSeatSelection(x, y) {
+                // Update the UI first
+                const seat = document.querySelector(`.seat[data-x="${x}"][data-y="${y}"]`);
+                seat.classList.toggle('selected');
+
+                // Then, send bulk updates to Livewire
+                Livewire.emit('updateMap', {
+                    x,
+                    y
+                });
+            }
+        });
+    </script>
     <x-filament::section>
         <div class="gap-4">
-            <div class="map" id="seatMap">
+            <div class="map">
                 @foreach ($gridItems as $square)
-                    @php
-                        $squareSeat = $this->isSeat($square);
-                    @endphp
-                    <div class="seat {{ $squareSeat ? 'selected' : '' }}"
-                        data-x="{{ $square['x'] }}"
+                    <div class="seat {{ $this->isSeat($square) ? 'selected' : '' }}" data-x="{{ $square['x'] }}"
                         data-y="{{ $square['y'] }}"
                         style="grid-row: {{ $square['x'] }}; grid-column: {{ $square['y'] }};">
-                        @if ($squareSeat)
-                            <span>{{ $squareSeat['f'] }}</span>
-                            <strong>{{ $squareSeat['s'] }}</strong>
+                        @if ($this->isSeat($square))
+                            <span>{{ $this->isSeat($square)['f'] }}</span>
+                            <strong>{{ $this->isSeat($square)['s'] }}</strong>
                         @endif
                     </div>
                 @endforeach
@@ -72,51 +94,4 @@
             </div>
         </div>
     </x-filament::section>
-    
-    <!-- JavaScript to handle seat selection -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const seatMap = document.getElementById('seatMap');
-            const selectedSeats = new Set();
-
-            // Ensure Livewire is loaded
-            if (typeof Livewire === 'undefined') {
-                console.error('Livewire is not loaded. Please make sure Livewire is properly set up.');
-                return;
-            }
-
-            seatMap.addEventListener('click', function (e) {
-                if (e.target.classList.contains('seat')) {
-                    const x = e.target.dataset.x;
-                    const y = e.target.dataset.y;
-                    const seatKey = `${x}-${y}`;
-
-                    if (selectedSeats.has(seatKey)) {
-                        selectedSeats.delete(seatKey);
-                        e.target.classList.remove('selected');
-                    } else {
-                        selectedSeats.add(seatKey);
-                        e.target.classList.add('selected');
-                    }
-
-                    console.log('Selected seats:', selectedSeats); // Log for debugging
-
-                    // Send bulk updates to Livewire after modifications
-                    sendBulkUpdate(selectedSeats);
-                }
-            });
-
-            function sendBulkUpdate(seatSet) {
-                const seats = Array.from(seatSet).map(key => {
-                    const [x, y] = key.split('-');
-                    return { x: parseInt(x), y: parseInt(y) };
-                });
-
-                console.log('Sending seats to Livewire:', seats); // Log for debugging
-
-                // Emit event to Livewire with the updated seats
-                Livewire.emit('handleSelectBulk', seats);
-            }
-        });
-    </script>
 </x-filament-widgets::widget>

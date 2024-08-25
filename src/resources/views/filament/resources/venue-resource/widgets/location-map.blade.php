@@ -30,43 +30,19 @@
             display: block;
         }
     </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const seatMap = document.getElementById('seatMap');
-
-            seatMap.addEventListener('click', function(e) {
-                if (e.target.classList.contains('seat')) {
-                    const x = e.target.dataset.x;
-                    const y = e.target.dataset.y;
-
-                    // Perform seat selection using JavaScript
-                    toggleSeatSelection(x, y);
-                }
-            });
-
-            function toggleSeatSelection(x, y) {
-                // Update the UI first
-                const seat = document.querySelector(`.seat[data-x="${x}"][data-y="${y}"]`);
-                seat.classList.toggle('selected');
-
-                // Then, send bulk updates to Livewire
-                Livewire.emit('updateMap', {
-                    x,
-                    y
-                });
-            }
-        });
-    </script>
     <x-filament::section>
         <div class="gap-4">
             <div class="map">
                 @foreach ($gridItems as $square)
-                    <div class="seat {{ $this->isSeat($square) ? 'selected' : '' }}" data-x="{{ $square['x'] }}"
-                        data-y="{{ $square['y'] }}"
+                    @php
+                        $squareSeat = $this->isSeat($square);
+                    @endphp
+                    <div wire:click="handleSelect({{ json_encode(['s' => $seat, 'f' => $row, 'x' => $square['x'], 'y' => $square['y']]) }})"
+                        class="seat {{ $squareSeat ? 'selected' : '' }}"
                         style="grid-row: {{ $square['x'] }}; grid-column: {{ $square['y'] }};">
-                        @if ($this->isSeat($square))
-                            <span>{{ $this->isSeat($square)['f'] }}</span>
-                            <strong>{{ $this->isSeat($square)['s'] }}</strong>
+                        @if ($squareSeat)
+                            <span>{{ $squareSeat['f'] }}</span>
+                            <strong>{{ $squareSeat['s'] }}</strong>
                         @endif
                     </div>
                 @endforeach

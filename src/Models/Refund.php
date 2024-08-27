@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Refund extends Model {
 
 	protected $table = 'refunds';
-	protected $guarded = array('id');
-	protected $hidden = array('updated_at');
-    protected $with = array('order');
+	protected $guarded = ['id'];
+	protected $hidden = ['updated_at'];
+    protected $with = ['order'];
     protected $dates = [
         'day_cancelled',
         'day_new'

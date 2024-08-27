@@ -10,7 +10,7 @@ use Filament\Support\Facades\FilamentAsset;
 class LocationMap extends Widget
 {
     protected static string $view = 'approtickets::filament.resources.venue-resource.widgets.location-map';
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     public ?Model $record = null;
     public $map = [];
@@ -66,10 +66,10 @@ class LocationMap extends Widget
         $this->record->seats = $this->map;
         $this->record->save();
         Notification::make()
-        ->title('Plànol guardat')
-        ->body('El plànol s\'ha guardat correctament.')
-        ->success()
-        ->send();
+            ->title('Plànol guardat')
+            ->body('El plànol s\'ha guardat correctament.')
+            ->success()
+            ->send();
     }
 
     public function render(): \Illuminate\View\View

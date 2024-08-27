@@ -67,13 +67,15 @@ class OrderController extends BaseController
 			return $item->price;
 		});
 
+		$payment = request()->input('payment') ?? 'card';
+
 		$order = Order::create([
 			//'lang' => 'ca',
 			'session' => Session::getId(),
 			'total' => $total,
 			'coupon' => Session::get('coupon.name'),
-			'payment' => request()->input('payment'),
-			'paid' => request()->input('payment') == 'card' ? 0 : 1,
+			'payment' => $payment,
+			'paid' => $payment == 'card' ? 0 : 1,
 			'user_id' => $user->id ?? null,
 			'name' => request()->input('name'),
 			'email' => request()->input('email'),

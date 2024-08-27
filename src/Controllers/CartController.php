@@ -143,9 +143,9 @@ class CartController extends BaseController
 			->where('rate_id', $rate->id)
 			->pluck('price')[0];
 
-		$pricezone = DB::table('producte_tarifa')
-			->where('producte_id', $product->id)
-			->where('tarifa_id', $rate->id)
+		$pricezone = DB::table('product_rate')
+			->where('product_id', $product->id)
+			->where('rate_id', $rate->id)
 			->pluck('pricezone');
 		if ($pricezone) {
 			$pricezone = explode(',',$pricezone);

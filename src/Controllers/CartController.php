@@ -171,7 +171,7 @@ class CartController extends BaseController
 				continue;
 			}
 
-			$price = $pricezone ? $pricezone[$seat->f - 1] : $price;
+			$price = $pricezone ? $pricezone[$seat->z - 1] : $price;
 
 			$booking = new Booking();
 			$booking->product_id = $product->id;

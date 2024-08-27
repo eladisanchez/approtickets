@@ -33,7 +33,9 @@ Route::middleware([
     Route::get('availability/{id}/{day}/{hour}', [ProductController::class, 'availability'])->name('product.availability');
     Route::get('image/{path}', [ProductController::class, 'image'])->name('image')->where('path', '.*\.(jpg|jpeg|png|gif|bmp|webp)');
 
-    Route::post('tpv-notification', [TPVController::class, 'notification'])->name('tpv-notification');
+    Route::post('tpv-notification', [TPVController::class, 'notification'])
+        ->withoutMiddleware(Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class)
+        ->name('tpv-notification');
 
     Route::get('legal/{slug}', [PageController::class, '__invoke'])->name('page');
 

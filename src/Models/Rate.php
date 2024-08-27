@@ -15,6 +15,10 @@ class Rate extends Model
     protected $guarded = ['id'];
     protected $hidden = ['created_at', 'updated_at', 'deleted_at', 'name', 'ambdescompte'];
 
+    protected $cast = [
+        'pricezone' => 'array',
+    ];
+
     public function product()
     {
         return $this->belongsToMany(Product::class, 'product_rate')
@@ -48,6 +52,17 @@ class Rate extends Model
 
     }
 
+    public function getPriceZoneAttribute($value)
+    {
+
+        if ($this->pivot->pricezone) {
+            return $this->pivot->pricezone;
+        } else {
+            return $this->pivot->price . ',' . $this->pivot->price . ',' . $this->pivot->price . ',' . $this->pivot->price;
+        }
+
+    }
+
     public function getPreuvalueAttribute($value)
     {
 
@@ -67,13 +82,13 @@ class Rate extends Model
         }
     }
 
-    public function pricelocalitat($zona)
+    public function priceSeat($zona)
     {
 
         $i = $zona - 1;
 
-        if ($this->pivot && $this->pivot->price) {
-            $prices = explode(',', $this->price);
+        if ($this->pivot && $this->pivot->pricezone) {
+            $prices = explode(',', $this->pricezone);
             return $prices[$i];
         } else {
             return $this->pricevalue;

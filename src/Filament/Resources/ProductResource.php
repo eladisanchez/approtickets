@@ -300,6 +300,9 @@ class ProductResource extends Resource
                                             ->numeric()
                                             ->minValue(0)
                                             ->suffix('€'),
+                                        Components\KeyValue::make('pricezone')
+                                            ->label('Preus per zona')
+                                            ->addActionLabel('Afegeix zona')
                                     ])->columns(3)
                             ])
                     ])->columnSpan('full')

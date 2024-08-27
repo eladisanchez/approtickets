@@ -18,7 +18,7 @@ class Product extends Model
     protected $table = 'products';
     protected $guarded = ['id'];
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
-    protected $appends = ['price'];
+    protected $appends = ['price','pricezone'];
     protected $with = ['organizer', 'rates'];
     protected $attributes = [
         'name' => '',
@@ -86,6 +86,11 @@ class Product extends Model
 
     }
 
+    public function getPriceZoneAttribute($value)
+    {
+        return $this->pivot->preuzona;
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
@@ -122,7 +127,7 @@ class Product extends Model
     {
         return $this->belongsToMany(Rate::class, 'product_rate')
             ->using(ProductRate::class)
-            ->withPivot('price');
+            ->withPivot('price', 'pricezone');
     }
 
 

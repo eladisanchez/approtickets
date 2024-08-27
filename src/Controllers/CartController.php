@@ -142,6 +142,15 @@ class CartController extends BaseController
 			->where('product_id', $product->id)
 			->where('rate_id', $rate->id)
 			->pluck('price')[0];
+
+		$pricezone = DB::table('producte_tarifa')
+			->where('producte_id', $product->id)
+			->where('tarifa_id', $rate->id)
+			->pluck('pricezone');
+		if ($pricezone) {
+			$pricezone = explode(',',$pricezone);
+		}
+
 		if (Session::has("coupon.p{$product->id}_t{$rate->id}")) {
 			$price *= 1 - Session::get('coupon.discount') / 100;
 		}
@@ -161,6 +170,8 @@ class CartController extends BaseController
 				$takenSeats[] = [$seat->s, $seat->f];
 				continue;
 			}
+
+			$price = $pricezone ? $pricezone[$seat->f - 1] : $price;
 
 			$booking = new Booking();
 			$booking->product_id = $product->id;

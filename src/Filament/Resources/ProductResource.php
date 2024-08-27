@@ -305,6 +305,7 @@ class ProductResource extends Resource
                                             ->keyLabel('Zona')
                                             ->valueLabel('Preu')
                                             ->addActionLabel('Afegeix zona')
+                                            ->rules('json')
                                     ])->columns(3)
                             ])
                     ])->columnSpan('full')

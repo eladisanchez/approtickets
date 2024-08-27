@@ -302,6 +302,8 @@ class ProductResource extends Resource
                                             ->suffix('€'),
                                         Components\KeyValue::make('pricezone')
                                             ->label('Preus per zona')
+                                            ->keyLabel('Zona')
+                                            ->valueLabel('Preu')
                                             ->addActionLabel('Afegeix zona')
                                     ])->columns(3)
                             ])

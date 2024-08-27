@@ -52,16 +52,16 @@ class Rate extends Model
 
     }
 
-    public function getPriceZoneAttribute($value)
-    {
+    // public function getPriceZoneAttribute($value)
+    // {
 
-        if ($this->pivot->pricezone) {
-            return $this->pivot->pricezone;
-        } else {
-            return $this->pivot->price . ',' . $this->pivot->price . ',' . $this->pivot->price . ',' . $this->pivot->price;
-        }
+    //     if ($this->pivot->pricezone) {
+    //         return $this->pivot->pricezone;
+    //     } else {
+    //         return $this->pivot->price . ',' . $this->pivot->price . ',' . $this->pivot->price . ',' . $this->pivot->price;
+    //     }
 
-    }
+    // }
 
     public function getPreuvalueAttribute($value)
     {

@@ -29,7 +29,7 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('username')->label('Nom')->required(),
+                Forms\Components\TextInput::make('name')->label('Nom')->required(),
                 Forms\Components\TextInput::make('email')->label('Correu electrònic')->required(),
                 Forms\Components\Select::make('roles')->label('Rols')->relationship('roles', 'display_name'),
                 Forms\Components\TextInput::make('password')->password()->label('Contrasenya')->required()->dehydrateStateUsing(fn($state) => Hash::make($state))
@@ -42,8 +42,9 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('username')->label('Nom')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('name')->label('Nom')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('email')->label('Correu electrònic')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('roles.display_name')->label('Rols'),
             ])
             ->filters([
                 //

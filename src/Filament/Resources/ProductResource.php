@@ -319,7 +319,7 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')->label('Títol'),
-                Tables\Columns\TextColumn::make('organizer.username')->label('Organitzador'),
+                Tables\Columns\TextColumn::make('organizer.name')->label('Organitzador'),
                 Tables\Columns\TextColumn::make('category.title')->label('Categoria'),
                 Tables\Columns\TextColumn::make('bookings_count')->counts('bookings')->badge()->sortable()
                     ->badge()->label('Vendes'),

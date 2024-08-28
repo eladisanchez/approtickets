@@ -37,7 +37,7 @@ class QrController extends BaseController
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'user' => $user->username
+            'user' => $user->name
         ]);
 
     }

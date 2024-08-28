@@ -35,7 +35,7 @@ class NewOrder extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.order')->with('text', $this->text)
+        return $this->view('emails.template')->with('text', $this->text)
             ->subject('Les teves entrades');
     }
 }

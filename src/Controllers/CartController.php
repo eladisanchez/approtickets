@@ -284,7 +284,7 @@ class CartController extends BaseController
 				$lastOrder = Auth::user()->comandes->last();
 			} else {
 				$lastOrder = (object) [
-					'name' => auth()->user()->username,
+					'name' => auth()->user()->name,
 					'email' => auth()->user()->email
 				];
 			}

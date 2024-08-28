@@ -4,7 +4,7 @@ return [
 
     'timeout' => [
         'ticket' => env('AT_TIMEOUT_TICKET', 10),
-        'payment' => env('AT_TIMEOUT_PAYMENT', 15),
+        'payment' => env('AT_TIMEOUT_PAYMENT', 60),
     ],
 
     'admin' => [

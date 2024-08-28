@@ -18,7 +18,7 @@ class Product extends Model
     protected $table = 'products';
     protected $guarded = ['id'];
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
-    protected $appends = ['price','pricezone'];
+    protected $appends = ['price'];
     protected $with = ['organizer', 'rates'];
     protected $attributes = [
         'name' => '',

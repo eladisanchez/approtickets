@@ -86,10 +86,10 @@ class Product extends Model
 
     }
 
-    public function getPriceZoneAttribute($value)
-    {
-        return $this->pivot->pricezone;
-    }
+    // public function getPriceZoneAttribute($value)
+    // {
+    //     return $this->pivot->pricezone;
+    // }
 
     public function category()
     {

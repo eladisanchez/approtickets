@@ -4,13 +4,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use ApproTickets\Controllers\QrController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::middleware('api')
+    ->group(function () {
 
-Route::post('/login', [QrController::class, 'login']);
+        Route::get('/user', function (Request $request) {
+            return $request->user();
+        })->middleware('auth:sanctum');
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/testQR', [QrController::class, 'testQr']);
-    Route::post('/checkQR', [QrController::class, 'checkQr']);
-});
+        Route::post('/login', [QrController::class, 'login']);
+
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/testQR', [QrController::class, 'testQr']);
+            Route::post('/checkQR', [QrController::class, 'checkQr']);
+        });
+
+    });

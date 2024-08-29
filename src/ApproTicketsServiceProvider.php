@@ -29,6 +29,7 @@ class ApproTicketsServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/migrations');
         $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
+        $this->loadRoutesFrom(__DIR__ . '/routes/api.php');
         $this->loadViewsFrom(__DIR__ . '/resources/views', 'approtickets');
 
         $this->publishes([

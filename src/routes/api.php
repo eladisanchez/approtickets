@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use ApproTickets\Controllers\QrController;
 
 Route::middleware('api')
+    ->prefix('api')
     ->group(function () {
 
         Route::get('/user', function (Request $request) {

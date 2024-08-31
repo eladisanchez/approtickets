@@ -108,13 +108,7 @@ class Product extends Model
 
     public function tickets(): HasMany
     {
-        $datetime = now();
-        return $this->hasMany(Ticket::class)->where('day', '>=', $datetime)->whereNull('cancelled');
-        if (Auth::user() && (Auth::user()->hasRole('admin') || Auth::user()->hasRole('organizer')))
-            return $this->hasMany(Ticket::class);
-        else
-            return $this->hasMany(Ticket::class)->where('day', '>', $datetime);
-
+        return $this->hasMany(Ticket::class)->whereNull('cancelled');
     }
 
     public function previousTickets()
@@ -144,8 +138,7 @@ class Product extends Model
 
     public function availableDays()
     {
-        $datetime = now();
-        return Ticket::where('product_id', $this->id)->where('day', '>=', $datetime)->whereNull('cancelled')->groupBy('day')->pluck('day');
+        return Ticket::where('product_id', $this->id)->whereNull('cancelled')->groupBy('day')->pluck('day');
     }
 
 

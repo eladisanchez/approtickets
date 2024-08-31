@@ -12,9 +12,9 @@ class Option extends Model
     protected $table = 'options';
     protected $guarded = ['id'];
 
-    public function scopeValue($query, $option)
+    public function scopeText($query, $option)
     {
-        return $query->where('key', $option)->first()->pluck('value');
+        return $query->where('key', $option)->first()->value ?? null;
     }
 
 }

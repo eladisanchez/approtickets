@@ -190,10 +190,7 @@ class ProductResource extends Resource
                                                 return 0;
                                             })
                                             ->readOnly(!!$venue),
-                                        // Components\Select::make('language')->label('Idioma')->options([
-                                        //     'ca' => 'Català',
-                                        //     'es' => 'Castellà'
-                                        // ]),
+                                        Components\Select::make('language')->label('Idioma')->options(config('approtickets.languages'))->hidden(!config('approtickets.languages')),
                                         Forms\Components\Hidden::make('seats')->default(function () use ($venue) {
                                             return $venue ? $venue->seats : [];
                                         })->hidden(!$venue),
@@ -293,7 +290,7 @@ class ProductResource extends Resource
                                             ->searchable()
                                             ->required()
                                             ->distinct(),
-                                            //->columnSpan(2),
+                                        //->columnSpan(2),
                                         Components\TextInput::make('price')
                                             ->label('Preu general')
                                             ->numeric()

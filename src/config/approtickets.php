@@ -21,4 +21,6 @@ return [
         'santander' => 'Santander'
     ],
 
+    'languages' => false
+
 ];

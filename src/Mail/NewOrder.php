@@ -21,7 +21,7 @@ class NewOrder extends Mailable
      */
     public function __construct(Order $order)
     {
-        $text = Option::value('new-order-text');
+        $text = Option::text('new-order-text');
         $this->text = strtr($text, [
             '[nom_client]' => $order->name,
             '[link_pdf]' => route('order.pdf', [$order->session, $order->id])

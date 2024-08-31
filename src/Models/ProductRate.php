@@ -9,6 +9,11 @@ class ProductRate extends Pivot
 {
 
     public $timestamps = false;
+
+    public $casts = [
+        'pricezone' => 'array',
+    ];
+
     public function rate(): BelongsTo
     {
         return $this->belongsTo(Rate::class);

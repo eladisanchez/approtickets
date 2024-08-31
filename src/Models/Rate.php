@@ -15,9 +15,9 @@ class Rate extends Model
     protected $guarded = ['id'];
     protected $hidden = ['created_at', 'updated_at', 'deleted_at', 'name', 'ambdescompte'];
 
-    // protected $casts = [
-    //     'pricezone' => 'array',
-    // ];
+    protected $casts = [
+        'pricezone' => 'array',
+    ];
 
     public function product()
     {

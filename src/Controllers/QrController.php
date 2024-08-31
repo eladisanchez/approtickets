@@ -55,7 +55,7 @@ class QrController extends BaseController
             return response()->json([
                 'message' => 'El codi no és correcte',
                 'codi' => $codi
-            ], 401);
+            ], 403);
 
         } else if ($codi == 'UwY8J8nXBQyDbza=') {
 
@@ -100,7 +100,7 @@ class QrController extends BaseController
             return response()->json([
                 'message' => __('El codi no és correcte'),
                 'codi' => $code
-            ], 401);
+            ], 403);
 
         endif;
 

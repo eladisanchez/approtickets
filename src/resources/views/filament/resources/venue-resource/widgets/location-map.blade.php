@@ -24,6 +24,9 @@
         .seat.selected {
             background: #deec9a;
         }
+        .seat.zone-2 {
+            background: #acbbeb;
+        }
 
         .seat strong,
         .seat span {
@@ -34,20 +37,17 @@
         <div class="gap-4">
             <div class="map">
                 @foreach ($gridItems as $square)
-                    @php
-                        $squareSeat = $this->isSeat($square);
-                    @endphp
-                    <div wire:click="handleSelect({{ json_encode(['s' => $seat, 'f' => $row, 'x' => $square['x'], 'y' => $square['y']]) }})"
-                        class="seat {{ $squareSeat ? 'selected' : '' }}"
+                    <div wire:click="handleSelect({{ json_encode(['s' => $seat, 'f' => $row, 'x' => $square['x'], 'y' => $square['y'], 'z' => $zone]) }})"
+                        class="seat {{ $square['seat'] ? 'selected' : '' }} zone-{{ $square['seat']['z'] ?? '' }}"
                         style="grid-row: {{ $square['x'] }}; grid-column: {{ $square['y'] }};">
-                        @if ($squareSeat)
-                            <span>{{ $squareSeat['f'] }}</span>
-                            <strong>{{ $squareSeat['s'] }}</strong>
+                        @if ($square['seat'])
+                            <span>{{ $square['seat']['f'] }}</span>
+                            <strong>{{ $square['seat']['s'] }}</strong>
                         @endif
                     </div>
                 @endforeach
             </div>
-            <div style="width: 300px;">
+            <div style="width: 300px; margin-top: 12px;">
                 <div class="flex gap-3 mb-4">
                     <div>
                         <label>Fila</label>
@@ -59,6 +59,12 @@
                         <label>Seient</label>
                         <x-filament::input.wrapper>
                             <x-filament::input label="Seient" type="number" wire:model.lazy="seat" />
+                        </x-filament::input.wrapper>
+                    </div>
+                    <div>
+                        <label>Zona</label>
+                        <x-filament::input.wrapper>
+                            <x-filament::input label="Zona" type="number" wire:model.lazy="zone" />
                         </x-filament::input.wrapper>
                     </div>
                 </div>

@@ -292,21 +292,21 @@ class ProductResource extends Resource
                                             ->relationship('rate', 'title')
                                             ->searchable()
                                             ->required()
-                                            ->distinct()
-                                            ->columnSpan(2),
+                                            ->distinct(),
+                                            //->columnSpan(2),
                                         Components\TextInput::make('price')
-                                            ->label('Preu')
+                                            ->label('Preu general')
                                             ->numeric()
                                             ->minValue(0)
                                             ->suffix('€'),
-                                        Components\TextInput::make('pricezone')
-                                            ->label('Preu per zones')
-                                            ->suffix('€'),
-                                        // Components\KeyValue::make('pricezone')
-                                        //     ->label('Preus per zona')
-                                        //     ->keyLabel('Zona')
-                                        //     ->valueLabel('Preu')
-                                        //     ->addActionLabel('Afegeix zona')
+                                        // Components\TextInput::make('pricezone')
+                                        //     ->label('Preu per zones')
+                                        //     ->suffix('€'),
+                                        Components\KeyValue::make('pricezone')
+                                            ->label('Preus per zona')
+                                            ->keyLabel('Zona')
+                                            ->valueLabel('Preu')
+                                            ->addActionLabel('Afegeix zona')
                                     ])->columns(3)
                             ])
                     ])->columnSpan('full')

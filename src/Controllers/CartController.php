@@ -6,6 +6,7 @@ use ApproTickets\Models\Rate;
 use ApproTickets\Models\Order;
 use ApproTickets\Models\Product;
 use ApproTickets\Models\Booking;
+use ApproTickets\Models\ProductRate;
 use DB;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Session;
@@ -138,27 +139,20 @@ class CartController extends BaseController
 	{
 
 		$rate = Rate::find($rate_id);
-		$price = DB::table('product_rate')
-			->where('product_id', $product->id)
-			->where('rate_id', $rate->id)
-			->pluck('price')[0];
 
-		$pricezone = DB::table('product_rate')
-			->where('product_id', $product->id)
-			->where('rate_id', $rate->id)
-			->pluck('pricezone')[0];
+		$productRate = ProductRate::where('product_id', $product->id)
+			->where('rate_id', $rate->id)->first();
 
-		if ($pricezone) {
-			$pricezone = explode(',',$pricezone);
-		}
-
-		if (Session::has("coupon.p{$product->id}_t{$rate->id}")) {
-			$price *= 1 - Session::get('coupon.discount') / 100;
-		}
+		$generalPrice = $productRate->price;
 
 		$takenSeats = [];
 
 		foreach ($seats as $seat) {
+
+			$price = $productRate->pricezone ? $productRate->pricezone[$seat->z] : $generalPrice;
+			if (Session::has("coupon.p{$product->id}_t{$rate->id}")) {
+				$price *= 1 - Session::get('coupon.discount') / 100;
+			}
 
 			// Check if seat is available
 			$booking = Booking::where('product_id', $product->id)
@@ -171,8 +165,6 @@ class CartController extends BaseController
 				$takenSeats[] = [$seat->s, $seat->f];
 				continue;
 			}
-
-			$price = $pricezone ? $pricezone[$seat->z - 1] : $price;
 
 			$booking = new Booking();
 			$booking->product_id = $product->id;

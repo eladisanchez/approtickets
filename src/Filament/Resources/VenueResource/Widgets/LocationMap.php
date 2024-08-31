@@ -18,6 +18,7 @@ class LocationMap extends Widget
     public $erase = false;
     public $seat = 1;
     public $row = 1;
+    public $zone = 1;
 
     public $gridSize = 90;
 
@@ -26,11 +27,11 @@ class LocationMap extends Widget
         $this->map = $this->record->seats ?? [];
     }
 
-    public function isSeat($square)
+    public function findSeatIndex($square)
     {
-        foreach ($this->map as $seat) {
+        foreach ($this->map as $index => $seat) {
             if ($seat['x'] == $square['x'] && $seat['y'] == $square['y']) {
-                return $seat;
+                return $index;
             }
         }
         return null;
@@ -38,17 +39,24 @@ class LocationMap extends Widget
 
     public function handleSelect($square)
     {
-        $newMap = $this->map;
-        if ($seat = $this->isSeat($square)) {
-            $this->map = array_filter($newMap, function ($s) use ($square) {
-                return $s['x'] != $square['x'] || $s['y'] != $square['y'];
-            });
+        // Check if the square already has a seat
+        $existingSeatIndex = $this->findSeatIndex($square);
+
+        if ($existingSeatIndex !== null) {
+            // Remove the seat if it exists
+            unset($this->map[$existingSeatIndex]);
         } else {
-            $newSeat = $this->seat + 1;
-            $this->seat = $newSeat;
-            $newMap[] = $square;
-            $this->map = $newMap;
+            // Add a new seat with the current seat, row, and zone numbers
+            $newSeat = $square;
+            $newSeat['s'] = $this->seat;
+            $newSeat['f'] = $this->row;
+            $newSeat['z'] = $this->zone;
+            $this->map[] = $newSeat;
+            $this->seat++;
         }
+
+        // Re-index the array to keep consistent keys
+        $this->map = array_values($this->map);
     }
 
     public function updatedRow($value)
@@ -74,12 +82,26 @@ class LocationMap extends Widget
 
     public function render(): \Illuminate\View\View
     {
+        // Prepare the grid items
         $gridItems = [];
+        $seatMap = [];
+
+        // Precompute the seat map for easier lookup
+        foreach ($this->map as $seat) {
+            $seatMap[$seat['x']][$seat['y']] = ['s' => $seat['s'], 'f' => $seat['f'], 'z' => $seat['z']];
+        }
+
+        // Generate the grid with seat information
         for ($y = 1; $y <= $this->gridSize; $y++) {
             for ($x = 1; $x <= $this->gridSize; $x++) {
-                $gridItems[] = ['x' => $x, 'y' => $y];
+                $gridItems[] = [
+                    'x' => $x,
+                    'y' => $y,
+                    'seat' => $seatMap[$x][$y] ?? null // Check if there's a seat at this position
+                ];
             }
         }
+
         return view(static::$view)
             ->with('gridItems', $gridItems);
     }

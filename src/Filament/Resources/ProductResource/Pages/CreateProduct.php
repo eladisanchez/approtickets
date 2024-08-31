@@ -88,10 +88,9 @@ class CreateProduct extends CreateRecord
                     TextInput::make('hour_limit')
                         ->label('Tancament venda')
                         ->numeric()
-                        ->minValue(0)
                         ->default(2)
                         ->step(1)
-                        ->helperText("Fins quantes hores abans de la sessió es poden adquirir entrades online")
+                        ->helperText("Fins quantes hores abans o després (negatiu) de la sessió es poden adquirir entrades online")
                         ->suffix('hores')
                         ->required()
                         ->columnSpan(2),

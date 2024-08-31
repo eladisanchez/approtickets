@@ -47,9 +47,9 @@ class VenueResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Espai'),
                 Tables\Columns\TextColumn::make('seats')->label('Seients')
-                ->getStateUsing(function ($record) {
-                    return is_array($record->seats) ? count($record->seats) : 0;
-                }),
+                    ->getStateUsing(function ($record) {
+                        return is_array($record->seats) ? count($record->seats) : 0;
+                    }),
                 Tables\Columns\TextColumn::make('products_count')
                     ->counts('products')
                     ->sortable()
@@ -60,6 +60,11 @@ class VenueResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('duplicate')
+                    ->label('Duplicar')
+                    ->icon('heroicon-o-document-duplicate')
+                    ->requiresConfirmation()
+                    ->action(fn(Venue $record) => $record->duplicate())
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -64,7 +64,7 @@
                     <div>
                         <label>Zona</label>
                         <x-filament::input.wrapper>
-                            <x-filament::input label="Zona" type="number" wire:model.lazy="zone" />
+                            <x-filament::input label="Zona" type="number" max="4" wire:model.lazy="zone" />
                         </x-filament::input.wrapper>
                     </div>
                 </div>

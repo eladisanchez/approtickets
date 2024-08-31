@@ -17,10 +17,9 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Facades\Filament;
 use ApproTickets\Console\Commands\CleanCartCommand;
+use ApproTickets\Console\Commands\TestMailCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Filament\Support\Colors\Color;
-use ApproTickets\Models\Booking;
-use Illuminate\Support\Facades\View;
 
 
 class ApproTicketsServiceProvider extends ServiceProvider
@@ -42,6 +41,7 @@ class ApproTicketsServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 CleanCartCommand::class,
+                TestMailCommand::class
             ]);
         }
 

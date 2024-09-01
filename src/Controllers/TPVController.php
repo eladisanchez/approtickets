@@ -17,8 +17,6 @@ class TPVController extends BaseController
     {
         $TPV = new Tpv(config('redsys'));
 
-        Log::info('Notificació del TPV', $_POST);
-
         try {
             $data = $TPV->checkTransaction($_POST);
             if (!$data['Ds_Order']) {
@@ -27,7 +25,7 @@ class TPVController extends BaseController
 
             $orderId = substr($data['Ds_Order'], 0, -3);
 
-            Log::info('Comanda', $data);
+            Log::info('Notificació comanda', $data);
             $this->orderNotification($orderId, $data);
 
         } catch (\Exception $e) {
@@ -49,6 +47,7 @@ class TPVController extends BaseController
                 'tpv_id' => $data["Ds_Order"],
                 'paid' => 1
             ]);
+            Log::info('Pagament correcte');
             try {
                 Mail::to($order->email)->send(new NewOrder($order));
                 Mail::to(config('mail.from.address'))->send(new NewOrderAlert($order));
@@ -59,6 +58,7 @@ class TPVController extends BaseController
             // Pagament fallit
         else:
 
+            Log::info('Error pagament');
             if ($order->paid != 1) {
                 $order->paid = 2;
                 $order->save();

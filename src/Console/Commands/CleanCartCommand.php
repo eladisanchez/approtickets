@@ -27,16 +27,16 @@ class CleanCartCommand extends Command
             ->delete();
 
         // Cleaning non paid orders
-        $date = new \DateTime;
-        $date->modify("-{$paymentTimeout} minutes");
-        $formatted = $date->format('Y-m-d H:i:s');
-        $abandonedOrders = Order::where('paid', '!=', 1)
-            ->where('payment', 'card')
-            ->where('created_at', '<=', $formatted)
-            ->get();
-        foreach ($abandonedOrders as $order) {
-            $order->delete();
-        }
+        // $date = new \DateTime;
+        // $date->modify("-{$paymentTimeout} minutes");
+        // $formatted = $date->format('Y-m-d H:i:s');
+        // $abandonedOrders = Order::where('paid', '!=', 1)
+        //     ->where('payment', 'card')
+        //     ->where('created_at', '<=', $formatted)
+        //     ->get();
+        // foreach ($abandonedOrders as $order) {
+        //     $order->delete();
+        // }
 
         $this->info("Done");
 

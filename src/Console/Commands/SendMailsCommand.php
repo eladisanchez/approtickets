@@ -22,7 +22,7 @@ class SendMailsCommand extends Command
         $this->info("Sending emails");
 
         $orders = Order::where('email_sent', '!=', 1)
-            ->where('email_sent' , '!=', 3)
+            ->where('email_sent', '!=', 2)
             ->where('payment', 'card')
             ->limit(10)
             ->get();
@@ -36,24 +36,18 @@ class SendMailsCommand extends Command
                     $order->save();
                     $this->line("Email sent to {$order->id} - {$order->email}");
                 } catch (\Exception $e) {
-                    $order->email_sent = 3;
-                    $order->save();
                     $this->line("Error sending to {$order->id} - {$order->email}");
                     Log::error($e->getMessage());
                 }
             } else {
-                if ($order->email_sent != 2) {
-                    try {
-                        Mail::to($order->email)->send(new PaymentMail($order));
-                        $order->email_sent = 2;
-                        $order->save();
-                        $this->line("Email sent to {$order->id} - {$order->email}");
-                    } catch (\Exception $e) {
-                        $order->email_sent = 3;
-                        $order->save();
-                        $this->line("Error sending to {$order->id} - {$order->email}");
-                        Log::error($e->getMessage());
-                    }
+                try {
+                    Mail::to($order->email)->send(new PaymentMail($order));
+                    $order->email_sent = 2;
+                    $order->save();
+                    $this->line("Email sent to {$order->id} - {$order->email}");
+                } catch (\Exception $e) {
+                    $this->line("Error sending to {$order->id} - {$order->email}");
+                    Log::error($e->getMessage());
                 }
             }
             sleep(1);

@@ -25,7 +25,6 @@ class TPVController extends BaseController
 
             $orderId = substr($data['Ds_Order'], 0, -3);
 
-            Log::info('Notificació comanda', $data);
             $this->orderNotification($orderId, $data);
 
         } catch (\Exception $e) {
@@ -47,7 +46,6 @@ class TPVController extends BaseController
                 'tpv_id' => $data["Ds_Order"],
                 'paid' => 1
             ]);
-            Log::info('Pagament correcte');
             try {
                 Mail::to($order->email)->send(new NewOrder($order));
                 Mail::to(config('mail.from.address'))->send(new NewOrderAlert($order));

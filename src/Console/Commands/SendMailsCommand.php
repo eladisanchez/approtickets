@@ -27,6 +27,7 @@ class SendMailsCommand extends Command
             ->get();
 
         foreach ($orders as $order) {
+            $this->line("Sending {$order->id} - {$order->email}");
             if ($order->paid == 1) {
                 try {
                     Mail::to($order->email)->send(new NewOrder($order));
@@ -50,7 +51,7 @@ class SendMailsCommand extends Command
                     }
                 }
             }
-            sleep(3);
+            sleep(1);
         }
 
         $this->info("Done");

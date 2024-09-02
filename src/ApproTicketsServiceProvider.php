@@ -18,6 +18,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Facades\Filament;
 use ApproTickets\Console\Commands\CleanCartCommand;
 use ApproTickets\Console\Commands\TestMailCommand;
+use ApproTickets\Console\Commands\SendMailsCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Filament\Support\Colors\Color;
 
@@ -41,7 +42,8 @@ class ApproTicketsServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 CleanCartCommand::class,
-                TestMailCommand::class
+                TestMailCommand::class,
+                SendMailsCommand::class
             ]);
         }
 

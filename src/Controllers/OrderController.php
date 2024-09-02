@@ -26,7 +26,6 @@ class OrderController extends BaseController
 			->orderBy('created_at', 'desc')
 			->first();
 		if ($failedOrder) {
-			dd('ja hi ha una comanda pendent');
 			return redirect()->route('order.payment', ['id' => $failedOrder->id]);
 		}
 

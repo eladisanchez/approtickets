@@ -53,10 +53,10 @@ class OrderResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')->label('ID')->sortable()->description(fn(Order $record): string => substr($record->tpv_id, -3)),
-                Tables\Columns\TextColumn::make('created_at')->date()->label('Data')->sortable(),
-                Tables\Columns\IconColumn::make('user')->label('')->icon(fn(string $state): string => $state ?
-                    'heroicon-o-user' : null)->sortable(),
-                Tables\Columns\TextColumn::make('name')->label('Client')->sortable()->description(fn(Order $record): string => $record->email)->limit(30),
+                Tables\Columns\TextColumn::make('created_at')->date()->label('Data')->sortable()->date('d/m/y H:i:s'),
+                // Tables\Columns\IconColumn::make('user')->label('')->icon(fn(string $state): string => $state ?
+                //     'heroicon-o-user' : null)->sortable(),
+                Tables\Columns\TextColumn::make('name')->label('Client')->sortable()->searchable()->description(fn(Order $record): string => $record->email)->limit(30)->wrap(),
                 Tables\Columns\TextColumn::make('bookings.product.title')->listWithLineBreaks()->label('Productes')->badge(),
                 Tables\Columns\TextColumn::make('total')->label('Total')->suffix(' €'),
                 Tables\Columns\IconColumn::make('paid')->label('Pagat')

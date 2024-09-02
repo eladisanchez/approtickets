@@ -46,12 +46,12 @@ class TPVController extends BaseController
                 'tpv_id' => $data["Ds_Order"],
                 'paid' => 1
             ]);
-            try {
-                Mail::to($order->email)->send(new NewOrder($order));
-                Mail::to(config('mail.from.address'))->send(new NewOrderAlert($order));
-            } catch (\Exception $e) {
-                Log::error($e->getMessage());
-            }
+            // try {
+            //     Mail::to($order->email)->send(new NewOrder($order));
+            //     Mail::to(config('mail.from.address'))->send(new NewOrderAlert($order));
+            // } catch (\Exception $e) {
+            //     Log::error($e->getMessage());
+            // }
 
             // Pagament fallit
         else:

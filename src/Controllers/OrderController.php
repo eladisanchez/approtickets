@@ -138,10 +138,10 @@ class OrderController extends BaseController
 
 	public function thanks(string $session, string $id): RedirectResponse|View
 	{
-		if (!$session == Session::getId()) {
-			return redirect()->route('home');
-		}
-		$order = Order::where('session', Session::getId())
+		// if (!$session == Session::getId()) {
+		// 	return redirect()->route('home');
+		// }
+		$order = Order::where('session', $session)
 			->where('id', $id)
 			->isPaid()
 			->orderBy('created_at', 'desc')

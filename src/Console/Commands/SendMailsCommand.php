@@ -7,6 +7,7 @@ use ApproTickets\Models\Order;
 use Mail;
 use Log;
 use ApproTickets\Mail\NewOrder;
+use ApproTickets\Mail\PaymentMail;
 
 class SendMailsCommand extends Command
 {
@@ -20,22 +21,36 @@ class SendMailsCommand extends Command
 
         $this->info("Sending emails");
 
-        $orders = Order::where('email_sent', 0)
-            ->where('paid', 1)
+        $orders = Order::where('email_sent', '!=', 1)
+            ->where('payment', 'card')
             ->limit(10)
             ->get();
 
         foreach ($orders as $order) {
-            try {
-                Mail::to($order->email)->send(new NewOrder($order));
-                $order->email_sent = 1;
-                $order->save();
-                $this->line("Email sent to {$order->id} - {$order->email}");
-            } catch (\Exception $e) {
-                $this->error("Error sending to {$order->id} - {$order->email}");
-                Log::error($e->getMessage());
+            if ($order->paid == 1) {
+                try {
+                    Mail::to($order->email)->send(new NewOrder($order));
+                    $order->email_sent = 1;
+                    $order->save();
+                    $this->line("Email sent to {$order->id} - {$order->email}");
+                } catch (\Exception $e) {
+                    $this->error("Error sending to {$order->id} - {$order->email}");
+                    Log::error($e->getMessage());
+                }
+            } else {
+                if ($order->email_sent != 2) {
+                    try {
+                        Mail::to($order->email)->send(new PaymentMail($order));
+                        $order->email_sent = 2;
+                        $order->save();
+                        $this->line("Email sent to {$order->id} - {$order->email}");
+                    } catch (\Exception $e) {
+                        $this->error("Error sending to {$order->id} - {$order->email}");
+                        Log::error($e->getMessage());
+                    }
+                }
             }
-            sleep(2);
+            sleep(3);
         }
 
         $this->info("Done");

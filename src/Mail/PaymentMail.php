@@ -34,7 +34,7 @@ class PaymentMail extends Mailable
         }
         $text .= "</ul><p>Per completar la comanda tan sols heu d'utilitzar el següent enllaç i fer el pagament:</p>
         <p><a href='{$paymentLink}'>{$paymentLink}</a></p>
-        <p>Teniu temps fins <strong>demà dimarts 3 de setembre a les 20:00</strong>. A partir d'aquesta hora les entrades s'alliberaran i algú altre les podrà adquirir.</p>
+        <p>Teniu temps fins <strong>dimarts 3 de setembre a les 20:00</strong>. A partir d'aquesta hora les entrades s'alliberaran i algú altre les podrà adquirir.</p>
         <p>Per a qualsevol consulta us podeu adreçar a l'Oficina d'Atenció de la Festa Major (Centre Cardona Medieval - voltes de la plaça de la Fira)</p>";
         $this->text = $text;
     }

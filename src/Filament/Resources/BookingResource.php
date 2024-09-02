@@ -12,6 +12,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use ApproTickets\Filament\Exports\BookingExporter;
+use Filament\Tables\Actions\ExportAction;
 
 class BookingResource extends Resource
 {
@@ -59,6 +61,10 @@ class BookingResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ])
+            ->headerActions([
+                ExportAction::make()
+                    ->exporter(BookingExporter::class)
             ])
             ->modifyQueryUsing(fn(Builder $query) => $query->orderBy('created_at', 'DESC'));
     }

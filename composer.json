@@ -13,7 +13,8 @@
         "redsys/tpv": "^2.3",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "shanmuga/laravel-entrust": "^5.0",
-        "laravel/sanctum": "^4.0"
+        "laravel/sanctum": "^4.0",
+        "croustibat/filament-jobs-monitor": "^2.5"
     },
     "autoload": {
         "psr-4": {

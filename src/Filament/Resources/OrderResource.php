@@ -52,7 +52,8 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')->label('ID')->sortable()->description(fn(Order $record): string => substr($record->tpv_id, -3)),
+                Tables\Columns\TextColumn::make('id')->label('ID')->sortable()->description(fn(Order $record): string => substr($record->tpv_id, -3))
+                    ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('created_at')->date()->label('Data')->sortable()->date('d/m/y H:i:s'),
                 // Tables\Columns\IconColumn::make('user')->label('')->icon(fn(string $state): string => $state ?
                 //     'heroicon-o-user' : null)->sortable(),

@@ -2,6 +2,8 @@
 
 return [
 
+    'inertia' => env('AT_INERTIA', false),
+
     'timeout' => [
         'ticket' => env('AT_TIMEOUT_TICKET', 10),
         'payment' => env('AT_TIMEOUT_PAYMENT', 60),
@@ -9,9 +11,9 @@ return [
 
     'admin' => [
         'colors' => [
-            'primary' => '#5cacb0',
+            'primary' => env('AT_ADMIN_COLOR', '#5cacb0'),
         ],
-        'font' => 'Inter',
+        'font' => env('AT_ADMIN_FONT', 'Inter'),
     ],
 
     'payment_methods' => [

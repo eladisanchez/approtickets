@@ -172,11 +172,17 @@ class OrderController extends BaseController
 		$order = Order::findOrFail($id);
 
 		if ($order->session != $session || !($order->paid == 1 || $order->payment == 'credit')) {
-			return abort('404');
+			return abort(404);
 		}
-
+	
 		$conditions = Option::where('key', 'condicions-venda')->pluck('value')->first();
-
+	
+		$pdfPath = storage_path("app/tickets/entrades-{$id}.pdf");
+	
+		if (file_exists($pdfPath)) {
+			return response()->file($pdfPath);
+		}
+	
 		$pdf = Pdf::setOptions(['isRemoteEnabled' => true])->loadView(
 			'pdf.order',
 			[
@@ -184,7 +190,9 @@ class OrderController extends BaseController
 				'conditions' => $conditions
 			]
 		);
-
+	
+		$pdf->save($pdfPath);
+	
 		return $pdf->stream("entrades-{$id}.pdf");
 
 	}

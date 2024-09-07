@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
+use Intervention\Image\Encoders\WebpEncoder;
 
 class ProductController extends BaseController
 {
@@ -24,7 +27,7 @@ class ProductController extends BaseController
 	/**
 	 * Product single page
 	 */
-	public function show($name, $day = NULL, $hour = NULL): View | RedirectResponse
+	public function show($name, $day = NULL, $hour = NULL): View | RedirectResponse | InertiaResponse
 	{
 
 		$product = Product::withoutGlobalScopes()->where('name', $name)->firstOrFail();
@@ -39,6 +42,17 @@ class ProductController extends BaseController
 			return redirect()->route('product', [
 				'name' => $name,
 				'day' => $availableDays->first()->format('Y-m-d')
+			]);
+		}
+
+		if (config('approtickets.inertia')) {
+			return Inertia::render('Product', [
+				'product' => $product,
+				'availableDays' => $availableDays,
+				'tickets' => fn() => $product->tickets,
+				'rates' => fn() => $product->rates,
+				'day' => fn() => $day,
+				'hour' => fn() => $hour
 			]);
 		}
 
@@ -142,24 +156,25 @@ class ProductController extends BaseController
 		return $pdf->stream('preview-' . $id . '.pdf');
 	}
 
+
 	public function image($path)
 	{
 		$cacheKey = 'image_' . md5($path);
 		$cachedImage = Cache::remember($cacheKey, 1, function () use ($path) {
-			if (Storage::disk('public')->exists($path)) {
+			if (Storage::disk('local')->exists($path)) {
 				$directory = explode('/', $path);
-				$width = $directory[0] == 'products' ? 600 : 1400;
-				$file = Storage::disk('public')->get($path);
+				$width = $directory[0] == 'thumbnails' ? 600 : 1400;
+				$file = Storage::disk('local')->get($path);
 				$image = Image::read($file);
 				$image->scale($width, null);
-				return $image->encode();
+				return $image->encode(new WebpEncoder(quality: 80));
 			}
 			return false;
 		});
 		if (!$cachedImage) {
 			abort(404);
 		}
-		return response()->make($cachedImage, 200, ['Content-Type' => 'image/jpeg']);
+		return response()->make($cachedImage, 200, ['Content-Type' => 'image/webp']);
 	}
 
 

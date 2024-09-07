@@ -2,6 +2,7 @@
 
 namespace ApproTickets;
 
+
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Panel;
@@ -19,6 +20,7 @@ use Filament\Facades\Filament;
 use ApproTickets\Console\Commands\CleanCartCommand;
 use ApproTickets\Console\Commands\TestMailCommand;
 use ApproTickets\Console\Commands\SendMailsCommand;
+use ApproTickets\Console\Commands\GeneratePdfCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Filament\Support\Colors\Color;
 
@@ -43,7 +45,8 @@ class ApproTicketsServiceProvider extends ServiceProvider
             $this->commands([
                 CleanCartCommand::class,
                 TestMailCommand::class,
-                SendMailsCommand::class
+                SendMailsCommand::class,
+                GeneratePdfCommand::class
             ]);
         }
 

@@ -15,9 +15,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components;
 use Filament\Forms\Get;
 use Filament\Forms\Components\Actions;
+use Filament\Resources\Concerns\Translatable;
 
 class ProductResource extends Resource
 {
+
+    use Translatable;
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-ticket';
@@ -47,13 +50,19 @@ class ProductResource extends Resource
                                     ->label('URL del producte')
                                     ->required()
                                     ->unique(Product::class, 'name', fn($record) => $record)
-                                    ->columnSpan(3),
+                                    ->columnSpan(2),
                                 Components\Select::make('category_id')
                                     ->label('Categoria')
                                     ->relationship(name: 'category', titleAttribute: 'title')
                                     ->required()
                                     ->native(false)
-                                    ->columnSpan(3),
+                                    ->columnSpan(2),
+                                Components\Select::make('user_id')
+                                    ->label('Organitzador')
+                                    ->relationship(name: 'organizer', titleAttribute: 'name')
+                                    ->searchable('organizer.name')
+                                    ->columnSpan(2)
+                                    ->hidden(!auth()->user()->hasRole('admin')),
                                 Components\Toggle::make('is_pack')
                                     ->label('És un pack')
                                     ->helperText('El producte estarà compost de varis productes')
@@ -319,13 +328,14 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('category.title')->label('Categoria'),
                 Tables\Columns\TextColumn::make('bookings_count')->counts('bookings')->badge()->sortable()
                     ->badge()->label('Vendes'),
-                Tables\Columns\ToggleColumn::make('active')->label('Actiu')->sortable(),
+                Tables\Columns\ToggleColumn::make('active')->label('Actiu')->sortable()->hidden(!auth()->user()->hasRole('admin')),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()->hidden(auth()->user()->hasRole('admin')),
                 Tables\Actions\Action::make('open')
                     ->label('Obre')
                     ->icon('heroicon-o-arrow-top-right-on-square')
@@ -338,11 +348,14 @@ class ProductResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->hidden(!auth()->user()->hasRole('admin')),
                 ]),
             ])
             ->modifyQueryUsing(fn(Builder $query) => $query->orderBy('order', 'ASC'))
-            ->reorderable('order');
+            ->reorderable('order', function () {
+                // Només permet reordenar si l'usuari és administrador
+                return auth()->user()->hasRole('admin');
+            });
     }
 
 
@@ -351,6 +364,14 @@ class ProductResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        if (!auth()->user()->hasRole('admin')) {
+            return parent::getEloquentQuery()->where('user_id', auth()->user()->id);
+        }
+        return parent::getEloquentQuery();
     }
 
     public static function getPages(): array

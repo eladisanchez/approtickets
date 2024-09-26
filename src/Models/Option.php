@@ -3,6 +3,7 @@
 namespace ApproTickets\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use ApproTickets\Enums\OptionType;
 
 class Option extends Model
 {
@@ -11,6 +12,10 @@ class Option extends Model
 
     protected $table = 'options';
     protected $guarded = ['id'];
+
+    protected $casts = [
+        'type' => OptionType::class,
+    ];
 
     public function scopeText($query, $option)
     {

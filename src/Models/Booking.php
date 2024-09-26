@@ -56,6 +56,25 @@ class Booking extends Model
 		return __('Fila') . ' ' . $this->row . ' ' . __('Seient') . ' ' . $this->seat;
 	}
 
+	public function getReducedSeatAttribute()
+	{
+		if (empty($this->row) || $this->row == 0) {
+			if (is_array($this->seat)) {
+				return $this->seat['s'] . '/' . $this->seat['f'];
+			}
+			if (is_numeric($this->seat)) {
+				return __('Localitat') . ' ' . $this->seat;
+			}
+			return false;
+		}
+		return $this->row . '/' . $this->seat;
+	}
+
+	public function getFormattedSessionAttribute()
+	{
+		return $this->day->format('d/m/Y') . ' ' . $this->hour;
+	}
+
 	public function scopeProductDayHour($query, $id, $day, $hour)
 	{
 		$query->where('product_id', $id)

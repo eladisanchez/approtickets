@@ -23,6 +23,8 @@ return [
         'santander' => 'Santander'
     ],
 
-    'languages' => false
+    'languages' => false,
+
+    'locales' => explode(',', env('AT_LOCALES', 'ca,es'))
 
 ];

@@ -31,7 +31,10 @@ class UserResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')->label('Nom')->required(),
                 Forms\Components\TextInput::make('email')->label('Correu electrònic')->required(),
-                Forms\Components\Select::make('roles')->label('Rols')->relationship('roles', 'display_name'),
+                Forms\Components\Select::make('roles')->label('Rols')
+                    ->relationship('roles', 'display_name')
+                    ->preload()
+                    ->multiple(),
                 Forms\Components\TextInput::make('password')->password()->label('Contrasenya')->required()->dehydrateStateUsing(fn($state) => Hash::make($state))
                     ->dehydrated(fn($state) => filled($state))
                     ->required(fn(string $context): bool => $context === 'create'),

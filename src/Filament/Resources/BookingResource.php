@@ -43,12 +43,13 @@ class BookingResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('created_at')->label('Data')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('created_at')->label('Data compra')->sortable()->searchable()->date('d/m/Y H:i'),
                 Tables\Columns\TextColumn::make('order.email')->label('Client')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('product.title')->label('Producte')->sortable()->searchable()->wrap(),
                 Tables\Columns\TextColumn::make('rate.title')->label('Tarifa')->sortable(),
-                Tables\Columns\TextColumn::make('tickets')->label('Quantitat')->sortable(),
-                Tables\Columns\TextColumn::make('formattedSeat')->label('Localitat')->sortable(),
+                Tables\Columns\TextColumn::make('tickets')->label('Qt.')->sortable(),
+                Tables\Columns\TextColumn::make('formattedSession')->label('Sessió')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('reducedSeat')->label('Localitat')->sortable(),
                 Tables\Columns\TextColumn::make('scans.scan_id')->label('QR')->badge()->color('success'),
             ])
             ->filters([
@@ -66,14 +67,39 @@ class BookingResource extends Resource
                 ExportAction::make()
                     ->exporter(BookingExporter::class)
             ])
+            ->filters([
+                // Filter by day with datepicker
+                Tables\Filters\Filter::make('day')
+                    ->form([
+                        Forms\Components\DatePicker::make('day')->label('Dia'),
+                    ])
+                    ->query(fn(Builder $query, array $data): Builder => $data['day'] ? $query->where('day', $data['day']) : $query),
+                // Filter by product
+                Tables\Filters\Filter::make('product')
+                    ->form([
+                        Forms\Components\Select::make('product')
+                            ->label('Producte')
+                            ->relationship('product', 'title'),
+                    ])
+                    ->query(fn(Builder $query, array $data): Builder => $data['product'] ? $query->where('product_id', $data['product']) : $query),
+                // Filter by if has scans
+                Tables\Filters\Filter::make('scans')
+                    ->form([
+                        Forms\Components\Toggle::make('scans')->label('Escanejat'),
+                    ])
+                    ->query(fn(Builder $query, array $data): Builder => $data['scans'] ? $query->whereHas('scans') : $query),
+
+            ])
             ->modifyQueryUsing(fn(Builder $query) => $query->orderBy('created_at', 'DESC'));
     }
 
-    public static function getRelations(): array
+    public static function getEloquentQuery(): Builder
     {
-        return [
-            //
-        ];
+        if (!auth()->user()->hasRole('admin')) {
+            $products = auth()->user()->products()->pluck('id');
+            return parent::getEloquentQuery()->whereIn('product_id', $products);
+        }
+        return parent::getEloquentQuery();
     }
 
     public static function getPages(): array

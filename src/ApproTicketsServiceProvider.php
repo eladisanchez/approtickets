@@ -23,7 +23,7 @@ use ApproTickets\Console\Commands\SendMailsCommand;
 use ApproTickets\Console\Commands\GeneratePdfCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Filament\Support\Colors\Color;
-
+use Filament\SpatieLaravelTranslatablePlugin;
 
 class ApproTicketsServiceProvider extends ServiceProvider
 {
@@ -67,10 +67,31 @@ class ApproTicketsServiceProvider extends ServiceProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->discoverResources(in: __DIR__ . '/Filament/Resources', for: 'ApproTickets\\Filament\\Resources')
-            ->discoverPages(in: __DIR__ . '/Filament/Resources', for: 'ApproTickets\\Filament\\Pages')
+            ->discoverResources(
+                in: app_path('Filament/Resources'),
+                for: 'App\\Filament\\Resources'
+            )
+            ->discoverResources(
+                in: __DIR__ . '/Filament/Resources',
+                for: 'ApproTickets\\Filament\\Resources'
+            )
+            ->discoverPages(
+                in: app_path('Filament/Pages'),
+                for: 'App\\Filament\\Pages'
+            )
+            ->discoverPages(
+                in: __DIR__ . '/Filament/Pages',
+                for: 'ApproTickets\\Filament\\Pages'
+            )
             ->pages([])
-            ->discoverWidgets(in: __DIR__ . '/Filament/Widgets', for: 'ApproTickets\\Filament\\Widgets')
+            ->discoverWidgets(
+                in: app_path('Filament/Widgets'),
+                for: 'App\\Filament\\Widgets'
+            )
+            ->discoverWidgets(
+                in: __DIR__ . '/Filament/Widgets',
+                for: 'ApproTickets\\Filament\\Widgets'
+            )
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -91,7 +112,10 @@ class ApproTicketsServiceProvider extends ServiceProvider
             ])
             ->favicon(asset('/favicon.png'))
             ->databaseNotifications()
-            ->databaseNotificationsPolling('30s');
+            ->databaseNotificationsPolling('30s')
+            ->plugins([
+                SpatieLaravelTranslatablePlugin::make()->defaultLocales(config('approtickets.locales')),
+            ]);
     }
 
     public function register()

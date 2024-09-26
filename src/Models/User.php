@@ -61,4 +61,9 @@ class User extends Authenticatable implements HasName, FilamentUser
         return $this->id === 1;
     }
 
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
 }

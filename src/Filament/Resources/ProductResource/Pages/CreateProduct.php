@@ -36,7 +36,8 @@ class CreateProduct extends CreateRecord
                     Toggle::make('is_pack')
                         ->label('És un pack')
                         ->helperText('El producte estarà compost de varis productes')
-                        ->columnSpan(6),
+                        ->columnSpan(6)
+                        ->hidden(!auth()->user()->hasRole('admin')),
                 ])->columns(6),
             Step::make('Descripció i horaris')
                 ->icon('heroicon-m-clock')
@@ -44,7 +45,8 @@ class CreateProduct extends CreateRecord
                     TextInput::make('summary')
                         ->label('Resum')
                         ->maxLength(255)
-                        ->columnSpan('full'),
+                        ->columnSpan('full')
+                        ->helperText('Text curt que apareixerà sota del títol en el llistat de portada'),
                     RichEditor::make('description')
                         ->label('Descripció')
                         ->columnSpan(3),

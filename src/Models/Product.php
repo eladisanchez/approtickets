@@ -9,11 +9,13 @@ use Session;
 use Auth;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
+use Spatie\Translatable\HasTranslations;
 
 class Product extends Model
 {
 
     use SoftDeletes;
+    use HasTranslations;
 
     protected $table = 'products';
     protected $guarded = ['id'];
@@ -22,6 +24,12 @@ class Product extends Model
     protected $with = ['organizer', 'rates'];
     protected $attributes = [
         'name' => '',
+    ];
+
+    public $translatable = [
+        'title',
+        'description',
+        'schedule'
     ];
 
 
@@ -37,6 +45,10 @@ class Product extends Model
     {
         static::creating(function ($product) {
             $product->name = Str::slug($product->title);
+            if (auth()->user()->hasRole('organizer')) {
+                $product->user_id = auth()->user()->id;
+            }
+            $product->active = auth()->user()->hasRole('admin') ? 1 : 0;
         });
     }
 

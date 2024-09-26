@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Get;
 use Filament\Tables\Columns\Layout\Stack;
+use ApproTickets\Enums\OptionType;
 
 class OptionResource extends Resource
 {
@@ -33,11 +34,18 @@ class OptionResource extends Resource
                 Forms\Components\TextInput::make('key')
                     ->label('Opció')
                     ->required()
-                    ->visible(auth()->user()->isSuperadmin()),
+                    ->visible(auth()->user()->isSuperadmin())
+                    ->columnSpan(2),
                 Forms\Components\TextInput::make('name')
                     ->label('Nom')
                     ->required()
-                    ->visible(auth()->user()->isSuperadmin()),
+                    ->visible(auth()->user()->isSuperadmin())
+                    ->columnSpan(2),
+                Forms\Components\Select::make('type')
+                    ->label('Tipus')
+                    ->options(OptionType::class)
+                    ->visible(auth()->user()->isSuperadmin())
+                    ->columnSpan(2),
                 Forms\Components\TextInput::make('description')
                     ->label('Descripció')
                     ->required()
@@ -46,8 +54,17 @@ class OptionResource extends Resource
                 RichEditor::make('value')
                     ->label(fn(Get $get) => $get('name'))
                     ->helperText(fn(Get $get) => $get('description'))
-                    ->columnSpan('full'),
-            ]);
+                    ->columnSpan('full')
+                    ->visible(function ($record) {
+                        return $record->key != 'vals_qr_fi';
+                    }),
+                Forms\Components\DateTimePicker::make('value')
+                    ->label(fn(Get $get) => $get('name'))
+                    ->helperText(fn(Get $get) => $get('description'))
+                    ->visible(function ($record) {
+                        return $record->key == 'vals_qr_fi';
+                    })->columnSpan('full')
+            ])->columns(6);
     }
 
     public static function table(Table $table): Table
@@ -57,11 +74,11 @@ class OptionResource extends Resource
                 Stack::make([
                     Tables\Columns\TextColumn::make('name')->label('Opció'),
                 ]),
-                
+
             ])->contentGrid([
-                'md' => 2,
-                'xl' => 3,
-            ])
+                    'md' => 2,
+                    'xl' => 3,
+                ])
             ->filters([
                 //
             ])

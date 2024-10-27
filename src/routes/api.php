@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use ApproTickets\Controllers\QrController;
+use ApproTickets\Http\Controllers\QrController;
 
 Route::middleware('api')
     ->prefix('api')

@@ -2,9 +2,11 @@
 
 namespace ApproTickets\Filament\Resources;
 
+use ApproTickets\Enums\PaymentMethods;
 use ApproTickets\Filament\Resources\OrderResource\Pages;
 use ApproTickets\Filament\Resources\OrderResource\RelationManagers;
 use ApproTickets\Models\Order;
+use ApproTickets\Http\Controllers\RefundController;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -12,6 +14,10 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Actions\ActionGroup;
+use Illuminate\Support\HtmlString;
+use Filament\Notifications\Notification;
+
 
 class OrderResource extends Resource
 {
@@ -35,13 +41,13 @@ class OrderResource extends Resource
                 Forms\Components\TextInput::make('email')->label('Correu electrònic')->columnSpan(2),
                 Forms\Components\TextInput::make('phone')->label('Telèfon')->columnSpan(2),
                 Forms\Components\Select::make('payment')->label('Mètode de pagament')
-                    ->options(config('approtickets.payment_methods'))->required()->columnSpan(2),
+                    ->options(PaymentMethods::class)->required()->columnSpan(2),
                 Forms\Components\Select::make('paid')->label('Estat pagament')->options([
                     '0' => 'Pendent',
                     '1' => 'Pagat',
                     '2' => 'Cancel·lat',
                 ])->required()->columnSpan(2),
-                Forms\Components\TextInput::make('tpv_id')->label('Resposta TPV')->disabled()->columnSpan(2),
+                Forms\Components\TextInput::make('tpv_id')->label('ID TPV')->disabled()->columnSpan(2),
                 Forms\Components\Grid::make([
                     Forms\Components\TextInput::make('bookings')->label('Productes')->disabled()->columnSpan(6),
                 ])
@@ -71,13 +77,14 @@ class OrderResource extends Resource
                         '1' => 'success',
                         '2' => 'danger',
                     }),
-                Tables\Columns\TextColumn::make('payment')->label('Mètode'),
+                Tables\Columns\TextColumn::make('payment')->badge()->label('Mètode'),
 
             ])
             ->filters([
                 //
             ])
             ->actions([
+                ActionGroup::make([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('downloadPdf')
                     ->label('PDF')
@@ -89,7 +96,41 @@ class OrderResource extends Resource
                         ]);
                     })
                     ->openUrlInNewTab(),
+                Tables\Actions\Action::make('refund')
+                    ->label('Devolució')
+                    ->icon('heroicon-o-arrow-left-circle')
+                    ->requiresConfirmation()
+                    ->modalHeading('Devolució')
+                    ->modalSubheading('')
+                    ->modalContent(fn(Order $record) => new HtmlString("El total d'aquesta comanda és de {$record->total} €. Indica la quantitat a retornar. Pots fer una devolució parcial."))
+                    ->form(function ($record) {
+                        return [
+                            Forms\Components\TextInput::make('amount')
+                                ->label('Quantitat a retornar')
+                                ->required()
+                                ->numeric()
+                                ->suffix(' €')
+                                ->default($record->total)
+                        ];
+                    })
+                    ->action(function (Order $record, array $data) {
+                        $refund = $record->createRefund($data['amount']);
+                        $refundRequest = RefundController::requestRefund($refund);
+                        if ($refundRequest['error']) {
+                            Notification::make()
+                                ->title('Error en la petició de devolució')
+                                ->body($refundRequest['error'])
+                                ->danger()
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title($refundRequest['message'])
+                                ->success()
+                                ->send();
+                        }
+                    }),
                 Tables\Actions\RestoreAction::make()
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -103,6 +144,7 @@ class OrderResource extends Resource
     {
         return [
             'bookings' => RelationManagers\BookingsRelationManager::class,
+            'refunds' => RelationManagers\RefundsRelationManager::class
         ];
     }
 

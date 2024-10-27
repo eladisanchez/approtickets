@@ -17,9 +17,12 @@ class Option extends Model
         'type' => OptionType::class,
     ];
 
-    public function scopeText($query, $option)
+    public static function text(string $key): ?string
     {
-        return $query->where('key', $option)->first()->value ?? null;
+        $option = static::where('key', $key)->first();
+        if (!$option) {
+            return null;
+        }
+        return $option->value;
     }
-
 }

@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class BookingsRelationManager extends RelationManager
 {
     protected static string $relationship = 'bookings';
+    protected static ?string $recordTitleAttribute = 'product.title';
+    protected static ?string $pluralLabel = 'Entrades';
+    protected static ?string $title = 'Entrades';
 
     public function form(Form $form): Form
     {

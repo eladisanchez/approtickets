@@ -3,24 +3,25 @@
 namespace ApproTickets\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Coupon extends Model {
+class Coupon extends Model
+{
 
 	protected $table = 'coupons';
-	protected $guarded = array('id');
-	protected $hidden = array('created_at', 'updated_at');
+	protected $guarded = ['id'];
+	protected $hidden = ['created_at', 'updated_at'];
 
-	public function product()
+	public function product(): BelongsTo
 	{
-		return $this->belongsTo(Product::class,'product_id')->select(array('id', 'title'));
+		return $this->belongsTo(Product::class)
+			->select(['id', 'title']);
 	}
 
-	public function Rate()
+	public function Rate(): BelongsTo
 	{
-
-		return $this->belongsTo(Rate::class,'rate_id')->select(array('id', 'title'));
-		
+		return $this->belongsTo(Rate::class)
+			->select(['id', 'title']);
 	}
 
 }

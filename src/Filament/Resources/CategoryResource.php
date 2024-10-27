@@ -12,9 +12,12 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
+use Filament\Resources\Concerns\Translatable;
 
 class CategoryResource extends Resource
 {
+
+    use Translatable;
     protected static ?string $model = Category::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
@@ -33,7 +36,7 @@ class CategoryResource extends Resource
                     ->required()
                     ->columnSpan(4),
                 Select::make('target')->label('Tipus')
-                    ->options(config('tickets.types'))
+                    ->options(config('approtickets.sections'))
                     ->required()
                     ->columnSpan(2),
                 Textarea::make('summary')
@@ -54,7 +57,9 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')->label('Títol'),
+                Tables\Columns\TextColumn::make('title')
+                    ->label('Títol')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('products_count')->counts('products')->badge()->sortable()
                     ->badge()->label('Productes')
             ])
@@ -69,7 +74,9 @@ class CategoryResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->reorderable('order')
+            ->defaultSort('order');
     }
 
     public static function getRelations(): array

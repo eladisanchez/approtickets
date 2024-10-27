@@ -45,7 +45,8 @@ class VenueResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label('Espai'),
+                Tables\Columns\TextColumn::make('name')->label('Espai')
+                    ->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('seats')->label('Seients')
                     ->getStateUsing(function ($record) {
                         return is_array($record->seats) ? count($record->seats) : 0;
@@ -53,6 +54,7 @@ class VenueResource extends Resource
                 Tables\Columns\TextColumn::make('products_count')
                     ->counts('products')
                     ->sortable()
+                    ->badge()
                     ->label('Productes')
             ])
             ->filters([

@@ -16,6 +16,7 @@ use Filament\Forms\Components;
 use Filament\Forms\Get;
 use Filament\Forms\Components\Actions;
 use Filament\Resources\Concerns\Translatable;
+use Filament\Forms\Components\Actions\Action;
 
 class ProductResource extends Resource
 {
@@ -23,7 +24,7 @@ class ProductResource extends Resource
     use Translatable;
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-ticket';
+    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
     protected static ?string $navigationLabel = 'Productes';
     protected static ?string $modelLabel = 'producte';
     protected static ?string $pluralModelLabel = 'productes';
@@ -184,7 +185,7 @@ class ProductResource extends Resource
                                 Components\Repeater::make('tickets')
                                     ->disableLabel()
                                     ->label('Entrades')
-                                    ->relationship('tickets')
+                                    ->relationship('nextTickets')
                                     ->collapsed()
                                     ->itemLabel(fn(array $state): ?string => $state['day'] ? ($state['day'] . ' - ' . $state['hour'] . ' (' . $state["tickets"] . ' entrades)' ?? null) : '')
                                     ->schema([
@@ -198,18 +199,28 @@ class ProductResource extends Resource
                                                 }
                                                 return 0;
                                             })
-                                            ->readOnly(!!$venue),
-                                        Components\Select::make('language')->label('Idioma')->options(config('approtickets.languages'))->hidden(!config('approtickets.languages')),
-                                        Forms\Components\Hidden::make('seats')->default(function () use ($venue) {
-                                            return $venue ? $venue->seats : [];
-                                        })->hidden(!$venue),
+                                            ->disabled(function () use ($venue) {
+                                                return !!$venue;
+                                            })
+                                            ->hintActions([
+                                                Action::make('edit-seats')
+                                                    ->url(fn(Ticket $record): string => route('filament.admin.resources.tickets.edit', $record))
+                                                    ->openUrlInNewTab()
+                                                    ->label('Edita seients')
+                                                    ->hidden(function () use ($venue) {
+                                                        return !$venue;
+                                                    }),
+                                            ]),
+                                        Components\Select::make('lang')->label('Idioma')->options(config('approtickets.locales'))->hidden(!config('approtickets.languages')),
                                         Components\Placeholder::make('sold')
                                             ->label('Venudes')
                                             ->hidden(fn($record) => !$record)
-                                            ->content(fn($record): string => $record ? $record->bookings() : ''),
-
+                                            ->content(fn($record): string => $record ? $record->bookings->count() : ''),
                                     ])->columns(6),
                                 Actions::make([
+                                    Actions\Action::make('previous-tickets')
+                                        ->label('Entrades anteriors')
+                                        ->url(fn(Product $record): string => route('filament.admin.resources.tickets.index').'?tableFilters[product][product]=' . $record->id . '&activeTab=previous'),
                                     Actions\Action::make('Crea múltiples entrades')
                                         ->form([
                                             Components\Section::make()->schema([
@@ -232,10 +243,7 @@ class ProductResource extends Resource
                                             Components\Section::make()->schema([
                                                 Components\TimePicker::make('hour')->label('Hora')->required(),
                                                 Components\TextInput::make('tickets')->label('Entrades per sessió')->numeric()->required(),
-                                                Components\Select::make('language')->label('Idioma')->options([
-                                                    'ca' => 'Català',
-                                                    'es' => 'Castellà'
-                                                ]),
+                                                Components\Select::make('lang')->label('Idioma')->options(config('approtickets.locales'))->hidden(!config('approtickets.languages')),
                                             ])->columns(3),
                                             Components\Toggle::make('delete')->label('Elimina totes les entrades creades prèviament per aquest producte'),
                                         ])
@@ -269,7 +277,7 @@ class ProductResource extends Resource
                                                         $ticket->day = $day;
                                                         $ticket->hour = $hour;
                                                         if (!$venue) {
-                                                            $ticket->language = $data["language"];
+                                                            $ticket->language = $data["lang"];
                                                             $ticket->tickets = $data["tickets"];
                                                         } else {
                                                             $ticket->seats = $venue->seats;
@@ -281,7 +289,8 @@ class ProductResource extends Resource
                                             }
                                         })
                                         ->slideOver()
-                                ])->hidden(!!$venue),
+                                        ->hidden(!!$venue)
+                                ]),
                             ]),
                         Components\Tabs\Tab::make('Preus')
                             ->icon('heroicon-m-currency-euro')
@@ -323,9 +332,9 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')->label('Títol'),
-                Tables\Columns\TextColumn::make('organizer.name')->label('Organitzador'),
-                Tables\Columns\TextColumn::make('category.title')->label('Categoria'),
+                Tables\Columns\TextColumn::make('title')->label('Títol')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('organizer.name')->label('Organitzador')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('category.title')->label('Categoria')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('bookings_count')->counts('bookings')->badge()->sortable()
                     ->badge()->label('Vendes'),
                 Tables\Columns\ToggleColumn::make('active')->label('Actiu')->sortable()->hidden(!auth()->user()->hasRole('admin')),

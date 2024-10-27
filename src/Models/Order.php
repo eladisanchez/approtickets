@@ -4,24 +4,29 @@ namespace ApproTickets\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use ApproTickets\Enums\PaymentMethods;
 
-class Order extends Model {
+class Order extends Model
+{
 
     use SoftDeletes;
 
-	protected $table = 'orders';
-	protected $guarded = ['id','product_id'];
-	protected $hidden = ['updated_at'];
+    protected $table = 'orders';
+    protected $guarded = ['id', 'product_id'];
+    protected $hidden = ['updated_at'];
     protected $append = ['number'];
+    protected $casts = [
+        'payment' => PaymentMethods::class
+    ];
 
     protected static function booted()
     {
-        static::deleting(function($order) {
+        static::deleting(function ($order) {
             foreach ($order->bookings()->get() as $booking) {
                 $booking->delete();
             }
         });
-        static::restoring(function($order) {
+        static::restoring(function ($order) {
             foreach ($order->bookings()->get() as $booking) {
                 $booking->restore();
             }
@@ -39,7 +44,7 @@ class Order extends Model {
 
     public function user()
     {
-    	return $this->belongsTo(User::class,'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function getLinkpdfAttribute()
@@ -57,17 +62,17 @@ class Order extends Model {
 
         $users = collect();
         foreach ($this->bookings as $res) {
-            if($res->product->organizer)
-            $users->push($res->product->organizer);
+            if ($res->product->organizer)
+                $users->push($res->product->organizer);
         }
         return $users->unique();
 
     }
 
-    protected static function boot() 
+    protected static function boot()
     {
         parent::boot();
-        static::deleting(function($order) {
+        static::deleting(function ($order) {
             foreach ($order->bookings()->get() as $booking) {
                 $booking->delete();
             }
@@ -76,12 +81,21 @@ class Order extends Model {
 
     public function refunds()
     {
-        return $this->hasMany(Refund::class)->where('refund',1);
+        return $this->hasMany(Refund::class);
     }
 
     public function scopeIsPaid($query)
     {
-        return $query->where('paid',1)->orWhere('payment','credit');
+        return $query->where('paid', 1)->orWhere('payment', 'credit');
+    }
+
+    public function createRefund($amount)
+    {
+        $refund = new Refund();
+        $refund->order_id = $this->id;
+        $refund->total = $amount;
+        $refund->save();
+        return $refund;
     }
 
 }

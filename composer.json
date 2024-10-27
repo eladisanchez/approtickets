@@ -15,7 +15,8 @@
         "shanmuga/laravel-entrust": "^5.0",
         "laravel/sanctum": "^4.0",
         "inertiajs/inertia-laravel": "^1.3",
-        "filament/spatie-laravel-translatable-plugin": "^3.2"
+        "filament/spatie-laravel-translatable-plugin": "^3.2",
+        "spatie/icalendar-generator": "^2.8"
     },
     "autoload": {
         "psr-4": {

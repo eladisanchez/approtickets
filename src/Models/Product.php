@@ -21,16 +21,15 @@ class Product extends Model
     protected $guarded = ['id'];
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
     protected $appends = ['price'];
-    protected $with = ['organizer', 'rates'];
-    protected $attributes = [
-        'name' => '',
-    ];
+    protected $with = ['organizer', 'rates','category'];
 
     public $translatable = [
         'title',
+        'summary',
         'description',
         'schedule'
     ];
+    protected $useFallbackLocale = "ca";
 
 
     protected static function boot()
@@ -57,7 +56,6 @@ class Product extends Model
         return $query->where('name', $url)->first();
     }
 
-    // Filtra per target
     public function scopeOfTarget($query, $target)
     {
         return $query->where('target', $target);
@@ -98,11 +96,6 @@ class Product extends Model
 
     }
 
-    // public function getPriceZoneAttribute($value)
-    // {
-    //     return $this->pivot->pricezone;
-    // }
-
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id');
@@ -120,13 +113,24 @@ class Product extends Model
 
     public function tickets(): HasMany
     {
-        return $this->hasMany(Ticket::class)->whereNull('cancelled');
+        return $this->hasMany(Ticket::class)
+            ->whereNull('canceled');
+    }
+
+    public function nextTickets()
+    {
+        $datetime = now();
+        return $this->hasMany(Ticket::class)
+            ->where('day', '>=', $datetime)
+            ->whereNull('canceled');
     }
 
     public function previousTickets()
     {
         $datetime = now();
-        return $this->hasMany(Ticket::class)->where('day', '<', $datetime)->whereNull('cancelled');
+        return $this->hasMany(Ticket::class)
+            ->where('day', '<', $datetime)
+            ->whereNull('canceled');
     }
 
     public function rates()
@@ -139,7 +143,9 @@ class Product extends Model
 
     public function venue()
     {
-        return $this->belongsTo(Venue::class)->where('id', '!=', 0)->withTrashed();
+        return $this->belongsTo(Venue::class)
+            ->where('id', '!=', 0)
+            ->withTrashed();
     }
 
     public function coupons()
@@ -150,14 +156,21 @@ class Product extends Model
 
     public function availableDays()
     {
-        return Ticket::where('product_id', $this->id)->whereNull('cancelled')->groupBy('day')->pluck('day');
+        return Ticket::where('product_id', $this->id)
+            ->where('day', '>=', now())
+            ->whereNull('canceled')
+            ->groupBy('day')
+            ->pluck('day');
     }
 
 
     public function allTickets()
     {
         $datetime = now();
-        $tickets = Ticket::where('product_id', $this->id)->where('day', '>=', $datetime)->whereNull('cancelled')->get();
+        $tickets = Ticket::where('product_id', $this->id)
+            ->where('day', '>=', $datetime)
+            ->whereNull('canceled')
+            ->get();
         return $tickets->groupBy(function ($date) {
             return \Carbon\Carbon::parse($date->day)->format('Y-m-d');
         });
@@ -167,9 +180,16 @@ class Product extends Model
     {
 
         if ($hour) {
-            return $this->hasMany(Ticket::class)->where('day', $day)->where('hour', $hour)->whereNull('cancelled')->first();
+            return $this->hasMany(Ticket::class)
+                ->where('day', $day)
+                ->where('hour', $hour)
+                ->whereNull('canceled')
+                ->first();
         }
-        return $this->hasMany(Ticket::class)->where('day', $day)->whereNull('cancelled')->get();
+        return $this->hasMany(Ticket::class)
+            ->where('day', $day)
+            ->whereNull('canceled')
+            ->get();
 
     }
 

@@ -47,7 +47,7 @@ class UserResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Nom')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('email')->label('Correu electrònic')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('roles.display_name')->label('Rols'),
+                Tables\Columns\TextColumn::make('roles.display_name')->badge()->label('Rols'),
             ])
             ->filters([
                 //

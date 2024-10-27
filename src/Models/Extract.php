@@ -57,21 +57,22 @@ class Extract extends Model
         }
         $bookings = $bookings->get()->groupBy(['product.title', 'rate.title'], $preserveKeys = true);
         $sales = [];
-        foreach ($bookings as $product => $Rate):
-            foreach ($Rate as $t => $bookings):
+        foreach ($bookings as $product => $rate):
+            foreach ($rate as $t => $bookings):
                 $total = $bookings->reduce(function ($carry, $item) {
-                    return $carry + $item->numEntrades * $item->preu;
+                    return $carry + $item->tickets * $item->price;
                 });
                 $devolucio = $bookings->reduce(function ($carry, $item) {
                     if ($item->devolucio) {
-                        return $carry + $item->numEntrades * $item->preu;
+                        return $carry + $item->tickets * $item->price;
                     } else {
                         return $carry;
                     }
                 });
                 $liquidar = $total - $devolucio;
                 $sales[] = [
-                    'product' => $product . ' - ' . $t,
+                    'product' => $product,
+                    'rate' => $t,
                     'tickets' => $bookings->sum('tickets'),
                     'total' => $total,
                     'refund' => $devolucio,
@@ -92,13 +93,13 @@ class Extract extends Model
             })
             ->whereHas('product', function ($q) {
                 if ($this->producte_id) {
-                    $q->where("id", $this->producte_id);
+                    $q->where("id", $this->product_id);
                 } else {
                     $q->where("user_id", $this->user_id);
                 }
             })->get();
         $total = $bookings->reduce(function ($total, $item) {
-            return $total + $item->tickets * $item->preu;
+            return $total + $item->tickets * $item->price;
         });
         return $total;
     }
@@ -123,6 +124,11 @@ class Extract extends Model
             return $total + $item->numEntrades * $item->preu;
         });
         return $total;
+    }
+
+    public function getTotalAttribute(): float
+    {
+        return $this->totalSales - $this->totalRefunds;
     }
 
 }

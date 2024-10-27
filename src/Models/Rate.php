@@ -5,11 +5,13 @@ namespace ApproTickets\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Session;
+use Spatie\Translatable\HasTranslations;
 
 class Rate extends Model
 {
 
     use SoftDeletes;
+    use HasTranslations;
 
     protected $table = 'rates';
     protected $guarded = ['id'];
@@ -18,6 +20,11 @@ class Rate extends Model
     protected $casts = [
         'pricezone' => 'array',
     ];
+    public $translatable = [
+        'title',
+        'description',
+    ];
+    protected $useFallbackLocale = "ca";
 
     public function product()
     {

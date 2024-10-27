@@ -1,6 +1,6 @@
 <?php
 
-namespace ApproTickets\Controllers;
+namespace ApproTickets\Http\Controllers;
 
 use Log;
 use Illuminate\View\View;
@@ -14,11 +14,13 @@ use Redsys\Tpv\Tpv;
 use Barryvdh\DomPDF\Facade\Pdf;
 use ApproTickets\Models\Option;
 use Illuminate\Routing\Controller as BaseController;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 
 class OrderController extends BaseController
 {
 
-	public function store(): RedirectResponse
+	public function store(): RedirectResponse|array
 	{
 
 		$failedOrder = Order::where('session', Session::getId())
@@ -37,22 +39,14 @@ class OrderController extends BaseController
 			return redirect()->route('home');
 		}
 
-		// Delete order with same session id when user goes back
-		$orderError = Order::where('session', Session::getId())
-			->where('paid', 0)
-			->first();
-		if ($orderError) {
-			$orderError->delete();
-		}
-
 		$rules = !(auth()->check() && auth()->user()->hasRole('admin')) ? [
-			'condicions' => 'accepted',
+			'conditions' => 'accepted',
 			'name' => 'required',
 			'phone' => 'required',
 			'email' => 'required|email',
 			'cp' => 'required|size:5'
 		] : [
-			'condicions' => 'accepted',
+			'conditions' => 'accepted',
 			'name' => 'required',
 			'email' => 'required|email',
 		];
@@ -69,7 +63,7 @@ class OrderController extends BaseController
 		$payment = request()->input('payment') ?? 'card';
 
 		$order = Order::create([
-			//'lang' => 'ca',
+			'lang' => app()->getLocale(),
 			'session' => Session::getId(),
 			'total' => $total,
 			'coupon' => Session::get('coupon.name'),
@@ -85,7 +79,7 @@ class OrderController extends BaseController
 
 		foreach ($cartItems as $booking) {
 			$booking->order_id = $order->id;
-			$booking->uniqid = substr(bin2hex(random_bytes(20)), -5);
+			$booking->uid = substr(bin2hex(random_bytes(20)), -5);
 			$booking->save();
 		}
 
@@ -136,11 +130,11 @@ class OrderController extends BaseController
 		]);
 	}
 
-	public function thanks(string $session, string $id): RedirectResponse|View
+	public function thanks(string $session, string $id): RedirectResponse|View|InertiaResponse
 	{
-		// if (!$session == Session::getId()) {
-		// 	return redirect()->route('home');
-		// }
+		if (!$session == Session::getId()) {
+			return redirect()->route('home');
+		}
 		$order = Order::where('session', $session)
 			->where('id', $id)
 			->isPaid()
@@ -149,17 +143,42 @@ class OrderController extends BaseController
 
 		Session::forget('coupon');
 		Session::forget('coupon_name');
+		if (config('approtickets.inertia')) {
+			$download = route('order.pdf', ['session' => $order->session, 'id' => $order->id]);
+			return Inertia::render('order/Thanks', [
+				'title' => __('Gràcies per la teva compra'),
+				'download' => $download
+			]);
+		}
 		return view('order.thanks')->with('order', $order);
 
 	}
 
-	public function error(string $session, string $id): View
+	/**
+	 * Error page
+	 * @param string $session
+	 * @param string $id
+	 * @return \Illuminate\View\View|\Inertia\Response
+	 */
+	public function error(string $session, string $id): View|InertiaResponse
 	{
 
+		if (!$session == Session::getId()) {
+			return redirect()->route('home');
+		}
 		$order = Order::where('session', Session::getId())
-			->orderBy('created_at', 'desc')->where('paid', '!=', 1)
+			->where('id', $id)
+			->where('paid', '!=', 1)
+			->orderBy('created_at', 'desc')
 			->firstOrFail();
 
+		if (config('approtickets.inertia')) {
+			return Inertia::render('order/Error', [
+				'title' => __('El pagament no s\'ha pogut processar'),
+				'payment' => route('order.payment', ['id' => $order->id]),
+				'limit' => $order->created_at->addHour->format('H:i')
+			]);
+		}
 		return view('order.error')->with('order', $order);
 
 	}
@@ -171,18 +190,18 @@ class OrderController extends BaseController
 	{
 		$order = Order::findOrFail($id);
 
-		if ($order->session != $session || !($order->paid == 1 || $order->payment == 'credit')) {
+		if ($order->session != $session || $order->paid != 1) {
 			return abort(404);
 		}
-	
-		$conditions = Option::where('key', 'condicions-venda')->pluck('value')->first();
-	
+
+		$conditions = Option::text('pdf_condicions');
+
 		$pdfPath = storage_path("app/tickets/entrades-{$id}.pdf");
-	
-		if (file_exists($pdfPath)) {
+
+		if (file_exists($pdfPath) && !auth()->user()->hasRole(['admin', 'organizer'])) {
 			return response()->file($pdfPath);
 		}
-	
+
 		$pdf = Pdf::setOptions(['isRemoteEnabled' => true])->loadView(
 			'pdf.order',
 			[
@@ -190,9 +209,9 @@ class OrderController extends BaseController
 				'conditions' => $conditions
 			]
 		);
-	
+
 		$pdf->save($pdfPath);
-	
+
 		return $pdf->stream("entrades-{$id}.pdf");
 
 	}

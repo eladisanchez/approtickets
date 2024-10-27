@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Scan extends Model {
 
 	protected $table = 'scans';
-	protected $guarded = array('id');
+	protected $guarded = ['id'];
 
 	public function reserva()
 	{
-		return $this->belongsTo(Booking::class,'reserva_id');
+		return $this->belongsTo(Booking::class);
 	}
 
 }

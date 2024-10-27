@@ -3,6 +3,7 @@
 namespace ApproTickets\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Refund extends Model {
 
@@ -11,9 +12,17 @@ class Refund extends Model {
 	protected $hidden = ['updated_at'];
     protected $with = ['order'];
     protected $dates = [
-        'day_cancelled',
-        'day_new'
+        'session_canceled',
+        'session_new'
     ];
+
+    protected static function boot() 
+    {
+        parent::boot();
+        static::creating(function($refund) {
+            $refund->hash = Str::random(32);
+        });
+    }
 
     public function order()
     {
@@ -29,6 +38,5 @@ class Refund extends Model {
     {
         return $this->belongsTo(Product::class);
     }
-
 
 }

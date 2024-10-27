@@ -10,13 +10,13 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Resources\Concerns\Translatable;
 
 class RateResource extends Resource
 {
+    use Translatable;
     protected static ?string $model = Rate::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-currency-euro';
@@ -43,7 +43,8 @@ class RateResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')->label('Tarifa')->sortable(),
+                Tables\Columns\TextColumn::make('title')->label('Tarifa')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('description')->label('Descripció')->sortable()->words(10),
                 Tables\Columns\TextColumn::make('product_count')->counts('product')->badge()->sortable()
                     ->badge()->label('Productes')
 

@@ -21,9 +21,10 @@ use ApproTickets\Console\Commands\CleanCartCommand;
 use ApproTickets\Console\Commands\TestMailCommand;
 use ApproTickets\Console\Commands\SendMailsCommand;
 use ApproTickets\Console\Commands\GeneratePdfCommand;
-use Illuminate\Console\Scheduling\Schedule;
 use Filament\Support\Colors\Color;
 use Filament\SpatieLaravelTranslatablePlugin;
+use Illuminate\Http\Resources\Json\JsonResource;
+use ApproTickets\Http\Middleware\HandleInertiaRequests;
 
 class ApproTicketsServiceProvider extends ServiceProvider
 {
@@ -32,7 +33,9 @@ class ApproTicketsServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/migrations');
         $this->loadRoutesFrom(__DIR__ . '/routes/web.php');
         $this->loadRoutesFrom(__DIR__ . '/routes/api.php');
+        $this->loadRoutesFrom(__DIR__ . '/routes/console.php');
         $this->loadViewsFrom(__DIR__ . '/resources/views', 'approtickets');
+        $this->loadTranslationsFrom(__DIR__.'/resources/lang', 'approtickets');
 
         $this->publishes([
             __DIR__ . '/resources/views' => resource_path('views/vendor/approtickets'),
@@ -50,10 +53,11 @@ class ApproTicketsServiceProvider extends ServiceProvider
             ]);
         }
 
-        $this->app->booted(function () {
-            $schedule = $this->app->make(Schedule::class);
-            $schedule->command('approtickets:clean-cart')->everyMinute();
-        });
+        $this->app['router']->middlewareGroup('web', [
+            HandleInertiaRequests::class,
+        ]);
+
+        JsonResource::withoutWrapping();
 
         // Filament
         Model::unguard();
@@ -113,6 +117,7 @@ class ApproTicketsServiceProvider extends ServiceProvider
             ->favicon(asset('/favicon.png'))
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
+            //->maxContentWidth(MaxWidth::Full)
             ->plugins([
                 SpatieLaravelTranslatablePlugin::make()->defaultLocales(config('approtickets.locales')),
             ]);

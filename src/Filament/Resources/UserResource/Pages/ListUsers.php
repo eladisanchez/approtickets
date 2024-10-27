@@ -24,7 +24,7 @@ class ListUsers extends ListRecords
         return [
             'admin' => Tab::make('Administradors')
                 ->modifyQueryUsing(fn(Builder $query) => $query->withRole('admin')),
-            'entities' => Tab::make('Organitzadors')
+            'organizers' => Tab::make('Organitzadors')
                 ->modifyQueryUsing(fn(Builder $query) => $query->withRole('organizer')),
             'validators' => Tab::make('Validadors')
                 ->modifyQueryUsing(fn(Builder $query) => $query->withRole('validator')),

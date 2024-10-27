@@ -1,6 +1,6 @@
 <?php
 
-namespace ApproTickets\Controllers;
+namespace ApproTickets\Http\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
 use Redsys\Tpv\Tpv;

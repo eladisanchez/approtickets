@@ -32,11 +32,12 @@ Afegir a config/app.php (Aquest pas segurament no és necessari en les últimes 
 
     php artisan vendor:publish --provider="ApproticketsServiceProvider" --tag=config
 
-I fer els canvis oportuns a l'arxiu tickets.php
+I fer els canvis oportuns a l'arxiu approtickets.php.
 
 ### Models
 
 - Usuaris: El model ha d'extendre ApproTickets\Models\User
+- Rols: El model ha d'extendre ApproTickets\Models\Role
 
 ### Filament
 

@@ -12,23 +12,24 @@ class Venue extends Model
     use SoftDeletes;
 
     protected $table = 'venues';
-    protected $guarded = array('id');
-    protected $hidden = array('created_at', 'updated_at');
+    protected $guarded = ['id'];
+    protected $hidden = ['created_at', 'updated_at'];
     protected $casts = [
         'stage' => 'boolean',
         'seats' => 'array'
     ];
-
-    public function products(): HasMany
-    {
-        return $this->hasMany(Product::class, 'venue_id', 'id')->orderBy('order');
-    }
 
     protected static function booted()
     {
         static::creating(function ($venue) {
             $venue->seats ??= [];
         });
+    }
+
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class, 'venue_id', 'id')
+            ->orderBy('order');
     }
 
     public function duplicate()

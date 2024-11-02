@@ -23,6 +23,13 @@ class Banner extends Model
     ];
     protected $useFallbackLocale = "ca";
 
+    protected static function booted()
+    {
+        static::creating(function ($banner) {
+            $banner->order = 0;
+        });
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -34,6 +41,12 @@ class Banner extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('date_start', '<=', now())
+            ->where('date_end', '>=', now());
     }
 
 }

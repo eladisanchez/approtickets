@@ -10,10 +10,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\FileUpload;
 use Filament\Resources\Concerns\Translatable;
+use Illuminate\Database\Eloquent\Builder;
 
 class BannerResource extends Resource
 {
@@ -35,15 +34,22 @@ class BannerResource extends Resource
                 TextInput::make('title')
                     ->label('Títol')
                     ->required()
-                    ->columnSpan(6),
+                    ->columnSpan(2),
                 Select::make('product_id')
                     ->label('Producte')
-                    ->relationship('product', 'title')
-                    ->columnSpanFull(),
+                    ->relationship(
+                        name: 'product',
+                        titleAttribute: 'title',
+                        modifyQueryUsing: fn(Builder $query) => $query->active()->orderBy('order', 'asc'),
+                    )
+                    ->searchable()
+                    ->preload()
+                    ->required()
+                    ->columnSpan(4),
                 DateTimePicker::make('date_start')
                     ->label('Inici')
                     ->columnSpan(3),
-                DateTimePicker::make('date_start')
+                DateTimePicker::make('date_end')
                     ->label('Fi')
                     ->columnSpan(3),
             ])->columns(6);

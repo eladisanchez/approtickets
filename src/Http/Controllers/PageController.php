@@ -3,10 +3,11 @@
 namespace ApproTickets\Http\Controllers;
 
 use ApproTickets\Http\Resources\Category as CategoryResource;
+use ApproTickets\Http\Resources\Banner as BannerResource;
 use Illuminate\View\View;
 use ApproTickets\Models\Option;
 use ApproTickets\Models\Category;
-use ApproTickets\Models\Product;
+use ApproTickets\Models\Banner;
 use Illuminate\Routing\Controller as BaseController;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -20,8 +21,8 @@ class PageController extends BaseController
         $products = [];
         $sections = [];
         if ($siteSections):
-            foreach ($siteSections as $section=>$sectionName) {
-                $sections[$section] = __('approtickets.'.$section);
+            foreach ($siteSections as $section => $sectionName) {
+                $sections[$section] = __('approtickets.' . $section);
                 $categories = Category::whereHas('products', function ($q) use ($section) {
                     $q->ofTarget($section);
                 })->with('products')->orderBy('order', 'asc')->get();
@@ -32,15 +33,13 @@ class PageController extends BaseController
         endif;
 
         // TODO: featured
-        $featured = [];
+        $featured = Banner::active()->get();
 
         $props = [
             'sections' => $sections,
             'products' => $products,
-            'featured' => $featured
+            'featured' => BannerResource::collection($featured)
         ];
-
-        //return $props;
 
         if (config('approtickets.inertia')) {
             return Inertia::render('Home', $props);
@@ -48,9 +47,17 @@ class PageController extends BaseController
         return view('home', $props);
     }
 
-    public function page($slug): View
+    public function page($slug): View|InertiaResponse
     {
         $page = Option::where('key', $slug)->firstOrFail();
+
+        if (config('approtickets.inertia')) {
+            return Inertia::render('Basic', [
+                'content' => $page->value,
+                'title' => $page->name
+            ]);
+        }
+
         return view('page')->with([
             'text' => $page->value,
             'title' => $page->name

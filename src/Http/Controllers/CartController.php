@@ -62,14 +62,14 @@ class CartController extends BaseController
 	protected function convertToPack(Product $product, array $rates): void
 	{
 		$this->initializeCart();
-	
+
 		foreach ($product->packs as $pack) {
-	
+
 			$packProductIds = $pack->packProducts->modelKeys();
 			$packRates = $pack->rates;
-	
+
 			foreach ($packRates as $packRate) {
-	
+
 				if (!in_array($packRate->id, $rates)) {
 					continue;
 				}
@@ -79,13 +79,13 @@ class CartController extends BaseController
 				$cartRowsEligibleForPack = $this->cartItems->where('rate_id', $packRate->id)
 					->whereIn('product_id', $packProductIds)
 					->whereNull('pack_booking_id');
-	
+
 				if ($cartRowsEligibleForPack) {
 
 					$cartPackProductsRows = [];
 					$cartPackProductIds = [];
 					$cartPackProductsQtys = [];
-					
+
 					foreach ($cartRowsEligibleForPack as $row) {
 						if (in_array($row->product_id, $packProductIds) && !in_array($row->product_id, $cartPackProductIds)) {
 							$cartPackProductsRows[] = $row;
@@ -93,7 +93,7 @@ class CartController extends BaseController
 							$cartPackProductIds[] = $row->product_id;
 						}
 					}
-	
+
 					if (count($cartPackProductsRows) == count($packProductIds)) {
 
 						$minPackTickets = min($cartPackProductsQtys);
@@ -109,7 +109,7 @@ class CartController extends BaseController
 						]);
 
 						for ($i = 0; $i < count($cartPackProductsRows); $i++) {
-							
+
 							Booking::create([
 								'product_id' => $cartPackProductsRows[$i]->product_id,
 								'rate_id' => $packRate->id,
@@ -122,7 +122,7 @@ class CartController extends BaseController
 							]);
 
 							$qty = $cartPackProductsQtys[$i] - $minPackTickets;
-	
+
 							if ($qty > 0) {
 								$cartPackProductsRows[$i]->update([
 									'tickets' => $qty,
@@ -333,7 +333,7 @@ class CartController extends BaseController
 
 			$bookings = $session['bookings'];
 
-			foreach ($qtys as $i=>$qty) {
+			foreach ($qtys as $i => $qty) {
 
 				if ($qty > 0) {
 

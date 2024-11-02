@@ -216,4 +216,20 @@ class OrderController extends BaseController
 
 	}
 
+	public function previousOrders(): View|InertiaResponse
+	{
+		$orders = Order::where('user_id', auth()->user()->id)
+			->where('paid', 1)
+			->orderBy('created_at', 'desc')
+			->get();
+
+		if (config('approtickets.inertia')) {
+			return Inertia::render('order/PreviousOrders', [
+				'title' => __('Les teves comandes anteriors'),
+				'orders' => $orders
+			]);
+		}
+		return view('order.previous')->with('orders', $orders);
+	}
+
 }

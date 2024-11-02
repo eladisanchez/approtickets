@@ -29,42 +29,44 @@ class OptionResource extends Resource
 
     public static function form(Form $form): Form
     {
+
+        $fields = [
+            Forms\Components\TextInput::make('key')
+                ->label('Opció')
+                ->required()
+                ->visible(auth()->user()->isSuperadmin())
+                ->columnSpan(2),
+            Forms\Components\TextInput::make('name')
+                ->label('Nom')
+                ->required()
+                ->visible(auth()->user()->isSuperadmin())
+                ->columnSpan(2),
+            Forms\Components\Select::make('type')
+                ->label('Tipus')
+                ->options(OptionType::class)
+                ->visible(auth()->user()->isSuperadmin())
+                ->columnSpan(2),
+            Forms\Components\TextInput::make('description')
+                ->label('Descripció')
+                ->visible(auth()->user()->isSuperadmin())
+                ->columnSpan('full'),
+        ];
+
+        if (gettype($form->model) == 'string' || $form->model->type == OptionType::Text) {
+            $fields[] = RichEditor::make('value')
+                ->label(fn(Get $get) => $get('name') ?? 'Valor')
+                ->helperText(fn(Get $get) => $get('description'))
+                ->columnSpan('full');
+        } else {
+            $fields[] = Forms\Components\DateTimePicker::make('value')
+                ->label(fn(Get $get) => $get('name'))
+                ->helperText(fn(Get $get) => $get('description'))
+                ->columnSpan('full');
+        }
+
         return $form
-            ->schema([
-                Forms\Components\TextInput::make('key')
-                    ->label('Opció')
-                    ->required()
-                    ->visible(auth()->user()->isSuperadmin())
-                    ->columnSpan(2),
-                Forms\Components\TextInput::make('name')
-                    ->label('Nom')
-                    ->required()
-                    ->visible(auth()->user()->isSuperadmin())
-                    ->columnSpan(2),
-                Forms\Components\Select::make('type')
-                    ->label('Tipus')
-                    ->options(OptionType::class)
-                    ->visible(auth()->user()->isSuperadmin())
-                    ->columnSpan(2),
-                Forms\Components\TextInput::make('description')
-                    ->label('Descripció')
-                    ->required()
-                    ->visible(auth()->user()->isSuperadmin())
-                    ->columnSpan('full'),
-                RichEditor::make('value')
-                    ->label(fn(Get $get) => $get('name'))
-                    ->helperText(fn(Get $get) => $get('description'))
-                    ->columnSpan('full')
-                    ->visible(function ($record) {
-                        return $record->key != 'vals_qr_fi';
-                    }),
-                Forms\Components\DateTimePicker::make('value')
-                    ->label(fn(Get $get) => $get('name'))
-                    ->helperText(fn(Get $get) => $get('description'))
-                    ->visible(function ($record) {
-                        return $record->key == 'vals_qr_fi';
-                    })->columnSpan('full')
-            ])->columns(6);
+            ->schema($fields)->columns(6);
+
     }
 
     public static function table(Table $table): Table

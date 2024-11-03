@@ -18,7 +18,7 @@ class ProductThumbnail extends JsonResource
             'id' => $this->id,
             'title' => $this->getTranslation('title', app()->getLocale()),
             'summary' => $this->getTranslation('summary', app()->getLocale()),
-            'name' => $this->name,
+            'url' => route('product', $this->name, false),
             'image' => $this->image,
             'is_pack' => $this->is_pack
         ];

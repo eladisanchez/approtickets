@@ -21,7 +21,7 @@ class Product extends JsonResource
             'description' => $this->getTranslation('description', app()->getLocale()),
             'schedule' => $this->getTranslation('schedule', app()->getLocale()),
             'place' => $this->place,
-            'name' => $this->name,
+            'url' => route('product', $this->name, false),
             'image' => $this->image,
             'target' => $this->category->target,
             'organizer' => $this->when($this->organizer, function () {

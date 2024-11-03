@@ -25,6 +25,8 @@ use Filament\Support\Colors\Color;
 use Filament\SpatieLaravelTranslatablePlugin;
 use Illuminate\Http\Resources\Json\JsonResource;
 use ApproTickets\Http\Middleware\HandleInertiaRequests;
+use Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter;
+use Illuminate\Contracts\Http\Kernel;
 
 class ApproTicketsServiceProvider extends ServiceProvider
 {
@@ -35,7 +37,7 @@ class ApproTicketsServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__ . '/routes/api.php');
         $this->loadRoutesFrom(__DIR__ . '/routes/console.php');
         $this->loadViewsFrom(__DIR__ . '/resources/views', 'approtickets');
-        $this->loadTranslationsFrom(__DIR__.'/resources/lang', 'approtickets');
+        $this->loadTranslationsFrom(__DIR__ . '/resources/lang', 'approtickets');
 
         $this->publishes([
             __DIR__ . '/resources/views' => resource_path('views/vendor/approtickets'),
@@ -61,6 +63,9 @@ class ApproTicketsServiceProvider extends ServiceProvider
 
         // Filament
         Model::unguard();
+
+        $kernel = $this->app->make(Kernel::class);
+        $kernel->pushMiddleware(LaravelLocalizationRedirectFilter::class);
 
     }
 

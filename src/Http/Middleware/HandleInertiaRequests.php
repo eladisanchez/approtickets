@@ -7,6 +7,7 @@ use Inertia\Middleware;
 use Closure;
 use ApproTickets\Models\Booking;
 use ApproTickets\Http\Resources\CartItem;
+use Illuminate\Support\Facades\File;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -48,14 +49,27 @@ class HandleInertiaRequests extends Middleware
 
     public function share(Request $request): array
     {
-        
+
         $cartData = $this->getCartData();
         return array_merge(parent::share($request), [
             'csrf_token' => csrf_token(),
             'cart' => [
                 'items' => CartItem::collection($cartData->items),
-                'total' => $cartData->total 
-            ]
+                'total' => $cartData->total
+            ],
+            'translations' => $this->getTranslations(app()->getLocale()),
+            'locale' => app()->getLocale(),
         ]);
+    }
+
+    private function getTranslations($locale)
+    {
+        $files = File::files(resource_path("lang/$locale"));
+        $translations = [];
+        foreach ($files as $file) {
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+            $translations[$filename] = trans($filename, [], $locale);
+        }
+        return $translations;
     }
 }

@@ -49,11 +49,6 @@ Route::group(['prefix' => LaravelLocalization::setLocale()], function () {
             ->where('path', '.*\.(jpg|jpeg|png|gif|bmp|webp)');
         Route::get('search', [ProductController::class, 'search'])->name('search');
 
-        // Tpv
-        Route::post('tpv-notification', [TPVController::class, 'notification'])
-            ->withoutMiddleware(Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class)
-            ->name('tpv-notification');
-
         // Calendar
         Route::get('calendari', [CalendarController::class, 'calendar'])->name('calendar');
         Route::get('calendari/ics', [CalendarController::class, 'ics']);
@@ -62,5 +57,21 @@ Route::group(['prefix' => LaravelLocalization::setLocale()], function () {
         Route::get('pagina/{slug}', [PageController::class, 'page'])->name('page');
 
     });
+
+});
+
+Route::middleware([
+    'web'
+])->group(function () {
+
+    Route::get('prova', function () {
+        return 'prova';
+    })->name('provaget');
+    Route::post('prova', function () {
+        return 'prova';
+    })->name('prova');
+
+    // Tpv
+
 
 });

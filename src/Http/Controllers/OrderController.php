@@ -117,7 +117,7 @@ class OrderController extends BaseController
 			[
 				'TransactionType' => '0',
 				'MerchantData' => "Comanda {$appName} {$order->id}",
-				'MerchantURL' => config('app.url') . '/tpv-notification',
+				'MerchantURL' => route('tpv-notification'),
 				'Order' => "{$order->id}{$uniqid}1",
 				'Amount' => $order->total,
 				'UrlOK' => route('order.thanks', ['session' => $order->session, 'id' => $order->id]),

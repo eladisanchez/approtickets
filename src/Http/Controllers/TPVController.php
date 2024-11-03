@@ -15,10 +15,14 @@ class TPVController extends BaseController
 
     public function notification(): void
     {
+
+        Log::info('Notificació rebuda');
+
         $TPV = new Tpv(config('redsys'));
 
         try {
             $data = $TPV->checkTransaction($_POST);
+            Log::debug($data);
             if (!$data['Ds_Order']) {
                 return;
             }

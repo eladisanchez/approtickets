@@ -132,15 +132,11 @@ class OrderController extends BaseController
 
 	public function thanks(string $session, string $id): RedirectResponse|View|InertiaResponse
 	{
-		if (!$session == Session::getId()) {
-			return redirect()->route('home');
-		}
 		$order = Order::where('session', $session)
 			->where('id', $id)
 			->isPaid()
 			->orderBy('created_at', 'desc')
 			->firstOrFail();
-
 		Session::forget('coupon');
 		Session::forget('coupon_name');
 		if (config('approtickets.inertia')) {

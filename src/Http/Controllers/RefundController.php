@@ -26,20 +26,19 @@ class RefundController extends BaseController
 	 */
 	private static function sendRefundRequest(
 		string $environmentUrl,
-		string $dsMerchantParameters, 
+		string $dsMerchantParameters,
 		string $dsSignature,
 		string $dsSignatureVersion
-	): array
-	{
+	): array {
 		$response = Http::asForm()->post($environmentUrl, [
-            'Ds_MerchantParameters' => $dsMerchantParameters,
-            'Ds_Signature' => $dsSignature,
-            'Ds_SignatureVersion' => $dsSignatureVersion
-        ]);
+			'Ds_MerchantParameters' => $dsMerchantParameters,
+			'Ds_Signature' => $dsSignature,
+			'Ds_SignatureVersion' => $dsSignatureVersion
+		]);
 		if ($response->successful()) {
 			$jsonResponse = $response->json();
 			if ($jsonResponse['errorCode']) {
-				if ($jsonResponse['errorCode']=='SIS0054') {
+				if ($jsonResponse['errorCode'] == 'SIS0054') {
 					return [
 						'error' => "La comanda no existeix.",
 					];
@@ -51,13 +50,13 @@ class RefundController extends BaseController
 			return [
 				'success' => true
 			];
-        } else {
-            Log::error('Error en la petició a Redsys: ' . $response->body());
-            return [
-                'error' => "S'ha produït un error en la connexió amb Redsys.",
-                'status' => $response->status(),
-            ];
-        }
+		} else {
+			Log::error('Error en la petició a Redsys: ' . $response->body());
+			return [
+				'error' => "S'ha produït un error en la connexió amb Redsys.",
+				'status' => $response->status(),
+			];
+		}
 	}
 
 	/**
@@ -93,8 +92,6 @@ class RefundController extends BaseController
 		if (isset($response['error'])) {
 			return $response;
 		}
-		$refund->refunded_at = now();
-		$refund->save();
 		return [
 			'success' => true
 		];
@@ -129,7 +126,7 @@ class RefundController extends BaseController
 	 * TPV refund notification
 	 * @return void
 	 */
-	public function tpvResponse(): void
+	public function notification(): void
 	{
 
 		$TPV = new Tpv(config('redsys'));
@@ -145,7 +142,7 @@ class RefundController extends BaseController
 				$refund = Refund::where('order_id', $order_id)->first();
 				if ($refund) {
 					$refund->update([
-						'refund' => 1
+						'refunded_at' => now()
 					]);
 					Mail::to(config('mail.from.address'))->send(new RefundAlertMail($refund));
 					Log::debug("Devolució efectuada de la comanda {$order_id}");

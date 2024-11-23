@@ -34,7 +34,7 @@ class ProductController extends BaseController
 		if ($product->is_pack) {
 
 			if (session()->has("pack{$product->id}")) {
-				foreach($product->products as $subproduct) {
+				foreach ($product->products as $subproduct) {
 					if (!session()->has("pack{$product->id}.bookings.{$subproduct->id}")) {
 						return redirect()->route('product', [
 							'name' => $product->name
@@ -45,6 +45,7 @@ class ProductController extends BaseController
 			if (config('approtickets.inertia')) {
 				return Inertia::render('Pack', [
 					'pack' => new ProductResource($product),
+					'rates' => RateResource::collection($product->rates),
 					'products' => ProductThumbnail::collection($product->packProducts)
 				]);
 			}
@@ -112,8 +113,8 @@ class ProductController extends BaseController
 		$keyword = request()->input('s');
 		$products = Product::where('active', 1)
 			->where('title', 'like', "%{$keyword}%")->get();
-			// ->orWhere('description', 'like', "%{$keyword}%")
-			// ->get();
+		// ->orWhere('description', 'like', "%{$keyword}%")
+		// ->get();
 		if (config('approtickets.inertia')) {
 			return Inertia::render('Search', [
 				'products' => ProductThumbnail::collection($products),
@@ -130,7 +131,7 @@ class ProductController extends BaseController
 	{
 		$product = Product::find($id);
 		$pdf = Pdf::setOptions(['isRemoteEnabled' => true])->loadView(
-			'pdf.contracte-preview',
+			'pdf.order-preview',
 			[
 				'product' => $product
 			]
@@ -157,6 +158,5 @@ class ProductController extends BaseController
 		}
 		return response()->make($cachedImage, 200, ['Content-Type' => 'image/webp']);
 	}
-
 
 }

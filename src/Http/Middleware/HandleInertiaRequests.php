@@ -39,6 +39,10 @@ class HandleInertiaRequests extends Middleware
         view()->share('cart', $cartData->items);
         view()->share('total', $cartData->total);
 
+        if (session()->has('pack')) {
+            view()->share('bookingPack', session()->get('pack'));
+        }
+
         return parent::handle($request, $next);
     }
 

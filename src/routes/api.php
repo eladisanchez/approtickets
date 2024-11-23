@@ -4,12 +4,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use ApproTickets\Http\Controllers\QrController;
 use ApproTickets\Http\Controllers\TPVController;
+use ApproTickets\Http\Controllers\RefundController;
 
 Route::middleware('api')
     ->prefix('api')
     ->group(function () {
 
         Route::post('tpv-notification', [TPVController::class, 'notification'])
+            ->withoutMiddleware(Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class)
+            ->name('tpv-notification');
+
+        Route::post('refund-notification', [RefundController::class, 'notification'])
             ->withoutMiddleware(Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class)
             ->name('tpv-notification');
 

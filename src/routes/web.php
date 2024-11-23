@@ -4,11 +4,11 @@ use Illuminate\Support\Facades\Route;
 use ApproTickets\Http\Controllers\CartController;
 use ApproTickets\Http\Controllers\OrderController;
 use ApproTickets\Http\Controllers\ProductController;
-use ApproTickets\Http\Controllers\TPVController;
 use ApproTickets\Http\Controllers\PageController;
 use ApproTickets\Http\Middleware\HandleInertiaRequests;
 use ApproTickets\Http\Controllers\CalendarController;
 use ApproTickets\Http\Controllers\RefundController;
+use ApproTickets\Http\Controllers\PackController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 
@@ -48,6 +48,10 @@ Route::group(['prefix' => LaravelLocalization::setLocale()], function () {
         Route::get('image/{path}', [ProductController::class, 'image'])->name('image')
             ->where('path', '.*\.(jpg|jpeg|png|gif|bmp|webp)');
         Route::get('search', [ProductController::class, 'search'])->name('search');
+
+        // Packs
+        Route::post('reserva-pack', [PackController::class, 'start'])->name('pack.start');
+        Route::post('cancel-pack', [PackController::class, 'cancel'])->name('pack.cancel');
 
         // Calendar
         Route::get('calendari', [CalendarController::class, 'calendar'])->name('calendar');

@@ -46,7 +46,8 @@ class ProductController extends BaseController
 				return Inertia::render('Pack', [
 					'pack' => new ProductResource($product),
 					'rates' => RateResource::collection($product->rates),
-					'products' => ProductThumbnail::collection($product->packProducts)
+					'products' => ProductThumbnail::collection($product->packProducts),
+					'bookingPack' => session()->get('pack')
 				]);
 			}
 			return view('pack', [
@@ -81,7 +82,8 @@ class ProductController extends BaseController
 				'tickets' => TicketResource::collection($product->nextTickets),
 				'rates' => RateResource::collection($product->rates),
 				'day' => $day,
-				'hour' => $hour
+				'hour' => $hour,
+				'bookingPack' => session()->get('pack')
 			];
 			return Inertia::render('Product', $props);
 		}

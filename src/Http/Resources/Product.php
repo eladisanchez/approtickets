@@ -35,6 +35,7 @@ class Product extends JsonResource
             'min_tickets' => $this->min_tickets,
             'max_tickets' => $this->max_tickets,
             'venue_id' => $this->venue_id,
+            'packs' => $this->packs->modelKeys(),
         ];
     }
 }

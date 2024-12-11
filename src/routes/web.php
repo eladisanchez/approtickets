@@ -36,6 +36,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale()], function () {
         Route::get('pagament/{session}/{id}/error', [OrderController::class, 'error'])->name('order.error');
         Route::get('pdf/order/{session}/{id}', [OrderController::class, 'pdf'])->name('order.pdf');
 
+        // User area
+        Route::post('login', [OrderController::class, 'login'])->name('login');
+
         // Refunds
         Route::get('devolucio/{hash}', [RefundController::class, 'show'])->name('refund');
 
@@ -50,8 +53,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale()], function () {
         Route::get('search', [ProductController::class, 'search'])->name('search');
 
         // Packs
-        Route::post('reserva-pack', [PackController::class, 'start'])->name('pack.start');
-        Route::post('cancel-pack', [PackController::class, 'cancel'])->name('pack.cancel');
+        Route::post('reserva-pack/{packId}', [PackController::class, 'start'])->name('pack.start');
+        Route::post('cancelar-pack', [PackController::class, 'cancel'])->name('pack.cancel');
 
         // Calendar
         Route::get('calendari', [CalendarController::class, 'calendar'])->name('calendar');

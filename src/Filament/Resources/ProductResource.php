@@ -75,13 +75,13 @@ class ProductResource extends Resource
                                     ->disk('public')
                                     ->directory('products')
                                     ->columnSpan(3),
-                                // Components\FileUpload::make('image_bg')
-                                //     ->label('Imatge de fons')
-                                //     ->image()
-                                //     ->imageEditor()
-                                //     ->disk('public')
-                                //     ->directory('header')
-                                //     ->columnSpan(3),
+                                Components\FileUpload::make('image_bg')
+                                    ->label('Imatge de fons')
+                                    ->image()
+                                    ->imageEditor()
+                                    ->disk('public')
+                                    ->directory('header')
+                                    ->columnSpan(3),
                             ])->columns(6),
                         Components\Tabs\Tab::make('Descripció i horaris')
                             ->icon('heroicon-m-clock')
@@ -220,7 +220,7 @@ class ProductResource extends Resource
                                 Actions::make([
                                     Actions\Action::make('previous-tickets')
                                         ->label('Entrades anteriors')
-                                        ->url(fn(Product $record): string => route('filament.admin.resources.tickets.index').'?tableFilters[product][product]=' . $record->id . '&activeTab=previous'),
+                                        ->url(fn(Product $record): string => route('filament.admin.resources.tickets.index') . '?tableFilters[product][product]=' . $record->id . '&activeTab=previous'),
                                     Actions\Action::make('Crea múltiples entrades')
                                         ->form([
                                             Components\Section::make()->schema([

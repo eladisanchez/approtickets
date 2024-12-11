@@ -67,4 +67,9 @@ class User extends Authenticatable implements HasName, FilamentUser
         return $this->hasMany(Product::class);
     }
 
+    public function orders()
+    {
+        return $this->hasMany(Order::class)->orderBy('created_at', 'desc')->limit(5);
+    }
+
 }

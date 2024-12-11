@@ -21,6 +21,8 @@ use ApproTickets\Http\Resources\CartItem;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use Illuminate\Database\Eloquent\Collection;
+use ApproTickets\Http\Controllers\PackController;
+use ApproTickets\Http\Resources\Order as OrderResource;
 
 
 class CartController extends BaseController
@@ -44,12 +46,13 @@ class CartController extends BaseController
 		});
 	}
 
-	protected function returnCartContent(): JsonResponse
+	protected function returnCartContent($redirect = null): JsonResponse
 	{
 		$this->initializeCart();
 		return response()->json([
 			'items' => CartItem::collection($this->cartItems),
-			'total' => $this->cartTotal
+			'total' => $this->cartTotal,
+			'redirect' => $redirect
 		]);
 	}
 
@@ -59,9 +62,11 @@ class CartController extends BaseController
 	 * @param array $rates
 	 * @return void
 	 */
-	protected function convertToPack(Product $product, array $rates): void
+	protected function convertToPack(Product $product, array $rates): bool
 	{
 		$this->initializeCart();
+
+		$packCreated = false;
 
 		foreach ($product->packs as $pack) {
 
@@ -130,11 +135,20 @@ class CartController extends BaseController
 							} else {
 								$cartPackProductsRows[$i]->delete();
 							}
+
+							$packCreated = true;
+
 						}
 					}
 				}
 			}
 		}
+
+		if ($packCreated) {
+			session()->forget('pack');
+		}
+
+		return $packCreated;
 	}
 
 	/**
@@ -233,13 +247,26 @@ class CartController extends BaseController
 		}
 
 		if ($product->packs->count() > 0) {
-			$this->convertToPack($product, $rates);
+			$packsCreated = $this->convertToPack($product, $rates);
+		}
+
+		$redirect = null;
+		if (isset($data['addToPack']) && !$packsCreated) {
+			$pack = Product::find($data['addToPack']);
+			$nextProduct = PackController::redirectToNextProduct($pack);
+			$redirect = route('product', ['name' => $nextProduct], false);
 		}
 
 		if (request()->wantsJson()) {
-			return $this->returnCartContent();
+			// if ($packsCreated) {
+			// 	return $this->returnCartContent(route('checkout', [], false));
+			// }
+			return $this->returnCartContent($redirect);
 		}
 
+		if ($redirect) {
+			return redirect($redirect);
+		}
 		return redirect()->back()->with('itemAdded', true);
 
 	}
@@ -315,80 +342,80 @@ class CartController extends BaseController
 	}
 
 
-	// TODO: Add pack to cart
-	/**
-	 * Add pack to cart
-	 * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
-	 */
-	public function addPack(): RedirectResponse|JsonResponse
-	{
+	// // TODO: Add pack to cart
+	// /**
+	//  * Add pack to cart
+	//  * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+	//  */
+	// public function addPack(): RedirectResponse|JsonResponse
+	// {
 
-		$pack = Product::find(request()->input('id_pack'));
-		if ($pack) {
+	// 	$pack = Product::find(request()->input('id_pack'));
+	// 	if ($pack) {
 
-			$session = session()->get("pack{$pack->id}");
+	// 		$session = session()->get("pack{$pack->id}");
 
-			$qtys = $session['qtys'];
-			$rates = $session['rates'];
+	// 		$qtys = $session['qtys'];
+	// 		$rates = $session['rates'];
 
-			$bookings = $session['bookings'];
+	// 		$bookings = $session['bookings'];
 
-			foreach ($qtys as $i => $qty) {
+	// 		foreach ($qtys as $i => $qty) {
 
-				if ($qty > 0) {
+	// 			if ($qty > 0) {
 
-					// Model Rate
-					$rate_id = $rates[$i];
-					$rate = Rate::find($rate_id);
-					$price = $rate->product()->where('products.id', '=', $pack->id)->first()->pivot->price;
+	// 				// Model Rate
+	// 				$rate_id = $rates[$i];
+	// 				$rate = Rate::find($rate_id);
+	// 				$price = $rate->product()->where('products.id', '=', $pack->id)->first()->pivot->price;
 
-					if (session()->has("code.p{$pack->id}_r{$rate_id}")) {
-						$price *= 1 - session()->get('code.discount') / 100;
-					}
+	// 				if (session()->has("code.p{$pack->id}_r{$rate_id}")) {
+	// 					$price *= 1 - session()->get('code.discount') / 100;
+	// 				}
 
-					$booking = new Booking();
-					$booking->product_id = $pack->id;
-					$booking->rate_id = $rate_id;
-					$booking->tickets = $qty;
-					$booking->price = $price;
-					$booking->session = Session::getId();
-					$booking->save();
+	// 				$booking = new Booking();
+	// 				$booking->product_id = $pack->id;
+	// 				$booking->rate_id = $rate_id;
+	// 				$booking->tickets = $qty;
+	// 				$booking->price = $price;
+	// 				$booking->session = Session::getId();
+	// 				$booking->save();
 
-					// Afegir al cistell
-					$cartItem = Cart::add(
-						$pack->id,
-						$pack->title,
-						$qty,
-						$price,
-						0,
-						array(
-							'name' => $pack->name,
-							'id_producte' => $pack->id,
-							'parent' => 0,
-							'rate' => $rate,
-							'id_Rate' => $rate->id,
-							'target' => $pack->target,
-							'reserves' => $bookings
-						)
-					)->associate('\App\Models\Product');
+	// 				// Afegir al cistell
+	// 				$cartItem = Cart::add(
+	// 					$pack->id,
+	// 					$pack->title,
+	// 					$qty,
+	// 					$price,
+	// 					0,
+	// 					array(
+	// 						'name' => $pack->name,
+	// 						'id_producte' => $pack->id,
+	// 						'parent' => 0,
+	// 						'rate' => $rate,
+	// 						'id_Rate' => $rate->id,
+	// 						'target' => $pack->target,
+	// 						'reserves' => $bookings
+	// 					)
+	// 				)->associate('\App\Models\Product');
 
-				}
+	// 			}
 
-				$i++;
+	// 			$i++;
 
-			}
+	// 		}
 
-			Session::forget('pack' . $pack->id);
+	// 		Session::forget('pack' . $pack->id);
 
-		}
+	// 	}
 
-		if (request()->wantsJson()) {
-			return $this->returnCartContent();
-		}
+	// 	if (request()->wantsJson()) {
+	// 		return $this->returnCartContent();
+	// 	}
 
-		return redirect()->route('cart');
+	// 	return redirect()->route('cart');
 
-	}
+	// }
 
 	/**
 	 * Confirmation page
@@ -408,23 +435,26 @@ class CartController extends BaseController
 		// 		'id' => $order->id
 		// 	]);
 		// }
-		$lastOrder = false;
+		$previousOrders = false;
+		$loggedIn = false;
 		if (auth()->check()) {
-			$lastOrder = !(auth()->user()->hasRole(['admin', 'organizer'])) ?
-				Auth::user()->comandes->last() :
-				(object) [
-					'name' => auth()->user()->name,
-					'email' => auth()->user()->email
-				];
+			$previousOrders = OrderResource::collection(auth()->user()->orders);
+			// $previousOrders = !(auth()->user()->hasRole(['admin', 'organizer'])) ?
+			// 	auth()->user()->orders : [];
+			$loggedIn = (object) [
+				'name' => auth()->user()->name,
+				'email' => auth()->user()->email
+			];
 		}
 		if (config('approtickets.inertia')) {
 			return Inertia::render('Checkout', [
-				'loggedIn' => auth()->check(),
-				'lastOrder' => $lastOrder,
+				'loggedIn' => $loggedIn,
+				'previousOrders' => $previousOrders
 			]);
 		}
 		return view('order.checkout', [
-			'lastOrder' => $lastOrder,
+			'loggedIn' => $loggedIn,
+			'previousOrders' => $previousOrders,
 		]);
 	}
 

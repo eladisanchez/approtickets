@@ -16,6 +16,7 @@ use ApproTickets\Models\Option;
 use Illuminate\Routing\Controller as BaseController;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
+use Illuminate\Http\Request;
 
 class OrderController extends BaseController
 {
@@ -226,6 +227,19 @@ class OrderController extends BaseController
 			]);
 		}
 		return view('order.previous')->with('orders', $orders);
+	}
+
+	public function login(Request $request)
+	{
+		$request->validate([
+			'email' => 'required|email',
+			'password' => 'required'
+		]);
+
+		if (auth()->attempt($request->only('email', 'password'))) {
+			return redirect()->route('checkout');
+		}
+		return redirect()->back()->with('error', 'El correu o la contrassenya són incorrectes');
 	}
 
 }

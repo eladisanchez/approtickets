@@ -98,4 +98,13 @@ class Order extends Model
         return $refund;
     }
 
+    public function totalTickets(): float|int
+    {
+        $total = 0;
+        foreach ($this->bookings as $booking) {
+            $total += $booking->tickets;
+        }
+        return $total;
+    }
+
 }

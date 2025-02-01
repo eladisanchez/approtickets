@@ -39,6 +39,11 @@ class Ticket extends Model
         return $this->bookings->sum('tickets');
     }
 
+    public function getAvailableAttribute()
+    {
+        return $this->tickets - $this->bookingsTotal;
+    }
+
     public function getCartSeatsAttribute()
     {
         $cartItems = $this->bookings

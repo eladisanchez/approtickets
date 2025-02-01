@@ -220,6 +220,7 @@ class CartController extends BaseController
 				continue;
 
 			$rate_id = $rates[$i] ?? null;
+
 			if (!$rate_id)
 				continue;
 

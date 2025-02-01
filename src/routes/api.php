@@ -16,7 +16,7 @@ Route::middleware('api')
 
         Route::post('refund-notification', [RefundController::class, 'notification'])
             ->withoutMiddleware(Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class)
-            ->name('tpv-notification');
+            ->name('refund-notification');
 
         Route::post('/login', [QrController::class, 'login']);
 

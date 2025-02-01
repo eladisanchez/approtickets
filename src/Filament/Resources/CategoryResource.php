@@ -38,7 +38,8 @@ class CategoryResource extends Resource
                 Select::make('target')->label('Tipus')
                     ->options(config('approtickets.sections'))
                     ->required()
-                    ->columnSpan(2),
+                    ->columnSpan(2)
+                    ->hidden(!config('approtickets.sections')),
                 Textarea::make('summary')
                     ->label('Resum')
                     ->rows(3)

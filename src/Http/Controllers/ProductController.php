@@ -143,12 +143,13 @@ class ProductController extends BaseController
 
 	public function image($path)
 	{
+
 		$cacheKey = 'image_' . md5($path);
 		$cachedImage = Cache::remember($cacheKey, 1, function () use ($path) {
-			if (Storage::disk('local')->exists($path)) {
+			if (Storage::disk('public')->exists($path)) {
 				$directory = explode('/', $path);
-				$width = $directory[0] == 'thumbnails' ? 600 : 1400;
-				$file = Storage::disk('local')->get($path);
+				$width = $directory[0] == 'products' ? 600 : 1400;
+				$file = Storage::disk('public')->get($path);
 				$image = Image::read($file);
 				$image->scale($width, null);
 				return $image->encode(new WebpEncoder(quality: 80));

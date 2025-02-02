@@ -30,5 +30,3 @@ enum PaymentMethods: string implements HasLabel, HasIcon
     }
 
 }
-
-

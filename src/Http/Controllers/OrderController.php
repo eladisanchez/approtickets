@@ -54,11 +54,12 @@ class OrderController extends BaseController
 
 		$validator = validator(request()->all(), $rules);
 		if ($validator->fails()) {
+			dd('validator fails');
 			return redirect()->back()->withErrors($validator)->withInput();
 		}
 
 		$total = $cartItems->sum(function ($item) {
-			return $item->price;
+			return $item->price * $item->tickets;
 		});
 
 		$payment = request()->input('payment') ?? 'card';

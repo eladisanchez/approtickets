@@ -196,7 +196,7 @@ class OrderController extends BaseController
 
 		$pdfPath = storage_path("app/tickets/entrades-{$id}.pdf");
 
-		if (file_exists($pdfPath) && !auth()->user()->hasRole(['admin', 'organizer'])) {
+		if (file_exists($pdfPath) && !auth()->check()) {
 			return response()->file($pdfPath);
 		}
 

@@ -9,6 +9,7 @@ use ApproTickets\Http\Middleware\HandleInertiaRequests;
 use ApproTickets\Http\Controllers\CalendarController;
 use ApproTickets\Http\Controllers\RefundController;
 use ApproTickets\Http\Controllers\PackController;
+use ApproTickets\Http\Controllers\PaymentController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 
@@ -41,6 +42,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale()], function () {
 
         // Refunds
         Route::get('devolucio/{hash}', [RefundController::class, 'show'])->name('refund');
+
+        // Payments
+        Route::get('pagament/{hash}', [PaymentController::class, 'show'])->name('payment');
 
         // Products
         Route::get('activitat/{name}/{day?}/{hour?}', [ProductController::class, 'show'])->name('product')

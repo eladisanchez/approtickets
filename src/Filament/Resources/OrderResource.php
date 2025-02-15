@@ -85,51 +85,51 @@ class OrderResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('downloadPdf')
-                    ->label('PDF')
-                    ->icon('heroicon-o-document')
-                    ->url(function ($record) {
-                        return route('order.pdf', [
-                            'id' => $record->id,
-                            'session' => $record->session
-                        ]);
-                    })
-                    ->openUrlInNewTab(),
-                Tables\Actions\Action::make('refund')
-                    ->label('Devolució')
-                    ->icon('heroicon-o-arrow-left-circle')
-                    ->requiresConfirmation()
-                    ->modalHeading('Devolució')
-                    ->modalSubheading('')
-                    ->modalContent(fn(Order $record) => new HtmlString("El total d'aquesta comanda és de {$record->total} €. Indica la quantitat a retornar. Pots fer una devolució parcial."))
-                    ->form(function ($record) {
-                        return [
-                            Forms\Components\TextInput::make('amount')
-                                ->label('Quantitat a retornar')
-                                ->required()
-                                ->numeric()
-                                ->suffix(' €')
-                                ->default($record->total)
-                        ];
-                    })
-                    ->action(function (Order $record, array $data) {
-                        $refund = $record->createRefund($data['amount']);
-                        $refundRequest = RefundController::requestRefund($refund);
-                        if ($refundRequest['error']) {
-                            Notification::make()
-                                ->title('Error en la petició de devolució')
-                                ->body($refundRequest['error'])
-                                ->danger()
-                                ->send();
-                        } else {
-                            Notification::make()
-                                ->title($refundRequest['message'])
-                                ->success()
-                                ->send();
-                        }
-                    }),
-                Tables\Actions\RestoreAction::make()
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\Action::make('downloadPdf')
+                        ->label('PDF')
+                        ->icon('heroicon-o-document')
+                        ->url(function ($record) {
+                            return route('order.pdf', [
+                                'id' => $record->id,
+                                'session' => $record->session
+                            ]);
+                        })
+                        ->openUrlInNewTab(),
+                    Tables\Actions\Action::make('refund')
+                        ->label('Devolució')
+                        ->icon('heroicon-o-arrow-left-circle')
+                        ->requiresConfirmation()
+                        ->modalHeading('Devolució')
+                        ->modalSubheading('')
+                        ->modalContent(fn(Order $record) => new HtmlString("El total d'aquesta comanda és de {$record->total} €. Indica la quantitat a retornar. Pots fer una devolució parcial."))
+                        ->form(function ($record) {
+                            return [
+                                Forms\Components\TextInput::make('amount')
+                                    ->label('Quantitat a retornar')
+                                    ->required()
+                                    ->numeric()
+                                    ->suffix(' €')
+                                    ->default($record->total)
+                            ];
+                        })
+                        ->action(function (Order $record, array $data) {
+                            $refund = $record->createRefund($data['amount']);
+                            $refundRequest = RefundController::requestRefund($refund);
+                            if ($refundRequest['error']) {
+                                Notification::make()
+                                    ->title('Error en la petició de devolució')
+                                    ->body($refundRequest['error'])
+                                    ->danger()
+                                    ->send();
+                            } else {
+                                Notification::make()
+                                    ->title($refundRequest['message'])
+                                    ->success()
+                                    ->send();
+                            }
+                        }),
+                    Tables\Actions\RestoreAction::make()
                 ])
             ])
             ->bulkActions([

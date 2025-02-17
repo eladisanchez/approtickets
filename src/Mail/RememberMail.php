@@ -49,7 +49,7 @@ class RememberMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "Entrades Carnaval (comanda {$this->order->id})",
+            subject: "Reenviament Entrades Carnaval (comanda {$this->order->id})",
         );
     }
 }

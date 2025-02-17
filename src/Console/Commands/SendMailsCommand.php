@@ -6,8 +6,7 @@ use Illuminate\Console\Command;
 use ApproTickets\Models\Order;
 use Mail;
 use Log;
-use ApproTickets\Mail\NewOrder;
-use ApproTickets\Mail\PaymentMail;
+use ApproTickets\Mail\RememberMail;
 
 class SendMailsCommand extends Command
 {
@@ -21,17 +20,26 @@ class SendMailsCommand extends Command
 
         $this->info("Sending emails");
 
-        $orders = Order::where('email_sent', '!=', 1)
-            ->where('email_sent', '!=', 2)
-            ->where('payment', 'card')
-            ->limit(10)
+        $orders = Order::where('payment', 'card')
+            ->where('created_at', '>', '2025-02-06 00:00:00')
             ->get();
 
         foreach ($orders as $order) {
             $this->line("Sending {$order->id} - {$order->email}");
             if ($order->paid == 1) {
                 try {
-                    Mail::to($order->email)->send(new NewOrder($order));
+
+                    $failedOrders = [1742, 1744, 1748, 1750, 1753, 1758, 1761, 1770, 1771, 1775, 1777, 1779];
+                    $numTickets = 0;
+                    $failed = in_array($order->id, $failedOrders);
+                    if ($failed) {
+                        $booking = $order->bookings->first();
+                        $numTickets = $booking->tickets;
+                        $booking->update([
+                            'tickets' => 1
+                        ]);
+                    }
+                    Mail::to($order->email)->send(new RememberMail($order, $failed, $numTickets));
                     $order->email_sent = 1;
                     $order->save();
                     $this->line("Email sent to {$order->id} - {$order->email}");
@@ -39,18 +47,8 @@ class SendMailsCommand extends Command
                     $this->line("Error sending to {$order->id} - {$order->email}");
                     Log::error($e->getMessage());
                 }
-            } else {
-                try {
-                    Mail::to($order->email)->send(new PaymentMail($order));
-                    $order->email_sent = 2;
-                    $order->save();
-                    $this->line("Email sent to {$order->id} - {$order->email}");
-                } catch (\Exception $e) {
-                    $this->line("Error sending to {$order->id} - {$order->email}");
-                    Log::error($e->getMessage());
-                }
             }
-            sleep(1);
+            //sleep(1);
         }
 
         $this->info("Done");

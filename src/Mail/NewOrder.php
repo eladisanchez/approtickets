@@ -7,6 +7,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use ApproTickets\Models\Order;
 use ApproTickets\Models\Option;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class NewOrder extends Mailable
 {

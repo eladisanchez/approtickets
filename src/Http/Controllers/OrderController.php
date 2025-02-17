@@ -194,11 +194,10 @@ class OrderController extends BaseController
 
 		$conditions = Option::text('pdf_condicions');
 
-		$pdfPath = storage_path("app/tickets/entrades-{$id}.pdf");
-
-		if (file_exists($pdfPath) && !auth()->check()) {
-			return response()->file($pdfPath);
-		}
+		// $pdfPath = storage_path("app/tickets/entrades-{$id}.pdf");
+		// if (file_exists($pdfPath) && !auth()->check()) {
+		// 	return response()->file($pdfPath);
+		// }
 
 		$pdf = Pdf::setOptions(['isRemoteEnabled' => true])->loadView(
 			'pdf.order',
@@ -208,7 +207,7 @@ class OrderController extends BaseController
 			]
 		);
 
-		$pdf->save($pdfPath);
+		// $pdf->save($pdfPath);
 
 		return $pdf->stream("entrades-{$id}.pdf");
 

@@ -38,6 +38,7 @@ class SendMailsCommand extends Command
                         $booking->update([
                             'tickets' => 1
                         ]);
+                        $this->line("Tickets fixed for {$order->id} - {$order->email}");
                     }
                     Mail::to($order->email)->send(new RememberMail($order, $failed, $numTickets));
                     $order->email_sent = 1;

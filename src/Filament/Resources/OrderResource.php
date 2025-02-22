@@ -64,9 +64,9 @@ class OrderResource extends Resource
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('created_at')->date()->label('Data')
                     ->sortable()->date('d/m/y H:i:s'),
-                Tables\Columns\TextColumn::make('name')->label('Client')
-                    ->sortable()->searchable(['name', 'email'])
-                    ->description(fn(Order $record): string => $record->email)
+                Tables\Columns\TextColumn::make('email')->label('Client')
+                    ->sortable()->searchable()
+                    ->description(fn(Order $record): string => $record->name)
                     ->limit(30)->wrap(),
                 Tables\Columns\TextColumn::make('bookings.product.title')
                     ->listWithLineBreaks()->label('Productes')->badge(),
@@ -83,7 +83,6 @@ class OrderResource extends Resource
                         '2' => 'danger',
                     }),
                 Tables\Columns\TextColumn::make('payment')->badge()->label('Mètode'),
-
             ])
             ->filters([
                 //

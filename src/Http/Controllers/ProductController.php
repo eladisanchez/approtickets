@@ -17,6 +17,7 @@ use Intervention\Image\Encoders\WebpEncoder;
 use ApproTickets\Http\Resources\Product as ProductResource;
 use ApproTickets\Http\Resources\Ticket as TicketResource;
 use ApproTickets\Http\Resources\Rate as RateResource;
+use Carbon\Carbon;
 
 class ProductController extends BaseController
 {
@@ -56,6 +57,7 @@ class ProductController extends BaseController
 
 		}
 
+
 		$availableTickets = $product->nextTickets;
 
 		if (!$hour && $availableTickets->count() == 1) {
@@ -72,6 +74,20 @@ class ProductController extends BaseController
 			return redirect()->route('product', [
 				'name' => $name,
 				'day' => $availableDays->first()->format('Y-m-d')
+			]);
+		}
+
+		$minutesBeforeClose = 60 * $product->hour_limit;
+		$closingTime = Carbon::parse("{$day} {$hour}")->subMinutes($minutesBeforeClose);
+
+		if (now() > $closingTime) {
+			if (config('approtickets.inertia')) {
+				return Inertia::render('Product', [
+					'product' => new ProductResource($product)
+				]);
+			}
+			return view('product', [
+				'product' => $product,
 			]);
 		}
 

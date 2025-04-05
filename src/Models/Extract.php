@@ -62,21 +62,21 @@ class Extract extends Model
                 $total = $bookings->reduce(function ($carry, $item) {
                     return $carry + $item->tickets * $item->price;
                 });
-                $devolucio = $bookings->reduce(function ($carry, $item) {
-                    if ($item->devolucio) {
+                $refund = $bookings->reduce(function ($carry, $item) {
+                    if ($item->refund) {
                         return $carry + $item->tickets * $item->price;
                     } else {
                         return $carry;
                     }
                 });
-                $liquidar = $total - $devolucio;
+                $settle = $total - $refund;
                 $sales[] = [
                     'product' => $product,
                     'rate' => $t,
                     'tickets' => $bookings->sum('tickets'),
                     'total' => $total,
-                    'refund' => $devolucio,
-                    'settle' => $liquidar
+                    'refund' => $refund,
+                    'settle' => $settle
                 ];
             endforeach;
         endforeach;

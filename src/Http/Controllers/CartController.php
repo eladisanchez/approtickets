@@ -7,11 +7,10 @@ use ApproTickets\Models\Order;
 use ApproTickets\Models\Product;
 use ApproTickets\Models\Booking;
 use ApproTickets\Models\ProductRate;
+use ApproTickets\Models\Coupon;
 use DB;
-use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Http\JsonResponse;
 use Session;
-use Auth;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -186,7 +185,7 @@ class CartController extends BaseController
 		$day = $data['day'] ?? null;
 		$hour = $data['hour'] ?? null;
 		$rates = $data['rates'] ?? null;
-		$qtys = $data['qty'] ?? null;
+		$qtys = $data['qty'] ?? [0];
 
 		if (isset($data['seats'])) {
 			$seats = is_array($data['seats']) ? $data['seats'] : json_decode($data['seats']);
@@ -342,81 +341,62 @@ class CartController extends BaseController
 
 	}
 
+	/**
+	 * Apply a coupon
+	 * @return RedirectResponse
+	 */
+	public function applyCoupon(): RedirectResponse|JsonResponse
+	{
 
-	// // TODO: Add pack to cart
-	// /**
-	//  * Add pack to cart
-	//  * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
-	//  */
-	// public function addPack(): RedirectResponse|JsonResponse
-	// {
+		$code = request()->input('code');
+		$coupons = Coupon::where('code', $code)
+			->where('validity', '>', now())->get();
 
-	// 	$pack = Product::find(request()->input('id_pack'));
-	// 	if ($pack) {
+		if (count($coupons) > 0) {
 
-	// 		$session = session()->get("pack{$pack->id}");
+			if (!Session::has('coupon')) {
 
-	// 		$qtys = $session['qtys'];
-	// 		$rates = $session['rates'];
+				foreach ($coupons as $coupon) {
 
-	// 		$bookings = $session['bookings'];
+					$couponSessionId = "coupon.p{$coupon->product_id}_t{$coupon->rate_id}";
+					if (!Session::has($couponSessionId)) {
+						Session::put($couponSessionId, true);
 
-	// 		foreach ($qtys as $i => $qty) {
+						$rowsInCart = $coupon->product->inCart()
+							->where('rate_id', $coupon->rate_id);
 
-	// 			if ($qty > 0) {
+						foreach ($rowsInCart as $row) {
+							$newPrice = $row->price * (1 - $coupon->discount / 100);
+							$row->price = $newPrice;
+							$row->save();
+						}
+					}
 
-	// 				// Model Rate
-	// 				$rate_id = $rates[$i];
-	// 				$rate = Rate::find($rate_id);
-	// 				$price = $rate->product()->where('products.id', '=', $pack->id)->first()->pivot->price;
+				}
 
-	// 				if (session()->has("code.p{$pack->id}_r{$rate_id}")) {
-	// 					$price *= 1 - session()->get('code.discount') / 100;
-	// 				}
+				Session::put('coupon.name', $code);
+				Session::put('coupon.discount', $coupon->discount);
+				if (request()->wantsJson()) {
+					return $this->returnCartContent();
+				}
+				return redirect()->route('cart')->with('message', 'Codi promocional correcte!');
 
-	// 				$booking = new Booking();
-	// 				$booking->product_id = $pack->id;
-	// 				$booking->rate_id = $rate_id;
-	// 				$booking->tickets = $qty;
-	// 				$booking->price = $price;
-	// 				$booking->session = Session::getId();
-	// 				$booking->save();
+			}
 
-	// 				// Afegir al cistell
-	// 				$cartItem = Cart::add(
-	// 					$pack->id,
-	// 					$pack->title,
-	// 					$qty,
-	// 					$price,
-	// 					0,
-	// 					array(
-	// 						'name' => $pack->name,
-	// 						'id_producte' => $pack->id,
-	// 						'parent' => 0,
-	// 						'rate' => $rate,
-	// 						'id_Rate' => $rate->id,
-	// 						'target' => $pack->target,
-	// 						'reserves' => $bookings
-	// 					)
-	// 				)->associate('\App\Models\Product');
+			if (request()->wantsJson()) {
+				return $this->returnCartContent();
+			}
+			return redirect()->route('cart')->with('message', 'Ja has aplicat un descompte');
 
-	// 			}
+		}
 
-	// 			$i++;
+		if (request()->wantsJson()) {
+			return $this->returnCartContent();
+		}
+		return redirect()->route('cart')->with('message', 'El codi promocional no és vàlid.');
 
-	// 		}
+	}
 
-	// 		Session::forget('pack' . $pack->id);
-
-	// 	}
-
-	// 	if (request()->wantsJson()) {
-	// 		return $this->returnCartContent();
-	// 	}
-
-	// 	return redirect()->route('cart');
-
-	// }
 
 	/**
 	 * Confirmation page

@@ -6,7 +6,6 @@ use ApproTickets\Http\Resources\ProductThumbnail;
 use Illuminate\Http\RedirectResponse;
 use ApproTickets\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
@@ -18,6 +17,8 @@ use ApproTickets\Http\Resources\Product as ProductResource;
 use ApproTickets\Http\Resources\Ticket as TicketResource;
 use ApproTickets\Http\Resources\Rate as RateResource;
 use Carbon\Carbon;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class ProductController extends BaseController
 {
@@ -57,7 +58,6 @@ class ProductController extends BaseController
 
 		}
 
-
 		$availableTickets = $product->nextTickets;
 
 		if (!$hour && $availableTickets->count() == 1) {
@@ -77,18 +77,19 @@ class ProductController extends BaseController
 			]);
 		}
 
-		$minutesBeforeClose = 60 * $product->hour_limit;
-		$closingTime = Carbon::parse("{$day} {$hour}")->subMinutes($minutesBeforeClose);
-
-		if (now() > $closingTime) {
-			if (config('approtickets.inertia')) {
-				return Inertia::render('Product', [
-					'product' => new ProductResource($product)
+		if ($day && $hour) {
+			$minutesBeforeClose = 60 * $product->hour_limit;
+			$closingTime = Carbon::parse("{$day} {$hour}")->subMinutes($minutesBeforeClose);
+			if (now() > $closingTime) {
+				if (config('approtickets.inertia')) {
+					return Inertia::render('Product', [
+						'product' => new ProductResource($product)
+					]);
+				}
+				return view('product', [
+					'product' => $product,
 				]);
 			}
-			return view('product', [
-				'product' => $product,
-			]);
 		}
 
 		if (config('approtickets.inertia')) {
@@ -161,17 +162,25 @@ class ProductController extends BaseController
 	{
 
 		$cacheKey = 'image_' . md5($path);
-		$cachedImage = Cache::remember($cacheKey, 1, function () use ($path) {
+
+		$cachedImage = Cache::remember($cacheKey, 60, function () use ($path) {
 			if (Storage::disk('public')->exists($path)) {
 				$directory = explode('/', $path);
-				$width = $directory[0] == 'products' ? 600 : 1400;
+				$width = $directory[0] == 'thumbnails' ? 500 : 1400;
+
 				$file = Storage::disk('public')->get($path);
-				$image = Image::read($file);
+
+				$manager = new ImageManager(new Driver());
+				$image = $manager->read($file);
+
 				$image->scale($width, null);
-				return $image->encode(new WebpEncoder(quality: 80));
+
+				return (string) $image->encode(new WebpEncoder(quality: 90));
 			}
+
 			return null;
 		});
+
 		if (!$cachedImage) {
 			abort(404);
 		}

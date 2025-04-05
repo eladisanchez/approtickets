@@ -66,7 +66,7 @@ class RefundController extends BaseController
 	 */
 	public static function requestRefund(Refund $refund): array
 	{
-		if ($refund->refunded_at == 1) {
+		if ($refund->refunded_at) {
 			return [
 				'error' => 'Aquesta devolució ja ha estat executada'
 			];

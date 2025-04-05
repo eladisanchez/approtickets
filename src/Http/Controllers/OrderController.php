@@ -161,6 +161,7 @@ class OrderController extends BaseController
 	public function error(string $session, string $id): View|InertiaResponse
 	{
 
+
 		if (!$session == Session::getId()) {
 			return redirect()->route('home');
 		}
@@ -174,7 +175,7 @@ class OrderController extends BaseController
 			return Inertia::render('order/Error', [
 				'title' => __('El pagament no s\'ha pogut processar'),
 				'payment' => route('order.payment', ['id' => $order->id]),
-				'limit' => $order->created_at->addHour->format('H:i')
+				'limit' => $order->created_at->addHour()->format('H:i')
 			]);
 		}
 		return view('order.error')->with('order', $order);

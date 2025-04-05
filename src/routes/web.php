@@ -27,6 +27,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale()], function () {
         Route::post('cistell', [CartController::class, 'add'])->name('cart.add');
         Route::delete('cistell', [CartController::class, 'removeRow'])->name('cart.remove');
         Route::get('cistell/destroy', [CartController::class, 'destroy'])->name('cart.destroy');
+        Route::post('cistell/codi', [CartController::class, 'applyCoupon'])->name('cart.coupon');
 
         // Checkout
         Route::get('confirmar', [CartController::class, 'confirm'])->name('checkout');

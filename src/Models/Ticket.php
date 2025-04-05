@@ -48,7 +48,8 @@ class Ticket extends Model
     {
         $cartItems = $this->bookings
             ->where('order_id', NULL)
-            ->where('session', session()->getId());
+            ->where('session', session()->getId())
+            ->values();
         return $cartItems->map(function ($booking) {
             return ['s' => $booking->seat, 'f' => $booking->row];
         })->toArray();
@@ -56,9 +57,16 @@ class Ticket extends Model
 
     public function getBookedSeatsAttribute()
     {
-        return $this->bookings->map(function ($booking) {
-            return ['s' => $booking->seat, 'f' => $booking->row];
-        })->toArray();
+        $cartSeats = collect($this->cart_seats);
+
+        return $this->bookings
+            ->reject(function ($booking) use ($cartSeats) {
+                return $cartSeats->contains(fn($cart) => $cart['s'] === $booking->seat && $cart['f'] === $booking->row);
+            })
+            ->map(function ($booking) {
+                return ['s' => $booking->seat, 'f' => $booking->row];
+            })
+            ->toArray();
     }
 
     public function cancel(

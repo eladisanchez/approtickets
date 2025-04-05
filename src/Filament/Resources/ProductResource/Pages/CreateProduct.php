@@ -11,6 +11,10 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Get;
+use Filament\Forms\Components\Placeholder;
+use ApproTickets\Mail\NewProductAlert;
+use Mail;
+use Log;
 
 class CreateProduct extends CreateRecord
 {
@@ -30,7 +34,7 @@ class CreateProduct extends CreateRecord
                     Select::make('category_id')
                         ->label('Categoria')
                         ->relationship(name: 'category', titleAttribute: 'title')
-                        ->required()
+                        ->searchable()
                         ->native(false)
                         ->columnSpan(3),
                     Toggle::make('is_pack')
@@ -120,24 +124,43 @@ class CreateProduct extends CreateRecord
                                 ->suffix('minuts')
                                 ->columnSpan(2),
                         ])->columns(6)->hidden(fn(Get $get) => $get('qr') !== true),
-                    Fieldset::make('Mesures Covid')
-                        ->schema([
-                            Toggle::make('social_distance')
-                                ->label('Distància social')
-                                ->helperText('Habilita el bloqueig de butaques adjacents d\'una comanda.')
-                                ->live()
-                                ->columnSpan(2),
-                            TextInput::make('capacity')
-                                ->label('Aforament màxim')
-                                ->numeric()
-                                ->minValue(0)
-                                ->step(1)
-                                ->helperText("La venda es tancarà a l'arribar al límit de percentatge d'aforament permès")
-                                ->suffix('%')
-                                ->columnSpan(2),
-                        ])->columns(6),
+                    // Fieldset::make('Mesures Covid')
+                    //     ->schema([
+                    //         Toggle::make('social_distance')
+                    //             ->label('Distància social')
+                    //             ->helperText('Habilita el bloqueig de butaques adjacents d\'una comanda.')
+                    //             ->live()
+                    //             ->columnSpan(2),
+                    //         TextInput::make('capacity')
+                    //             ->label('Aforament màxim')
+                    //             ->numeric()
+                    //             ->minValue(0)
+                    //             ->step(1)
+                    //             ->helperText("La venda es tancarà a l'arribar al límit de percentatge d'aforament permès")
+                    //             ->suffix('%')
+                    //             ->columnSpan(2),
+                    //     ])->columns(6),
                 ])->columns(6),
+            Step::make('Confirmació')
+                ->icon('heroicon-m-check-circle')
+                ->schema([
+                    Placeholder::make('Atenció')
+                        ->content('Feu-nos arribar les imatges de l\'esdeveniment a info@turismesolsones.com. La vostra sol·licitud es revisarà abans de ser activada a la plataforma. ')->columnSpan(6),
+                ])->columns(6)->visible(!auth()->user()->hasRole('admin')),
         ];
+    }
+
+    protected function afterCreate(): void
+    {
+        $product = $this->record;
+        if (!auth()->user()->hasRole('admin')) {
+            try {
+                Mail::to(config('mail.from.address'))->send(new NewProductAlert($product));
+            } catch (\Throwable $th) {
+                Log::error($th);
+            }
+        }
+
     }
 
 }

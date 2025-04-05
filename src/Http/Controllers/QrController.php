@@ -91,8 +91,8 @@ class QrController extends BaseController
         $booking_id = $code[3] ?? false;
 
         $booking = !$booking_id ?
-            Booking::where('uniqid', $uniqid)->orderBy('created_at', 'desc')->first() :
-            Booking::where('uniqid', $uniqid)->where('id', $booking_id)->first();
+            Booking::where('uid', $uniqid)->orderBy('created_at', 'desc')->first() :
+            Booking::where('uid', $uniqid)->where('id', $booking_id)->first();
 
         // Booking does not exist or ticket number is greater to booking tickets
         if (!$booking || $count > $booking->tickets):
@@ -125,12 +125,12 @@ class QrController extends BaseController
         $from_time = strtotime('now');
         $diff = round(($to_time - $from_time) / 60);
         // Minuts previs a l'inici de la sessió a partir dels que es podrà llegir l'entrada
-        $temps_previ = $booking->product->validation_start ?? 60;
+        $minutesLeft = $booking->product->validation_start ?? 60;
         // Caducitat de l'entrada a partir de l'inici de sessió
-        $temps_post = $booking->product->validation_end ?? 60;
+        $minutesPast = $booking->product->validation_end ?? 60;
 
         // Esdeveniment futur
-        if ($diff > $temps_previ):
+        if ($diff > $minutesLeft):
             $units = 'minuts';
             if ($diff / 60 > 1) {
                 $units = 'hores';
@@ -141,16 +141,16 @@ class QrController extends BaseController
                 }
             }
             return response()->json([
-                'message' => 'Falten ' . $diff . ' ' . $units . ' per l\'espectacle',
+                'message' => "Falten {$diff} {$units} per l'espectacle",
                 'codi' => $code
             ], 403);
         endif;
 
         // Entrada caducada
-        if ($diff < -$temps_post):
+        if ($diff < -$minutesPast):
             return response()->json(
                 [
-                    'message' => __('Aquest codi ja no és vàlid'),
+                    'message' => "Aquest codi ja no és vàlid",
                     'codi' => $code
                 ],
                 403

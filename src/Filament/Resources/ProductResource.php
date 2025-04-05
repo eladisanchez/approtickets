@@ -289,7 +289,7 @@ class ProductResource extends Resource
                                             }
                                         })
                                         ->slideOver()
-                                        ->hidden(!!$venue)
+                                        ->hidden(!!$venue || !auth()->user()->hasRole('admin')),
                                 ]),
                             ]),
                         Components\Tabs\Tab::make('Preus')

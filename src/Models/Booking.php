@@ -15,7 +15,7 @@ class Booking extends Model
 
 	protected $table = 'bookings';
 	protected $guarded = ['id', 'product_id'];
-	protected $hidden = ['updated_at', 'uniqid'];
+	protected $hidden = ['updated_at', 'uid'];
 	protected $casts = [
 		'day' => 'datetime:Y-m-d',
 		'hour' => 'datetime:H:i',
@@ -23,13 +23,13 @@ class Booking extends Model
 	];
 
 	protected static function booted()
-    {
-		static::deleting(function($booking) {
+	{
+		static::deleting(function ($booking) {
 			if ($booking->packBookings()->exists()) {
 				$booking->packBookings()->delete();
 			}
 		});
-    }
+	}
 
 	public function getHourAttribute($value)
 	{
@@ -50,8 +50,8 @@ class Booking extends Model
 	public function ticket()
 	{
 		return $this->belongsTo(Ticket::class, 'product_id', 'product_id')
-            ->where('day', $this->day)
-            ->where('hour', $this->hour);
+			->where('day', $this->day)
+			->where('hour', $this->hour);
 	}
 
 	public function scans()
@@ -93,7 +93,7 @@ class Booking extends Model
 
 	public function getFormattedSessionAttribute()
 	{
-		return $this->day->format('d/m/Y') . ' ' . $this->hour;
+		return $this->day?->format('d/m/Y') . ' ' . $this->hour;
 	}
 
 	public function getTotalAttribute()

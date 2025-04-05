@@ -2,7 +2,6 @@
 
 namespace ApproTickets;
 
-
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Panel;
@@ -27,6 +26,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use ApproTickets\Http\Middleware\HandleInertiaRequests;
 use Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter;
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Console\Scheduling\Schedule;
 
 class ApproTicketsServiceProvider extends ServiceProvider
 {
@@ -46,6 +46,9 @@ class ApproTicketsServiceProvider extends ServiceProvider
             __DIR__ . '/config/approtickets.php' => config_path('approtickets.php'),
         ], 'config');
 
+        $this->loadMigrationsFrom(__DIR__ . '/migrations');
+
+        // Commands
         if ($this->app->runningInConsole()) {
             $this->commands([
                 CleanCartCommand::class,
@@ -53,6 +56,10 @@ class ApproTicketsServiceProvider extends ServiceProvider
                 SendMailsCommand::class,
                 GeneratePdfCommand::class
             ]);
+            $this->app->booted(function () {
+                $schedule = $this->app->make(Schedule::class);
+                $schedule->command('approtickets:clean-cart')->everyMinute();
+            });
         }
 
         $this->app['router']->middlewareGroup('web', [

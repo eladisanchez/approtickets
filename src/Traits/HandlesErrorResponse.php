@@ -7,7 +7,7 @@ use Illuminate\Http\RedirectResponse;
 
 trait HandlesErrorResponse
 {
-    public function handleErrorResponse($message):JsonResponse|RedirectResponse
+    public function handleErrorResponse($message): JsonResponse|RedirectResponse
     {
         if (request()->wantsJson()) {
             return response()->json(['error' => $message]);

@@ -5,11 +5,13 @@ namespace ApproTickets\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Mail;
 use Session;
 use Auth;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use Spatie\Translatable\HasTranslations;
+use ApproTickets\Mail\NewProductAlert;
 
 class Product extends Model
 {
@@ -21,7 +23,7 @@ class Product extends Model
     protected $guarded = ['id'];
     protected $hidden = ['created_at', 'updated_at', 'deleted_at'];
     protected $appends = ['price'];
-    protected $with = ['organizer', 'rates','category'];
+    protected $with = ['organizer', 'rates', 'category'];
 
     public $translatable = [
         'title',

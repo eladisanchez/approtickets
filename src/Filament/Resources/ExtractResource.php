@@ -79,6 +79,15 @@ class ExtractResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('downloadExcel')
+                    ->label('Excel')
+                    ->icon('heroicon-o-document')
+                    ->url(function ($record) {
+                        return route('admin.extract.excel', [
+                            'id' => $record->id,
+                        ]);
+                    })
+                    ->openUrlInNewTab(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

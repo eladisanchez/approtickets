@@ -185,10 +185,11 @@ class ProductController extends BaseController
 			abort(404);
 		}
 
+		$expires = now()->addMonth()->format(\DateTime::RFC7231);
 		$headers = [
 			'Content-Type' => 'image/webp',
 			'Cache-Control' => 'public, max-age=2592000',
-			'Expires' => now()->addMonth()->toHttpDate(),
+			'Expires' => $expires,
 			'Pragma' => 'public',
 		];
 		return response()->make($cachedImage, 200, $headers);

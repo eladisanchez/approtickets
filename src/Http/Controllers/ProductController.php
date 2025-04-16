@@ -184,7 +184,14 @@ class ProductController extends BaseController
 		if (!$cachedImage) {
 			abort(404);
 		}
-		return response()->make($cachedImage, 200, ['Content-Type' => 'image/webp']);
+
+		$headers = [
+			'Content-Type' => 'image/webp',
+			'Cache-Control' => 'public, max-age=2592000',
+			'Expires' => now()->addMonth()->toHttpDate(),
+			'Pragma' => 'public',
+		];
+		return response()->make($cachedImage, 200, $headers);
 	}
 
 }

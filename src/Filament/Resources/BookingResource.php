@@ -3,7 +3,6 @@
 namespace ApproTickets\Filament\Resources;
 
 use ApproTickets\Filament\Resources\BookingResource\Pages;
-use ApproTickets\Filament\Resources\BookingResource\RelationManagers;
 use ApproTickets\Models\Booking;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -11,7 +10,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use ApproTickets\Filament\Exports\BookingExporter;
 use Filament\Tables\Actions\ExportAction;
 
@@ -31,11 +29,13 @@ class BookingResource extends Resource
         return $form
             ->schema([
                 Forms\Components\DateTimePicker::make('created_at')->label('Data')->disabled()->columnSpan(2),
-                Forms\Components\TextInput::make('order.email')->label('Client')->disabled()->columnSpan(2),
-                Forms\Components\TextInput::make('product.title')->label('Producte')->disabled()->columnSpan(2),
+                // Forms\Components\Placeholder::make('order')->label('Client')->content(fn($record): string => $record?->order?->email ?? '')->columnSpan(2),
+                Forms\Components\Select::make('product')->relationship(name: 'product', titleAttribute: 'title')->label('Producte')->disabled()->columnSpan(2),
                 Forms\Components\TextInput::make('tickets')->label('Quantitat')->columnSpan(2),
                 Forms\Components\DatePicker::make('day')->label('Dia')->required()->columnSpan(2),
                 Forms\Components\TimePicker::make('hour')->label('Hora')->required()->columnSpan(2),
+                Forms\Components\TextInput::make('row')->numeric()->label('Fila')->columnSpan(1)->visible(fn($record): bool => !!$record?->product?->venue_id),
+                Forms\Components\TextInput::make('seat')->numeric()->label('Seient')->columnSpan(1)->visible(fn($record): bool => !!$record?->product?->venue_id),
             ])->columns(6);
     }
 
@@ -55,7 +55,14 @@ class BookingResource extends Resource
                         '1' => 'success',
                         '2' => 'danger',
                         default => 'info',
-                    })->default('heroicon-o-shopping-cart'),
+                    })->default('cart')->tooltip(
+                        fn($state) => match ($state) {
+                            0 => 'Pagament pendent',
+                            1 => 'Comanda completada',
+                            2 => 'Pagament fallat',
+                            default => 'Cistell',
+                        }
+                    ),
                 Tables\Columns\TextColumn::make('created_at')->label('Data compra')->sortable()->searchable()->date('d/m/Y H:i'),
                 Tables\Columns\TextColumn::make('order.email')->label('Client')->sortable()->searchable(isIndividual: true, isGlobal: true),
                 Tables\Columns\TextColumn::make('product.title')->label('Producte')->sortable()->searchable(isIndividual: true, isGlobal: true)->wrap(),
@@ -63,7 +70,7 @@ class BookingResource extends Resource
                 Tables\Columns\TextColumn::make('tickets')->label('Qt.')->sortable(),
                 Tables\Columns\TextColumn::make('formattedSession')->label('Sessió')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('reducedSeat')->label('Localitat')->sortable(),
-                Tables\Columns\TextColumn::make('scans.scan_id')->label('QR')->badge()->color('success'),
+                Tables\Columns\TextColumn::make('scans_count')->counts('scans')->label('QR')->badge()->color('success')->tooltip(fn(Booking $record): string => $record->scans->pluck('scan_id')->implode(', ')),
 
             ])
             ->filters([
@@ -82,10 +89,15 @@ class BookingResource extends Resource
                     ->exporter(BookingExporter::class)
             ])
             ->filters([
-                // Filter by day with datepicker
-                Tables\Filters\Filter::make('day')
+                Tables\Filters\Filter::make('created_at')
                     ->form([
-                        Forms\Components\DatePicker::make('day')->label('Dia'),
+                        Forms\Components\DatePicker::make('created_at')->label('Data compra'),
+                    ])
+                    ->query(fn(Builder $query, array $data): Builder => $data['created_at'] ? $query->whereDate('created_at', $data['created_at']) : $query),
+                // Filter by day with datepicker
+                Tables\Filters\Filter::make('session')
+                    ->form([
+                        Forms\Components\DatePicker::make('day')->label('Sessió'),
                     ])
                     ->query(fn(Builder $query, array $data): Builder => $data['day'] ? $query->where('day', $data['day']) : $query),
                 // Filter by product
@@ -134,9 +146,9 @@ class BookingResource extends Resource
     {
         if (!auth()->user()->hasRole('admin')) {
             $products = auth()->user()->products()->pluck('id');
-            return parent::getEloquentQuery()->whereIn('product_id', $products);
+            return parent::getEloquentQuery()->whereIn('product_id', $products)->with('order');
         }
-        return parent::getEloquentQuery();
+        return parent::getEloquentQuery()->with('order');
     }
 
     public static function getPages(): array

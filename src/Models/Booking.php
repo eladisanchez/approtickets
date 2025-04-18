@@ -19,7 +19,6 @@ class Booking extends Model
 	protected $casts = [
 		'day' => 'datetime:Y-m-d',
 		'hour' => 'datetime:H:i',
-		'seat' => 'array'
 	];
 
 	protected static function booted()
@@ -80,9 +79,6 @@ class Booking extends Model
 	public function getReducedSeatAttribute()
 	{
 		if (empty($this->row) || $this->row == 0) {
-			if (is_array($this->seat)) {
-				return "{$this->seat['s']}/{$this->seat['f']}";
-			}
 			if (is_numeric($this->seat)) {
 				return __('Localitat') . ' ' . $this->seat;
 			}

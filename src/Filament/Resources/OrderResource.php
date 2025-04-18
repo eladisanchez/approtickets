@@ -41,7 +41,7 @@ class OrderResource extends Resource
                 Forms\Components\TextInput::make('email')->label('Correu electrònic')->columnSpan(2),
                 Forms\Components\TextInput::make('phone')->label('Telèfon')->columnSpan(2),
                 Forms\Components\Select::make('payment')->label('Mètode de pagament')
-                    ->options(PaymentMethods::class)->required()->columnSpan(2),
+                    ->options(PaymentMethods::cases())->required()->columnSpan(2),
                 Forms\Components\Select::make('paid')->label('Estat pagament')->options([
                     '0' => 'Pendent',
                     '1' => 'Pagat',

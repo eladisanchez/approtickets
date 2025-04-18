@@ -130,6 +130,7 @@ class ApproTicketsServiceProvider extends ServiceProvider
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             //->maxContentWidth(MaxWidth::Full)
+            ->passwordReset()
             ->plugins([
                 SpatieLaravelTranslatablePlugin::make()->defaultLocales(config('approtickets.locales')),
             ]);

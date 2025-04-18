@@ -24,11 +24,11 @@ class TicketResource extends Resource
     protected static ?string $model = Ticket::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
-    protected static ?string $navigationLabel = 'Entrades en venda';
-    protected static ?string $modelLabel = 'entrada';
-    protected static ?string $pluralModelLabel = 'entrades';
+    protected static ?string $navigationLabel = 'Sessions';
+    protected static ?string $modelLabel = 'sessió';
+    protected static ?string $pluralModelLabel = 'sessions';
     protected static ?string $navigationGroup = 'Entrades';
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -97,7 +97,8 @@ class TicketResource extends Resource
                         $record->cancel($data['new_date']);
                     })
                     ->icon('heroicon-o-x-circle')
-                    ->color('warning'),
+                    ->color('warning')
+                    ->visible(auth()->user()->hasRole('admin')),
                 Tables\Actions\Action::make('map')
                     ->label('Plànol')
                     ->url(fn(Ticket $record) => route('map', [
@@ -112,7 +113,7 @@ class TicketResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()->visible(auth()->user()->hasRole('admin')),
                 ]),
             ])
             ->defaultSort('day', 'asc');

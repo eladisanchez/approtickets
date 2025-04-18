@@ -179,12 +179,12 @@ class ProductResource extends Resource
                                             ->columnSpan(2),
                                     ])->columns(6),
                             ])->columns(6),
-                        Components\Tabs\Tab::make('Entrades')
+                        Components\Tabs\Tab::make('Sessions')
                             ->icon('heroicon-m-ticket')
                             ->schema([
                                 Components\Repeater::make('tickets')
                                     ->disableLabel()
-                                    ->label('Entrades')
+                                    ->label('Sessions')
                                     ->relationship('nextTickets')
                                     ->collapsed()
                                     ->itemLabel(fn(array $state): ?string => $state['day'] ? ($state['day'] . ' - ' . $state['hour'] . ' (' . $state["tickets"] . ' entrades)' ?? null) : '')
@@ -192,7 +192,7 @@ class ProductResource extends Resource
                                         Components\DatePicker::make('day')->label('Dia')->required(),
                                         Components\TimePicker::make('hour')->label('Hora')->required(),
                                         Components\TextInput::make('tickets')
-                                            ->label('Entrades')
+                                            ->label('Núm entrades')
                                             ->default(function () use ($venue) {
                                                 if ($venue) {
                                                     return count($venue->seats);
@@ -232,9 +232,9 @@ class ProductResource extends Resource
                                     ])->columns(6),
                                 Actions::make([
                                     Actions\Action::make('previous-tickets')
-                                        ->label('Entrades anteriors')
+                                        ->label('Sessions anteriors')
                                         ->url(fn(Product $record): string => route('filament.admin.resources.tickets.index') . '?tableFilters[product][product]=' . $record->id . '&activeTab=previous'),
-                                    Actions\Action::make('Crea múltiples entrades')
+                                    Actions\Action::make('Crea múltiples sessions')
                                         ->form([
                                             Components\Section::make()->schema([
                                                 Components\DatePicker::make('date_start')->label('Data d\'inici')->required(),
@@ -258,7 +258,7 @@ class ProductResource extends Resource
                                                 Components\TextInput::make('tickets')->label('Entrades per sessió')->numeric()->required(),
                                                 Components\Select::make('lang')->label('Idioma')->options(config('approtickets.locales'))->hidden(!config('approtickets.languages')),
                                             ])->columns(3),
-                                            Components\Toggle::make('delete')->label('Elimina totes les entrades creades prèviament per aquest producte'),
+                                            Components\Toggle::make('delete')->label('Elimina totes les sessions creades prèviament per aquest producte'),
                                         ])
                                         ->action(function (array $data) use ($form, $id, $venue): void {
                                             $product = Product::findOrFail($id);

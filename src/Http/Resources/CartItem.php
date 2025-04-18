@@ -27,6 +27,7 @@ class CartItem extends JsonResource
             'title' => $this->product->getTranslation('title', app()->getLocale()),
             'day' => $this->day,
             'hour' => $this->hour,
+            'product_id' => $this->product_id,
             'name' => $this->product->name,
             'image' => $this->product->image,
             'price' => $this->price,

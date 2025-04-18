@@ -23,6 +23,7 @@ class Product extends JsonResource
             'place' => $this->place,
             'url' => route('product', $this->name, false),
             'image' => $this->image,
+            'image_header' => $this->image_header,
             'target' => $this->category->target,
             'organizer' => $this->when($this->organizer, function () {
                 return [

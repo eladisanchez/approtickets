@@ -34,7 +34,7 @@ class ProductPolicy
     public function update(User $user, Product $product): bool
     {
         return false;
-        return $user->hasRole('organizer') && $product->user_id == $user->id;
+        //return $user->hasRole('organizer') && $product->user_id == $user->id;
     }
 
     public function delete(User $user, Product $product): bool

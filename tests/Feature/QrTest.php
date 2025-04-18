@@ -92,13 +92,13 @@ describe('qr check', function () {
     // Esdeveniment futur
     test('future event', function () {
         $booking = Booking::find(1);
-        $booking->day = date('Y-m-d', strtotime('+1 day'));
+        $booking->day = date('Y-m-d', strtotime('+2 day'));
         $booking->save();
         $response = $this->post('api/checkQR', [
             'qr' => base64_encode('xx_1234_1_1')
         ]);
         $response->assertStatus(403);
-        $response->assertJson(['message' => 'Falten 1 dies per l\'espectacle']);
+        $response->assertJson(['message' => 'Falten 2 dies per l\'espectacle']);
     });
 
     // Ja utilitzat

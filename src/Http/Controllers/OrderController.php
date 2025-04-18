@@ -7,6 +7,7 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use ApproTickets\Models\Order;
 use ApproTickets\Models\Booking;
+use ApproTickets\Models\User;
 use Session;
 use Mail;
 use ApproTickets\Mail\NewOrder;
@@ -54,8 +55,23 @@ class OrderController extends BaseController
 
 		$validator = validator(request()->all(), $rules);
 		if ($validator->fails()) {
-			dd('validator fails');
 			return redirect()->back()->withErrors($validator)->withInput();
+		}
+
+		if (!empty(request()->input('password'))) {
+			$newUserValidator = validator(request()->all(), [
+				'password' => 'confirmed|min:6',
+				'email' => 'unique:users,email'
+			]);
+			if ($newUserValidator->fails()) {
+				return redirect()->back()->withErrors($newUserValidator)->withInput();
+			}
+			$user = new User;
+			$user->name = request()->input('name');
+			$user->email = request()->input('email');
+			$user->password = request()->input('password');
+			$user->save();
+			auth()->login($user);
 		}
 
 		$total = $cartItems->sum(function ($item) {
@@ -173,7 +189,7 @@ class OrderController extends BaseController
 
 		if (config('approtickets.inertia')) {
 			return Inertia::render('order/Error', [
-				'title' => __('El pagament no s\'ha pogut processar'),
+				'title' => __('Error en el pagament'),
 				'payment' => route('order.payment', ['id' => $order->id]),
 				'limit' => $order->created_at->addHour()->format('H:i')
 			]);
@@ -228,19 +244,6 @@ class OrderController extends BaseController
 			]);
 		}
 		return view('order.previous')->with('orders', $orders);
-	}
-
-	public function login(Request $request)
-	{
-		$request->validate([
-			'email' => 'required|email',
-			'password' => 'required'
-		]);
-
-		if (auth()->attempt($request->only('email', 'password'))) {
-			return redirect()->route('checkout');
-		}
-		return redirect()->back()->with('error', 'El correu o la contrassenya són incorrectes');
 	}
 
 }

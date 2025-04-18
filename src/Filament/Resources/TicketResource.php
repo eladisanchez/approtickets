@@ -24,7 +24,7 @@ class TicketResource extends Resource
     protected static ?string $model = Ticket::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
-    protected static ?string $navigationLabel = 'Entrades';
+    protected static ?string $navigationLabel = 'Entrades en venda';
     protected static ?string $modelLabel = 'entrada';
     protected static ?string $pluralModelLabel = 'entrades';
     protected static ?string $navigationGroup = 'Entrades';
@@ -55,11 +55,12 @@ class TicketResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('product.title')->badge()->sortable()->searchable()
+                Tables\Columns\TextColumn::make('product.title')->badge()->sortable()->searchable(isIndividual: true, isGlobal: true)
                     ->label('Producte'),
                 Tables\Columns\TextColumn::make('day')->date('d/m/Y')->label('Dia'),
                 Tables\Columns\TextColumn::make('hour')->date('H:i')->label('Hora'),
-                Tables\Columns\TextColumn::make('tickets')->label('Entrades')
+                Tables\Columns\TextColumn::make('tickets')->label('Entrades'),
+                Tables\Columns\TextColumn::make('available')->label('Disponibles')
             ])
             ->filters([
                 Tables\Filters\Filter::make('product')
@@ -90,20 +91,31 @@ class TicketResource extends Resource
                         Forms\Components\DatePicker::make('new_date')
                             ->label('Nova data')
                             ->helperText("Especifica opcionalment un nou dia i hora de la sessió. Les entrades ja adquirides i no reemborsades seguiran sent vàlides pel nou horari."),
-                        
+
                     ])
                     ->action(function (Ticket $record, array $data) {
                         $record->cancel($data['new_date']);
                     })
                     ->icon('heroicon-o-x-circle')
-                    ->color('warning')
+                    ->color('warning'),
+                Tables\Actions\Action::make('map')
+                    ->label('Plànol')
+                    ->url(fn(Ticket $record) => route('map', [
+                        'product_id' => $record->product_id,
+                        'day' => date('Y-m-d', strtotime($record->day)),
+                        'hour' => date('H:i', strtotime($record->hour))
+                    ]))
+                    ->icon('heroicon-o-document-text')
+                    ->color('success')
+                    ->openUrlInNewTab()
+                    ->visible(fn(Ticket $record) => $record->product && $record->product->venue_id),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('day', 'desc');
+            ->defaultSort('day', 'asc');
     }
 
     public static function getPages(): array
@@ -114,4 +126,16 @@ class TicketResource extends Resource
             'edit' => Pages\EditTicket::route('/{record}/edit'),
         ];
     }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = static::getModel()::query();
+        if (auth()->user()->hasRole('organizer')) {
+            $query->whereHas('product', function (Builder $query) {
+                $query->where('user_id', auth()->user()->id);
+            });
+        }
+        return $query;
+    }
+
 }

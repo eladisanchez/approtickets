@@ -19,7 +19,8 @@ class Order extends JsonResource
             'created_at' => $this->created_at->format('d/m/Y'),
             'tickets' => $this->totalTickets(),
             'total' => $this->total,
-            'pdf' => route('order.pdf', ['session' => $this->session, 'id' => $this->id])
+            'paid' => $this->paid,
+            'url' => $this->paid ? route('order.pdf', ['session' => $this->session, 'id' => $this->id]) : route('order.payment', ['id' => $this->id]),
         ];
     }
 }

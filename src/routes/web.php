@@ -9,6 +9,7 @@ use ApproTickets\Http\Middleware\HandleInertiaRequests;
 use ApproTickets\Http\Controllers\CalendarController;
 use ApproTickets\Http\Controllers\RefundController;
 use ApproTickets\Http\Controllers\PackController;
+use ApproTickets\Http\Controllers\UserController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 
@@ -38,7 +39,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale()], function () {
         Route::get('pdf/order/{session}/{id}', [OrderController::class, 'pdf'])->name('order.pdf');
 
         // User area
-        Route::post('login', [OrderController::class, 'login'])->name('login');
+        Route::post('login', [UserController::class, 'login'])->name('login');
+        Route::post('logout', [UserController::class, 'logout'])->name('logout');
 
         // Refunds
         Route::get('devolucio/{hash}', [RefundController::class, 'show'])->name('refund');
@@ -64,22 +66,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale()], function () {
         // Static pages
         Route::get('pagina/{slug}', [PageController::class, 'page'])->name('page');
 
+        Route::get('mapa/{product_id}/{day}/{hour}', [ProductController::class, 'map'])->name('map');
+
     });
-
-});
-
-Route::middleware([
-    'web'
-])->group(function () {
-
-    Route::get('prova', function () {
-        return 'prova';
-    })->name('provaget');
-    Route::post('prova', function () {
-        return 'prova';
-    })->name('prova');
-
-    // Tpv
-
 
 });

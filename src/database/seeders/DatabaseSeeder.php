@@ -23,6 +23,10 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'organizer',
                 'display_name' => 'Organitzador',
+            ],
+            [
+                'name' => 'admin',
+                'display_name' => 'Administrador',
             ]
         ]);
         User::create([
@@ -33,12 +37,17 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'organitzador',
             'email' => 'organitzador@entradessolsones.com',
-            'password' => 'lector1234'
+            'password' => 'organitzador1234'
         ]);
         User::create([
             'name' => 'client',
             'email' => 'client@gmail.com',
             'password' => 'client1234'
+        ]);
+        User::create([
+            'name' => 'admin',
+            'email' => 'admin@entradessolsones.com',
+            'password' => 'admin1234'
         ]);
         DB::table('role_user')->insert([
             [
@@ -48,6 +57,10 @@ class DatabaseSeeder extends Seeder
             [
                 'user_id' => 2,
                 'role_id' => 2
+            ],
+            [
+                'user_id' => 4,
+                'role_id' => 3
             ]
         ]);
         DB::table('products')->insert([
@@ -78,6 +91,12 @@ class DatabaseSeeder extends Seeder
             'uid' => '1234',
             'day' => now()->toDateString(),
             'hour' => now()->addMinutes(30)->toTimeString()
+        ]);
+        DB::table('extracts')->insert([
+            'date_start' => now()->subDays(30)->toDateString(),
+            'date_end' => now()->toDateString(),
+            'paid' => 0,
+            'product_id' => 1
         ]);
     }
 }

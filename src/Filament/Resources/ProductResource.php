@@ -75,8 +75,8 @@ class ProductResource extends Resource
                                     ->disk('public')
                                     ->directory('products')
                                     ->columnSpan(3),
-                                Components\FileUpload::make('image_bg')
-                                    ->label('Imatge de fons')
+                                Components\FileUpload::make('image_header')
+                                    ->label('Imatge de capçalera')
                                     ->image()
                                     ->imageEditor()
                                     ->disk('public')
@@ -215,7 +215,20 @@ class ProductResource extends Resource
                                         Components\Placeholder::make('sold')
                                             ->label('Venudes')
                                             ->hidden(fn($record) => !$record)
-                                            ->content(fn($record): string => $record ? $record->bookings->count() : ''),
+                                            ->content(fn($record): string => $record ? $record->bookings->count() : '')
+                                            ->hintActions([
+                                                Action::make('map')
+                                                    ->label('Plànol')
+                                                    ->url(fn(Ticket $record): string => route('map', [
+                                                        'product_id' => $record->product_id,
+                                                        'day' => $record->day->format('Y-m-d'),
+                                                        'hour' => $record->hour->format('H:i')
+                                                    ]))
+                                                    ->icon('heroicon-o-document-text')
+                                                    ->color('success')
+                                                    ->openUrlInNewTab()
+                                                    ->visible(fn(Ticket $record) => $record->product->venue_id)
+                                            ])
                                     ])->columns(6),
                                 Actions::make([
                                     Actions\Action::make('previous-tickets')

@@ -2,7 +2,6 @@
 
 namespace ApproTickets\Tests\Feature;
 
-use Database\Seeders\DatabaseSeeder;
 use ApproTickets\Models\Product;
 
 it('shows the cart', function () {

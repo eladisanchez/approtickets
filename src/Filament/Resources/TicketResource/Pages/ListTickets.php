@@ -25,7 +25,7 @@ class ListTickets extends ListRecords
             'active' => Tab::make('En venda')
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('day', '>=', date('Y-m-d'))),
             'previous' => Tab::make('Anteriors')
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('day', '<', date('Y-m-d'))),
+                ->modifyQueryUsing(fn(Builder $query) => $query->where('day', '<', date('Y-m-d'))->orderBy('day', 'desc')),
         ];
     }
 }

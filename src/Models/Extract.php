@@ -52,8 +52,8 @@ class Extract extends Model
                 $q->where("user_id", $this->user_id);
             });
         }
-        if ($this->producte_id) {
-            $bookings->where('product_id', $this->producte_id);
+        if ($this->product_id) {
+            $bookings->where('product_id', $this->product_id);
         }
         $bookings = $bookings->get()->groupBy(['product.title', 'rate.title'], $preserveKeys = true);
         $sales = [];
@@ -92,7 +92,7 @@ class Extract extends Model
                 $q->where('payment', 'card')->where('paid', 1);
             })
             ->whereHas('product', function ($q) {
-                if ($this->producte_id) {
+                if ($this->product_id) {
                     $q->where("id", $this->product_id);
                 } else {
                     $q->where("user_id", $this->user_id);

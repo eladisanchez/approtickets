@@ -121,10 +121,23 @@ class ProductController extends BaseController
 	{
 		$product = Product::findOrFail($id);
 		$tickets = $product->ticketsDay($day, $hour);
+
+		if (!$tickets) {
+			abort(404);
+		}
+
+		if ($product->venue_id) {
+			return [
+				'cart' => $tickets->cartSeats,
+				'booked' => $tickets->bookedSeats,
+			];
+		}
 		return [
-			'cart' => $tickets->cartSeats,
-			'booked' => $tickets->bookedSeats,
+			'available' => $tickets->available,
+			'total' => $tickets->tickets,
+			'cart' => $tickets->cart
 		];
+
 	}
 
 	public function search(): View|InertiaResponse
@@ -193,6 +206,26 @@ class ProductController extends BaseController
 			'Pragma' => 'public',
 		];
 		return response()->make($cachedImage, 200, $headers);
+	}
+
+	public function map($product_id, $day, $hour)
+	{
+
+		$product = Product::findOrFail($product_id);
+
+		if (
+			!auth()->user()->hasRole('admin') &&
+			!(auth()->user()->hasRole('organizer') && auth()->user()->id == $product->user_id)
+		) {
+			abort(403);
+		}
+
+		if (!$day || !$hour) {
+			abort(403);
+		}
+
+		$tickets = $product->ticketsDay($day, $hour);
+		return view('approtickets::map', compact('tickets'));
 	}
 
 }

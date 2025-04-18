@@ -44,6 +44,14 @@ class Ticket extends Model
         return $this->tickets - $this->bookingsTotal;
     }
 
+    public function getCartAttribute()
+    {
+        return $this->bookings
+            ->where('order_id', NULL)
+            ->where('session', session()->getId())
+            ->sum('tickets');
+    }
+
     public function getCartSeatsAttribute()
     {
         $cartItems = $this->bookings

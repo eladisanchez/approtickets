@@ -13,6 +13,7 @@ use Laravel\Sanctum\SanctumServiceProvider;
 use Shanmuga\LaravelEntrust\LaravelEntrustServiceProvider;
 use ApproTickets\Models\User;
 use ApproTickets\Models\Role;
+use Livewire\LivewireServiceProvider;
 
 class TestCase extends Orchestra
 {
@@ -34,6 +35,11 @@ class TestCase extends Orchestra
             LaravelLocalizationServiceProvider::class,
             SanctumServiceProvider::class,
             LaravelEntrustServiceProvider::class,
+            LivewireServiceProvider::class,
+            \Filament\FilamentServiceProvider::class,
+            \Filament\Forms\FormsServiceProvider::class,
+            \Filament\Tables\TablesServiceProvider::class,
+            \Filament\Actions\ActionsServiceProvider::class,
         ];
     }
 

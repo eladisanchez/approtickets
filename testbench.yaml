@@ -1,4 +1,0 @@
-providers:
-  - Mcamara\LaravelLocalization\LaravelLocalizationServiceProvider
-  - Laravel\Sanctum\SanctumServiceProvider
-  - Shanmuga\LaravelEntrust\LaravelEntrustServiceProvider

@@ -20,7 +20,7 @@ class BookingResource extends Resource
     protected static ?string $model = Booking::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-ticket';
-    protected static ?string $navigationLabel = 'Entrades';
+    protected static ?string $navigationLabel = 'Entrades venudes';
     protected static ?string $modelLabel = 'entrada';
     protected static ?string $pluralModelLabel = 'entrades';
     protected static ?string $navigationGroup = 'Vendes';
@@ -43,14 +43,28 @@ class BookingResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\IconColumn::make('order.paid')->label('Estat')
+                    ->icon(fn(string $state): string => match ($state) {
+                        '0' => 'heroicon-o-clock',
+                        '1' => 'heroicon-o-check',
+                        '2' => 'heroicon-o-x-mark',
+                        default => 'heroicon-o-shopping-cart',
+                    })
+                    ->color(fn(string $state): string => match ($state) {
+                        '0' => 'warning',
+                        '1' => 'success',
+                        '2' => 'danger',
+                        default => 'info',
+                    })->default('heroicon-o-shopping-cart'),
                 Tables\Columns\TextColumn::make('created_at')->label('Data compra')->sortable()->searchable()->date('d/m/Y H:i'),
-                Tables\Columns\TextColumn::make('order.email')->label('Client')->sortable()->searchable(),
-                Tables\Columns\TextColumn::make('product.title')->label('Producte')->sortable()->searchable()->wrap(),
+                Tables\Columns\TextColumn::make('order.email')->label('Client')->sortable()->searchable(isIndividual: true, isGlobal: true),
+                Tables\Columns\TextColumn::make('product.title')->label('Producte')->sortable()->searchable(isIndividual: true, isGlobal: true)->wrap(),
                 Tables\Columns\TextColumn::make('rate.title')->label('Tarifa')->sortable(),
                 Tables\Columns\TextColumn::make('tickets')->label('Qt.')->sortable(),
                 Tables\Columns\TextColumn::make('formattedSession')->label('Sessió')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('reducedSeat')->label('Localitat')->sortable(),
                 Tables\Columns\TextColumn::make('scans.scan_id')->label('QR')->badge()->color('success'),
+
             ])
             ->filters([
                 //
@@ -79,7 +93,8 @@ class BookingResource extends Resource
                     ->form([
                         Forms\Components\Select::make('product')
                             ->label('Producte')
-                            ->relationship('product', 'title'),
+                            ->relationship('product', 'title')
+                            ->searchable(),
                     ])
                     ->query(fn(Builder $query, array $data): Builder => $data['product'] ? $query->where('product_id', $data['product']) : $query),
                 // Filter by if has scans
@@ -88,6 +103,28 @@ class BookingResource extends Resource
                         Forms\Components\Toggle::make('scans')->label('Escanejat'),
                     ])
                     ->query(fn(Builder $query, array $data): Builder => $data['scans'] ? $query->whereHas('scans') : $query),
+                // Filter by order.paid
+                Tables\Filters\Filter::make('paid_status')
+                    ->form([
+                        Forms\Components\Select::make('paid_status')
+                            ->label('Estat')
+                            ->options([
+                                'cart' => 'Cistell',
+                                '0' => 'Pendent',
+                                '1' => 'Comanda completada',
+                            ])
+                    ])
+                    ->query(
+                        function (Builder $query, array $data) {
+                            if (isset($data['paid_status'])) {
+                                if ($data['paid_status'] == 'cart') {
+                                    return $query->whereDoesntHave('order');
+                                }
+                                return $query->whereHas('order', fn($q) => $q->where('paid', $data['paid_status']));
+                            }
+                            return $query;
+                        }
+                    ),
 
             ])
             ->modifyQueryUsing(fn(Builder $query) => $query->orderBy('created_at', 'DESC'));

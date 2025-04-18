@@ -33,32 +33,37 @@ class ExtractResource extends Resource
                     ->relationship('user', 'name')->searchable('name'),
                 Forms\Components\DatePicker::make('date_start')->label('Data inici')->required(),
                 Forms\Components\DatePicker::make('date_end')->label('Data fi')->required(),
-                Forms\Components\Placeholder::make('sale')->label('Vendes')->content(function ($record) {
-                    $content = '<div class="overflow-x-auto"><table class="border border-gray-300 divide-y divide-gray-300" style="width:100%">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300">Producte</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300">Tarifa</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300">Vendes</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300">Devolucions</th>
-                        </tr>
-                    </thead><tbody class="bg-white divide-y divide-gray-200">';
-                    foreach ($record->sales as $sale):
-                        $refund = $sale['refund'] ?? 0;
-                        $content .= "<tr>
-                        <td class='text-left px-6 py-4 whitespace-nowrap border-b border-gray-300'>{$sale['product']}</td>
-                        <td class='text-left px-6 py-4 whitespace-nowrap border-b border-gray-300'>{$sale['rate']}</td>
-                        <td class='text-left px-6 py-4 whitespace-nowrap border-b border-gray-300'>{$sale["settle"]} €</td>
-                        <td class='text-left px-6 py-4 whitespace-nowrap border-b border-gray-300'>{$refund} €</td>
-                        </tr>";
-                    endforeach;
-                    $content .= '<tr>
-                        <td colspan="3" class="text-left px-6 py-4 whitespace-nowrap border-b border-gray-300"><strong>Total</strong></td>
-                        <td class="text-left px-6 py-4 whitespace-nowrap border-b border-gray-300"><strong>' . $record->total . ' €</strong></td>
-                    </tr>';
-                    $content .= '</tbody></table></div>';
-                    return new HtmlString($content);
-                })->columnSpanFull()
+                Forms\Components\Placeholder::make('sale')->label('Vendes')
+                    ->visible(fn($record) => $record !== null)
+                    ->content(function ($record) {
+                        if (!$record)
+                            return '';
+
+                        $content = '<div class="overflow-x-auto"><table class="border border-gray-300 divide-y divide-gray-300" style="width:100%">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300">Producte</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300">Tarifa</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300">Vendes</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300">Devolucions</th>
+                            </tr>
+                        </thead><tbody class="bg-white divide-y divide-gray-200">';
+                        foreach ($record->sales as $sale):
+                            $refund = $sale['refund'] ?? 0;
+                            $content .= "<tr>
+                            <td class='text-left px-6 py-4 whitespace-nowrap border-b border-gray-300'>{$sale['product']}</td>
+                            <td class='text-left px-6 py-4 whitespace-nowrap border-b border-gray-300'>{$sale['rate']}</td>
+                            <td class='text-left px-6 py-4 whitespace-nowrap border-b border-gray-300'>{$sale["settle"]} €</td>
+                            <td class='text-left px-6 py-4 whitespace-nowrap border-b border-gray-300'>{$refund} €</td>
+                            </tr>";
+                        endforeach;
+                        $content .= '<tr>
+                            <td colspan="3" class="text-left px-6 py-4 whitespace-nowrap border-b border-gray-300"><strong>Total</strong></td>
+                            <td class="text-left px-6 py-4 whitespace-nowrap border-b border-gray-300"><strong>' . $record->total . ' €</strong></td>
+                        </tr>';
+                        $content .= '</tbody></table></div>';
+                        return new HtmlString($content);
+                    })->columnSpanFull()
             ]);
     }
 

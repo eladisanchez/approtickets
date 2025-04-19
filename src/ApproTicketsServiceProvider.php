@@ -27,6 +27,7 @@ use ApproTickets\Http\Middleware\HandleInertiaRequests;
 use Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Console\Scheduling\Schedule;
+use ApproTickets\Http\Middleware\RedirectIfNotAuthorized;
 
 class ApproTicketsServiceProvider extends ServiceProvider
 {
@@ -64,6 +65,7 @@ class ApproTicketsServiceProvider extends ServiceProvider
 
         $this->app['router']->middlewareGroup('web', [
             HandleInertiaRequests::class,
+            RedirectIfNotAuthorized::class,
         ]);
 
         JsonResource::withoutWrapping();
@@ -121,6 +123,7 @@ class ApproTicketsServiceProvider extends ServiceProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                RedirectIfNotAuthorized::class,
             ])
             ->font(config('approtickets.admin.font'))
             ->colors([

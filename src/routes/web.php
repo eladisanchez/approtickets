@@ -40,7 +40,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale()], function () {
 
         // User area
         Route::post('login', [UserController::class, 'login'])->name('login');
-        Route::post('logout', [UserController::class, 'logout'])->name('logout');
+        Route::get('logout', [UserController::class, 'logout'])->name('logout');
 
         // Refunds
         Route::get('devolucio/{hash}', [RefundController::class, 'show'])->name('refund');

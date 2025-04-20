@@ -59,6 +59,7 @@ class ApproTicketsServiceProvider extends ServiceProvider
             ]);
             $this->app->booted(function () {
                 $schedule = $this->app->make(Schedule::class);
+                $schedule->command('queue:work --stop-when-empty')->everyMinute();
                 $schedule->command('approtickets:clean-cart')->everyMinute();
             });
         }

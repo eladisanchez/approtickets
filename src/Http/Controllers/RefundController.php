@@ -37,7 +37,7 @@ class RefundController extends BaseController
 		]);
 		if ($response->successful()) {
 			$jsonResponse = $response->json();
-			if ($jsonResponse['errorCode']) {
+			if (isset($jsonResponse['errorCode'])) {
 				if ($jsonResponse['errorCode'] == 'SIS0054') {
 					return [
 						'error' => "La comanda no existeix.",

@@ -21,6 +21,16 @@ class Ticket extends Model
         'seats' => 'array'
     ];
 
+    protected static function booted()
+    {
+        static::created(function ($ticket) {
+            if ($ticket->product->venue_id) {
+                $ticket->seats = $ticket->product->venue->seats;
+                $ticket->save();
+            }
+        });
+    }
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

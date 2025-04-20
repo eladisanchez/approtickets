@@ -199,7 +199,7 @@ class ProductResource extends Resource
                                                 }
                                                 return 0;
                                             })
-                                            ->disabled(function () use ($venue) {
+                                            ->readOnly(function () use ($venue) {
                                                 return !!$venue;
                                             })
                                             ->hintActions([
@@ -207,8 +207,8 @@ class ProductResource extends Resource
                                                     ->url(fn(Ticket $record): string => route('filament.admin.resources.tickets.edit', $record))
                                                     ->openUrlInNewTab()
                                                     ->label('Edita seients')
-                                                    ->hidden(function () use ($venue) {
-                                                        return !$venue;
+                                                    ->hidden(function ($record) use ($venue) {
+                                                        return !$venue || !$record;
                                                     }),
                                             ]),
                                         Components\Select::make('lang')->label('Idioma')->options(config('approtickets.locales'))->hidden(!config('approtickets.languages')),

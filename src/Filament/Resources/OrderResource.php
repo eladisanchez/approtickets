@@ -100,6 +100,16 @@ class OrderResource extends Resource
                             ]);
                         })
                         ->openUrlInNewTab(),
+                    Tables\Actions\Action::make('resend')
+                        ->label('Reenviar email')
+                        ->icon('heroicon-o-envelope')
+                        ->action(function (Order $record) {
+                            $record->resend();
+                            Notification::make()
+                                ->title('Email reenviat a ' . $record->email)
+                                ->success()
+                                ->send();
+                        }),
                     Tables\Actions\Action::make('refund')
                         ->label('Devolució')
                         ->icon('heroicon-o-arrow-left-circle')

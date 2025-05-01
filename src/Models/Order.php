@@ -5,6 +5,9 @@ namespace ApproTickets\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use ApproTickets\Enums\PaymentMethods;
+use ApproTickets\Mail\NewOrder;
+use Mail;
+use Log;
 
 class Order extends Model
 {
@@ -105,6 +108,15 @@ class Order extends Model
             $total += $booking->tickets;
         }
         return $total;
+    }
+
+    public function resend()
+    {
+        try {
+            Mail::to($this->email)->send(new NewOrder($this));
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+        }
     }
 
 }

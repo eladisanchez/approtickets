@@ -54,6 +54,7 @@ class TPVController extends BaseController
                 Mail::to($order->email)->send(new NewOrder($order));
                 $order->email_sent = 1;
                 $order->save();
+                Mail::to(config('mail.from.address'))->send(new NewOrderAlert($order));
             } catch (\Exception $e) {
                 Log::error($e->getMessage());
             }

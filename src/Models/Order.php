@@ -114,8 +114,10 @@ class Order extends Model
     {
         try {
             Mail::to($this->email)->send(new NewOrder($this));
+            return true;
         } catch (\Exception $e) {
             Log::error($e->getMessage());
+            return false;
         }
     }
 

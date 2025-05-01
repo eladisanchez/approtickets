@@ -104,11 +104,18 @@ class OrderResource extends Resource
                         ->label('Reenviar email')
                         ->icon('heroicon-o-envelope')
                         ->action(function (Order $record) {
-                            $record->resend();
-                            Notification::make()
-                                ->title('Email reenviat a ' . $record->email)
-                                ->success()
-                                ->send();
+                            $resend = $record->resend();
+                            if ($resend) {
+                                Notification::make()
+                                    ->title('Email reenviat a ' . $record->email)
+                                    ->success()
+                                    ->send();
+                            } else {
+                                Notification::make()
+                                    ->title('Error en enviar el mail. ')
+                                    ->danger()
+                                    ->send();
+                            }
                         }),
                     Tables\Actions\Action::make('refund')
                         ->label('Devolució')

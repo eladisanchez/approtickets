@@ -1,4 +1,4 @@
-@extends('approtickets::emails.template')
+@extends('emails.template')
 
 @section('content')
     {{-- Cancel·lació --}}

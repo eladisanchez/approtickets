@@ -1,4 +1,4 @@
-@extends('emails.base')
+@extends('approtickets::emails.base')
 
 @section('content')
     {!! $text !!}

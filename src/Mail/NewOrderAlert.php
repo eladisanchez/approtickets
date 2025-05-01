@@ -28,14 +28,14 @@ class NewOrderAlert extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Nova comanda: '.$this->order->number,
+            subject: 'Nova comanda: ' . $this->order->number,
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'emails.new-order-alert',
+            view: 'approtickets::emails.new-order-alert',
             with: [
                 'order' => $this->order
             ],

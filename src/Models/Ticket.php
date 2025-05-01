@@ -4,9 +4,11 @@ namespace ApproTickets\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use ApproTickets\Models\Booking;
+use ApproTickets\Models\Refund;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Mail;
+use Log;
 use ApproTickets\Mail\RefundMail;
 
 class Ticket extends Model
@@ -88,20 +90,20 @@ class Ticket extends Model
     }
 
     public function cancel(
-        string|null $newDate = null,
-        bool $canRefund = false
+        string|null $newDate = null
     ) {
-        $sessionCanceled = null;
+        $sessionCanceled = "{$this->day->format('Y-m-d')} {$this->hour->format('H:i:s')}";
+        $oldDay = $this->day;
+        $oldHour = $this->hour;
         if ($newDate) {
-            $sessionCanceled = "{$this->day} {$this->hour}";
             $this->day = date('Y-m-d', strtotime($newDate));
             $this->hour = date('H:i:s', strtotime($newDate));
         }
         $this->save();
 
         $bookings = Booking::where("product_id", $this->product_id)
-            ->where("day", $this->day)
-            ->where("hour", $this->hour)
+            ->where("day", $oldDay)
+            ->where("hour", $oldHour)
             ->get()
             ->groupBy('order_id');
 
@@ -109,9 +111,7 @@ class Ticket extends Model
             foreach ($bookings as $orderId => $orderBookings) {
                 $amountRefund = 0;
                 foreach ($orderBookings as $booking) {
-                    if ($canRefund) {
-                        $booking->refund = 1;
-                    }
+                    $booking->refund = 1;
                     if ($newDate) {
                         $booking->day = $this->day;
                         $booking->hour = $this->hour;
@@ -121,14 +121,21 @@ class Ticket extends Model
                 }
                 $order = Order::find($orderId);
                 if ($order && $order->tpv_id) {
-                    $refund = new Refund([
+                    $refund = Refund::create([
                         'product_id' => $this->product_id,
                         'order_id' => $order->id,
                         'total' => $amountRefund,
                         'session_canceled' => $sessionCanceled,
                         'session_new' => $newDate
                     ]);
-                    Mail::send(new RefundMail($refund))->to($order->email);
+                    Log::debug("Devolució de {$amountRefund} creada per la comanda {$order->id}");
+                    if ($order->email) {
+                        try {
+                            Mail::to($order->email)->queue(new RefundMail($refund));
+                        } catch (\Exception $e) {
+                            Log::error('Error a l\'enviar correu de devolució: ' . $e);
+                        }
+                    }
                 }
             }
         }

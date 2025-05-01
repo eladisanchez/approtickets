@@ -8,8 +8,9 @@ use Illuminate\Queue\SerializesModels;
 use ApproTickets\Models\Refund;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Content;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class RefundMail extends Mailable
+class RefundMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -33,7 +34,7 @@ class RefundMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.refund',
+            view: 'approtickets::emails.refund',
             with: [
                 'refund' => $this->refund
             ],

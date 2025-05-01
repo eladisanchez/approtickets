@@ -105,12 +105,28 @@ class RefundController extends BaseController
 	public function show(string $hash): View|InertiaResponse
 	{
 		$refund = Refund::where('hash', $hash)
-			->whereNotNull('refunded_at')
+			->whereNull('refunded_at')
 			->with('order')
+			->where('created_at', '>', now()->subMonths(1))
 			->firstOrFail();
+
+		$tpv = new Tpv(config('redsys'));
+		$tpv->setFormHiddens(
+			[
+				'TransactionType' => '3',
+				'MerchantData' => "Devolució comanda {$refund->order_id}",
+				'MerchantURL' => route('refund-notification'),
+				'Order' => $refund->order->tpv_id,
+				'Amount' => $refund->total,
+				'UrlOK' => route('refund', ['hash' => $refund->hash]),
+				'UrlKO' => route('refund', ['hash' => $refund->hash])
+			]
+		);
+
 		if (config('approtickets.inertia')) {
-			$content = view('partials.refund', [
+			$content = view('approtickets::partials.refund', [
 				'refund' => $refund,
+				'tpv' => $tpv
 			])->render();
 			return Inertia::render('Basic', [
 				'title' => __('Devolució'),
@@ -119,6 +135,7 @@ class RefundController extends BaseController
 		}
 		return view('checkout.refund', [
 			'refund' => $refund,
+			'tpv' => $tpv
 		]);
 	}
 

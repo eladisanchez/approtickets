@@ -22,10 +22,6 @@ class RefundsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                // Forms\Components\Select::make('product_id')
-                //     ->label('Producte')
-                //     ->relationship('product', 'title')
-                //     ->required(),
                 Forms\Components\TextInput::make('total')
                     ->label('Quantitat')
                     ->numeric()
@@ -44,7 +40,7 @@ class RefundsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('created_at')->label('Creació')
                     ->date('d/m/Y H:i')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('refund')->label('Efectuada')
+                Tables\Columns\TextColumn::make('refunded_at')->label('Efectuada')
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->icon('heroicon-m-check')
@@ -59,9 +55,9 @@ class RefundsRelationManager extends RelationManager
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                ->hidden(function($record) {
-                    return $record->refunded_at;
-                }),
+                    ->hidden(function ($record) {
+                        return $record->refunded_at;
+                    }),
                 Tables\Actions\Action::make('url')
                     ->label('Enllaç')
                     ->icon('heroicon-o-link')
@@ -74,7 +70,7 @@ class RefundsRelationManager extends RelationManager
                         ]);
                     })
                     ->openUrlInNewTab()
-                    ->hidden(function($record) {
+                    ->hidden(function ($record) {
                         return $record->refunded_at;
                     }),
                 Tables\Actions\Action::make('request')
@@ -97,7 +93,7 @@ class RefundsRelationManager extends RelationManager
                     })
                     ->requiresConfirmation()
                     ->color('warning')
-                    ->hidden(function($record) {
+                    ->hidden(function ($record) {
                         return $record->refunded_at;
                     }),
             ]);

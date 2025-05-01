@@ -16,6 +16,7 @@ use Filament\Forms\Components\Select;
 use Filament\Resources\Concerns\Translatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
+use Log;
 
 class TicketResource extends Resource
 {
@@ -85,16 +86,16 @@ class TicketResource extends Resource
                     ->modalHeading('Cancel·lar sessió')
                     ->modalDescription("")
                     ->form([
-                        Forms\Components\Toggle::make('refund')
-                            ->label('Generar devolucions')
-                            ->helperText("S'enviarà un email a tots els usuaris afectats amb un enllaç per poder efectuar la devolució."),
-                        Forms\Components\DatePicker::make('new_date')
+                        Forms\Components\DateTimePicker::make('new_date')
                             ->label('Nova data')
                             ->helperText("Especifica opcionalment un nou dia i hora de la sessió. Les entrades ja adquirides i no reemborsades seguiran sent vàlides pel nou horari."),
-
                     ])
                     ->action(function (Ticket $record, array $data) {
-                        $record->cancel($data['new_date']);
+                        try {
+                            $record->cancel($data['new_date']);
+                        } catch (\Exception $e) {
+                            Log::error($e->getMessage());
+                        }
                     })
                     ->icon('heroicon-o-x-circle')
                     ->color('warning')

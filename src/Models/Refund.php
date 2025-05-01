@@ -5,21 +5,22 @@ namespace ApproTickets\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class Refund extends Model {
+class Refund extends Model
+{
 
-	protected $table = 'refunds';
-	protected $guarded = ['id'];
-	protected $hidden = ['updated_at'];
+    protected $table = 'refunds';
+    protected $guarded = ['id'];
+    protected $hidden = ['updated_at'];
     protected $with = ['order'];
-    protected $dates = [
-        'session_canceled',
-        'session_new'
+    protected $casts = [
+        'session_canceled' => 'datetime',
+        'session_new' => 'datetime',
     ];
 
-    protected static function boot() 
+    protected static function boot()
     {
         parent::boot();
-        static::creating(function($refund) {
+        static::creating(function ($refund) {
             $refund->hash = Str::random(32);
         });
     }
@@ -31,7 +32,7 @@ class Refund extends Model {
 
     public function bookings()
     {
-        return $this->comanda->bookings->where('refund',1);
+        return $this->order->bookings->where('refund', 1);
     }
 
     public function product()

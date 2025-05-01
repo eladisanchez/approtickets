@@ -41,7 +41,8 @@ class ApproTicketsServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom(__DIR__ . '/resources/lang', 'approtickets');
 
         $this->publishes([
-            __DIR__ . '/resources/views' => resource_path('views/vendor/approtickets'),
+            __DIR__ . '/resources/views/emails/base.blade.php' => resource_path('views/vendor/approtickets/emails/base.blade.php'),
+            __DIR__ . '/resources/views/emails/refund.blade.php' => resource_path('views/vendor/approtickets/emails/refund.blade.php'),
         ], 'views');
         $this->publishes([
             __DIR__ . '/config/approtickets.php' => config_path('approtickets.php'),

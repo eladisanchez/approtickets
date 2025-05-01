@@ -35,7 +35,7 @@ class NewProductAlert extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.new-product-alert',
+            view: 'approtickets::emails.new-product-alert',
             with: [
                 'product' => $this->product
             ],

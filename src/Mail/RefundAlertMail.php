@@ -33,7 +33,7 @@ class RefundAlertMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.new-refund-alert',
+            view: 'approtickets::emails.new-refund-alert',
             with: [
                 'refund' => $this->refund
             ],

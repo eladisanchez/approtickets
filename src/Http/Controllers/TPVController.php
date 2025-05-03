@@ -2,6 +2,7 @@
 
 namespace ApproTickets\Http\Controllers;
 
+use ApproTickets\Enums\PaymentStatus;
 use Illuminate\Routing\Controller as BaseController;
 use Redsys\Tpv\Tpv;
 use Mail;
@@ -52,7 +53,7 @@ class TPVController extends BaseController
             ]);
             try {
                 Mail::to($order->email)->send(new NewOrder($order));
-                $order->email_sent = 1;
+                $order->email_sent_at = now();
                 $order->save();
                 Mail::to(config('mail.from.address'))->send(new NewOrderAlert($order));
             } catch (\Exception $e) {
@@ -63,8 +64,8 @@ class TPVController extends BaseController
         else:
 
             Log::info('Error pagament');
-            if ($order->paid != 1) {
-                $order->paid = 2;
+            if ($order->paid != PaymentStatus::PAID) {
+                $order->paid = PaymentStatus::FAILED;
                 $order->save();
             }
 

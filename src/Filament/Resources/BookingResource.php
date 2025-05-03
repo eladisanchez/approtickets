@@ -43,26 +43,7 @@ class BookingResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\IconColumn::make('order.paid')->label('Estat')
-                    ->icon(fn(string $state): string => match ($state) {
-                        '0' => 'heroicon-o-clock',
-                        '1' => 'heroicon-o-check',
-                        '2' => 'heroicon-o-x-mark',
-                        default => 'heroicon-o-shopping-cart',
-                    })
-                    ->color(fn(string $state): string => match ($state) {
-                        '0' => 'warning',
-                        '1' => 'success',
-                        '2' => 'danger',
-                        default => 'info',
-                    })->default('cart')->tooltip(
-                        fn($state) => match ($state) {
-                            0 => 'Pagament pendent',
-                            1 => 'Comanda completada',
-                            2 => 'Pagament fallat',
-                            default => 'Cistell',
-                        }
-                    ),
+                Tables\Columns\IconColumn::make('order.paid')->label('Estat')->default(3),
                 Tables\Columns\TextColumn::make('created_at')->label('Data compra')->sortable()->searchable()->date('d/m/Y H:i'),
                 Tables\Columns\TextColumn::make('order.email')->label('Client')->sortable()->searchable(isIndividual: true, isGlobal: true),
                 Tables\Columns\TextColumn::make('product.title')->label('Producte')->sortable()->searchable(isIndividual: true, isGlobal: true)->wrap(),
@@ -71,7 +52,6 @@ class BookingResource extends Resource
                 Tables\Columns\TextColumn::make('formattedSession')->label('Sessió')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('reducedSeat')->label('Localitat')->sortable(),
                 Tables\Columns\TextColumn::make('scans_count')->counts('scans')->label('QR')->badge()->color('success')->tooltip(fn(Booking $record): string => $record->scans->pluck('scan_id')->implode(', ')),
-
             ])
             ->filters([
                 //

@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Support\HtmlString;
 use Filament\Notifications\Notification;
+use ApproTickets\Enums\PaymentStatus;
 
 
 class OrderResource extends Resource
@@ -40,13 +41,8 @@ class OrderResource extends Resource
                 Forms\Components\TextInput::make('name')->label('Client')->columnSpan(2),
                 Forms\Components\TextInput::make('email')->label('Correu electrònic')->columnSpan(2),
                 Forms\Components\TextInput::make('phone')->label('Telèfon')->columnSpan(2),
-                Forms\Components\Select::make('payment')->label('Mètode de pagament')
-                    ->options(fn() => collect(PaymentMethods::cases())->mapWithKeys(fn($case) => [$case->value => $case->getLabel()]))->required()->columnSpan(2),
-                Forms\Components\Select::make('paid')->label('Estat pagament')->options([
-                    '0' => 'Pendent',
-                    '1' => 'Pagat',
-                    '2' => 'Cancel·lat',
-                ])->required()->columnSpan(2),
+                Forms\Components\Select::make('payment')->label('Mètode de pagament')->options(PaymentMethods::class)->required()->columnSpan(2),
+                Forms\Components\Select::make('paid')->label('Estat pagament')->options(PaymentStatus::class)->required()->columnSpan(2),
                 Forms\Components\TextInput::make('tpv_id')->label('ID TPV')->disabled()->columnSpan(2),
                 Forms\Components\Grid::make([
                     Forms\Components\TextInput::make('bookings')->label('Productes')->disabled()->columnSpan(6),
@@ -71,17 +67,7 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('bookings.product.title')
                     ->listWithLineBreaks()->label('Productes')->badge(),
                 Tables\Columns\TextColumn::make('total')->label('Total')->suffix(' €'),
-                Tables\Columns\IconColumn::make('paid')->label('Pagat')
-                    ->icon(fn(string $state): string => match ($state) {
-                        '0' => 'heroicon-o-clock',
-                        '1' => 'heroicon-o-check',
-                        '2' => 'heroicon-o-x-mark',
-                    })
-                    ->color(fn(string $state): string => match ($state) {
-                        '0' => 'warning',
-                        '1' => 'success',
-                        '2' => 'danger',
-                    }),
+                Tables\Columns\IconColumn::make('paid')->label('Pagat'),
                 Tables\Columns\TextColumn::make('payment')->badge()->label('Mètode'),
             ])
             ->filters([

@@ -5,6 +5,7 @@ namespace ApproTickets\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use ApproTickets\Enums\PaymentMethods;
+use ApproTickets\Enums\PaymentStatus;
 use ApproTickets\Mail\NewOrder;
 use Mail;
 use Log;
@@ -19,6 +20,7 @@ class Order extends Model
     protected $hidden = ['updated_at'];
     protected $append = ['number'];
     protected $casts = [
+        'paid' => PaymentStatus::class,
         'payment' => PaymentMethods::class
     ];
 

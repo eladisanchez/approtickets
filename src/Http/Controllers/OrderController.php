@@ -17,7 +17,7 @@ use ApproTickets\Models\Option;
 use Illuminate\Routing\Controller as BaseController;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
-use Illuminate\Http\Request;
+use ApproTickets\Enums\PaymentStatus;
 
 class OrderController extends BaseController
 {
@@ -123,7 +123,7 @@ class OrderController extends BaseController
 	public function payment($id)
 	{
 		$order = Order::findOrFail($id);
-		if ($order->paid == 1) {
+		if ($order->paid == PaymentStatus::PAID) {
 			return redirect()->route('order.thanks', ['session' => $order->session, 'id' => $order->id]);
 		}
 
@@ -205,11 +205,11 @@ class OrderController extends BaseController
 	{
 		$order = Order::findOrFail($id);
 
-		if ($order->session != $session || $order->paid != 1) {
+		if ($order->session != $session || $order->paid != PaymentStatus::PAID) {
 			return abort(404);
 		}
 
-		$conditions = Option::text('pdf_condicions');
+		$conditions = Option::text('order-conditions');
 
 		// $pdfPath = storage_path("app/tickets/entrades-{$id}.pdf");
 		// if (file_exists($pdfPath) && !auth()->check()) {

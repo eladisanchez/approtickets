@@ -47,7 +47,7 @@ class RefundResource extends Resource
                     ->sortable()
                     ->icon('heroicon-m-check')
                     ->iconColor('success')
-                    ->placeholder('No efectuada'),
+                    ->placeholder('No'),
             ])
             ->filters([
                 Tables\Filters\Filter::make('product')
@@ -60,7 +60,21 @@ class RefundResource extends Resource
                     ->query(fn(Builder $query, array $data): Builder => $data['product'] ? $query->where('product_id', $data['product']) : $query),
             ])
             ->actions([
-
+                Tables\Actions\Action::make('url')
+                    ->label('Enllaç')
+                    ->icon('heroicon-o-link')
+                    ->url(function (Refund $record) {
+                        if (!$record->hash) {
+                            return null;
+                        }
+                        return route('refund', [
+                            'hash' => $record->hash
+                        ]);
+                    })
+                    ->openUrlInNewTab()
+                    ->hidden(function ($record) {
+                        return $record->refunded_at;
+                    }),
             ])
             ->modifyQueryUsing(fn(Builder $query) => $query->orderBy('created_at', 'DESC'));
     }

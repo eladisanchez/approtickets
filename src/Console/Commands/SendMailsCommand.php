@@ -7,6 +7,7 @@ use ApproTickets\Models\Order;
 use Mail;
 use Log;
 use ApproTickets\Mail\RememberMail;
+use ApproTickets\Enums\PaymentStatus;
 
 class SendMailsCommand extends Command
 {
@@ -26,7 +27,7 @@ class SendMailsCommand extends Command
 
         foreach ($orders as $order) {
             $this->line("Sending {$order->id} - {$order->email}");
-            if ($order->paid == 1) {
+            if ($order->paid == PaymentStatus::PAID) {
                 try {
 
                     $failedOrders = [1742, 1744, 1748, 1750, 1753, 1758, 1761, 1770, 1771, 1775, 1777, 1779];
@@ -41,7 +42,7 @@ class SendMailsCommand extends Command
                         $this->line("Tickets fixed for {$order->id} - {$order->email}");
                     }
                     Mail::to($order->email)->send(new RememberMail($order, $failed, $numTickets));
-                    $order->email_sent = 1;
+                    $order->email_sent_at = now();
                     $order->save();
                     $this->line("Email sent to {$order->id} - {$order->email}");
                 } catch (\Exception $e) {

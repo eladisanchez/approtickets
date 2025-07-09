@@ -49,7 +49,7 @@ class BookingResource extends Resource
                 Tables\Columns\TextColumn::make('product.title')->label('Producte')->sortable()->searchable(isIndividual: true, isGlobal: true)->wrap(),
                 Tables\Columns\TextColumn::make('rate.title')->label('Tarifa')->sortable(),
                 Tables\Columns\TextColumn::make('tickets')->label('Qt.')->sortable(),
-                Tables\Columns\TextColumn::make('day')->label('Sessió')->sortable()->searchable()->date('d/m/Y'),
+                Tables\Columns\TextColumn::make('day')->label('Sessió')->sortable()->searchable()->date('d/m/Y H:i'),
                 Tables\Columns\TextColumn::make('reducedSeat')->label('Localitat')->sortable(),
                 Tables\Columns\TextColumn::make('scans_count')->counts('scans')->label('QR')->badge()->color('success')->tooltip(fn(Booking $record): string => $record->scans->pluck('scan_id')->implode(', ')),
             ])

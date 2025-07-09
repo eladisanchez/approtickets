@@ -10,10 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Actions;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Support\Enums\ActionSize;
-use Filament\Forms\Components\Iframe;
+use Filament\Forms\Components\Toggle;
 
 class VenueResource extends Resource
 {
@@ -38,6 +35,7 @@ class VenueResource extends Resource
                 TextInput::make('address')
                     ->label('Adreça')
                     ->columnSpan('full'),
+                Toggle::make('stage')->label('Mostrar escenari')
             ]);
     }
 

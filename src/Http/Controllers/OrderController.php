@@ -74,9 +74,7 @@ class OrderController extends BaseController
 			auth()->login($user);
 		}
 
-		$total = $cartItems->sum(function ($item) {
-			return $item->price * $item->tickets;
-		});
+		$total = $cartItems->sum(fn($item) => $item->price * $item->tickets);
 
 		$payment = request()->input('payment') ?? 'card';
 

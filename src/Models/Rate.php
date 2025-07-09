@@ -26,6 +26,13 @@ class Rate extends Model
     ];
     protected $useFallbackLocale = "ca";
 
+    protected static function booted()
+    {
+        static::creating(function ($banner) {
+            $banner->order = 0;
+        });
+    }
+
     public function product()
     {
         return $this->belongsToMany(Product::class, 'product_rate')

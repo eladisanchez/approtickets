@@ -18,13 +18,16 @@ class BookingPolicy
 
     public function viewAny(User $user): bool
     {
-        return true;
+        return false;
+        // Consultar protecció de dades
+        // return true;
     }
 
     public function view(User $user, Booking $booking): bool
     {
-        $products = $user->products()->pluck('id')->toArray();
-        return in_array($booking->product_id, $products);
+        return false;
+        // $products = $user->products()->pluck('id')->toArray();
+        // return in_array($booking->product_id, $products);
     }
 
     public function create(User $user): bool

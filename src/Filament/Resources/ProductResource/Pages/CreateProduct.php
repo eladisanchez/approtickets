@@ -34,6 +34,7 @@ class CreateProduct extends CreateRecord
                     Select::make('category_id')
                         ->label('Categoria')
                         ->relationship(name: 'category', titleAttribute: 'title')
+                        ->preload()
                         ->searchable()
                         ->native(false)
                         ->columnSpan(3),
@@ -67,7 +68,8 @@ class CreateProduct extends CreateRecord
                         ->relationship(name: 'venue', titleAttribute: 'name')
                         ->searchable()
                         ->helperText("Escollint un espai el producte serà un esdeveniment amb entrades numerades.")
-                        ->columnSpan(3),
+                        ->columnSpan(3)
+                        ->visible(auth()->user()->hasRole('admin')),
                     TextInput::make('place')
                         ->label("Lloc de l'esdeveniment / punt inicial de la visita")
                         ->columnSpan(3),
@@ -124,28 +126,12 @@ class CreateProduct extends CreateRecord
                                 ->suffix('minuts')
                                 ->columnSpan(2),
                         ])->columns(6)->hidden(fn(Get $get) => $get('qr') !== true),
-                    // Fieldset::make('Mesures Covid')
-                    //     ->schema([
-                    //         Toggle::make('social_distance')
-                    //             ->label('Distància social')
-                    //             ->helperText('Habilita el bloqueig de butaques adjacents d\'una comanda.')
-                    //             ->live()
-                    //             ->columnSpan(2),
-                    //         TextInput::make('capacity')
-                    //             ->label('Aforament màxim')
-                    //             ->numeric()
-                    //             ->minValue(0)
-                    //             ->step(1)
-                    //             ->helperText("La venda es tancarà a l'arribar al límit de percentatge d'aforament permès")
-                    //             ->suffix('%')
-                    //             ->columnSpan(2),
-                    //     ])->columns(6),
                 ])->columns(6),
             Step::make('Confirmació')
                 ->icon('heroicon-m-check-circle')
                 ->schema([
                     Placeholder::make('Atenció')
-                        ->content('Feu-nos arribar les imatges de l\'esdeveniment a info@turismesolsones.com. La vostra sol·licitud es revisarà abans de ser activada a la plataforma. ')->columnSpan(6),
+                        ->content('Feu-nos arribar les imatges de l\'esdeveniment a turisme@turismesolsones.com. La vostra sol·licitud es revisarà abans de ser activada a la plataforma.')->columnSpan(6),
                 ])->columns(6)->visible(!auth()->user()->hasRole('admin')),
         ];
     }
@@ -160,7 +146,6 @@ class CreateProduct extends CreateRecord
                 Log::error($th);
             }
         }
-
     }
 
 }

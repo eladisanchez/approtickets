@@ -77,6 +77,10 @@ class OrderController extends BaseController
 		$total = $cartItems->sum(fn($item) => $item->price * $item->tickets);
 
 		$payment = request()->input('payment') ?? 'card';
+		$paid = $payment == 'card' ? 0 : 1;
+		if ($total == 0) {
+			$paid = 1;
+		}
 
 		$order = Order::create([
 			'lang' => app()->getLocale(),
@@ -84,7 +88,7 @@ class OrderController extends BaseController
 			'total' => $total,
 			'coupon' => Session::get('coupon.name'),
 			'payment' => $payment,
-			'paid' => $payment == 'card' ? 0 : 1,
+			'paid' => $paid,
 			'user_id' => $user->id ?? null,
 			'name' => request()->input('name'),
 			'email' => request()->input('email'),

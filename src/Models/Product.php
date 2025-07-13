@@ -159,8 +159,10 @@ class Product extends Model
 
     public function availableDays()
     {
+        $datetime = now()->subHours($this->hour_limit);
         return Ticket::where('product_id', $this->id)
-            ->where('day', '>=', now())
+            ->where('day', '>=', $datetime->format('Y-m-d'))
+            ->whereRaw('hour >= ' . $datetime->format('H'))
             ->whereNull('canceled')
             ->groupBy('day')
             ->pluck('day');

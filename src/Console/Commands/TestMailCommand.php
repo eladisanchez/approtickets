@@ -19,9 +19,9 @@ class TestMailCommand extends Command
 
         $this->info("Sending test email");
 
-        Mail::raw('Funciona.', function ($message) {
+        Mail::raw('Correu de prova', function ($message) {
             $message->to('eladisanchez@gmail.com')
-                ->subject('El correu funciona');
+                ->subject('Correu de prova');
         });
 
         $this->info("Done");

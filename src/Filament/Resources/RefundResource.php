@@ -41,7 +41,14 @@ class RefundResource extends Resource
                 Tables\Columns\TextColumn::make('order.id')->sortable()->searchable(isIndividual: true, isGlobal: true)
                     ->label('Comanda')
                     ->badge()
-                    ->url(fn($record) => route('filament.admin.resources.orders.edit', $record->order)),
+                    ->url(function ($record) {
+                        if (!$record->order_id) {
+                            return null;
+                        }
+                        return route('filament.admin.resources.orders.edit', [
+                            'record' => $record->order_id,
+                        ]);
+                    }),
                 Tables\Columns\TextColumn::make('session_canceled')->date('d/m/Y H:i')->label('Sessió cancel·lada'),
                 Tables\Columns\TextColumn::make('session_new')->date('d/m/Y H:i')->label('Nova sessió'),
                 Tables\Columns\TextColumn::make('refunded_at')->label('Efectuada')

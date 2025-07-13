@@ -121,9 +121,10 @@ class Product extends Model
 
     public function nextTickets()
     {
-        $datetime = now();
+        $datetime = now()->subHours($this->hour_limit);
         return $this->hasMany(Ticket::class)
-            ->where('day', '>=', $datetime)
+            ->where('day', '>=', $datetime->format('Y-m-d'))
+            ->whereRaw('hour >= ' . $datetime->format('H'))
             ->whereNull('canceled');
     }
 

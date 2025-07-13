@@ -38,7 +38,12 @@ class QrController extends BaseController
             'domain' => request()->getHost(),
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'currentUser' => $user,
+            'currentUser' => [
+                'id' => $user->id,
+                'username' => $user->name,
+                'email' => $user->email,
+                'api_token' => $token
+            ],
             'message' => 'Hola, ' . $user->name,
             'user' => $user->name
         ]);

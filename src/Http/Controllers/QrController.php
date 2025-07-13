@@ -35,12 +35,52 @@ class QrController extends BaseController
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
+            'domain' => request()->getHost(),
             'access_token' => $token,
             'token_type' => 'Bearer',
+            'currentUser' => $user,
+            'message' => 'Hola, ' . $user->name,
             'user' => $user->name
         ]);
 
     }
+
+
+    // public function login(Request $request)
+    // {
+    //     if(User::where('email', $request->email)->exists()){
+
+    //         $user = User::where('email', $request->email)->first();
+
+    //         if(!$user) {
+    //             return response(array(
+    //                 'message' => 'L\'usuari no existeix',
+    //             ), 401);
+    //         }
+
+    //         $auth = Hash::check($request->password, $user->password);
+
+    //         if(!$auth) {
+    //             return response(array(
+    //                 'message' => 'Contrasenya incorrecta',
+    //             ), 401);
+    //         }
+
+    //         if($user && $auth) {
+    //             if (!$user->api_key) {
+    //                 $user->rollApiKey();
+    //             }
+    //             return response(array(
+    //                 'currentUser' => $user,
+    //                 'message' => 'Hola, '.$user->username,
+    //             ));
+    //         }
+    //     }
+
+    //     return response(array(
+    //         'message' => 'Claus incorrectes',
+    //     ), 401);
+    // }
 
 
     /**

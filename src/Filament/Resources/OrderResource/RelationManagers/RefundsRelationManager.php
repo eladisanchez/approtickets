@@ -73,29 +73,29 @@ class RefundsRelationManager extends RelationManager
                     ->hidden(function ($record) {
                         return $record->refunded_at;
                     }),
-                Tables\Actions\Action::make('request')
-                    ->label('Efectuar devolució')
-                    ->icon('heroicon-o-forward')
-                    ->action(function (Refund $record) {
-                        $refundRequest = RefundController::requestRefund($record);
-                        if ($refundRequest['error']) {
-                            Notification::make()
-                                ->title('Error en la petició de devolució')
-                                ->body($refundRequest['error'])
-                                ->danger()
-                                ->send();
-                        } else {
-                            Notification::make()
-                                ->title($refundRequest['message'])
-                                ->success()
-                                ->send();
-                        }
-                    })
-                    ->requiresConfirmation()
-                    ->color('warning')
-                    ->hidden(function ($record) {
-                        return $record->refunded_at;
-                    }),
+                // Tables\Actions\Action::make('request')
+                //     ->label('Efectuar devolució')
+                //     ->icon('heroicon-o-forward')
+                //     ->action(function (Refund $record) {
+                //         $refundRequest = RefundController::requestRefund($record);
+                //         if ($refundRequest['error']) {
+                //             Notification::make()
+                //                 ->title('Error en la petició de devolució')
+                //                 ->body($refundRequest['error'])
+                //                 ->danger()
+                //                 ->send();
+                //         } else {
+                //             Notification::make()
+                //                 ->title($refundRequest['message'])
+                //                 ->success()
+                //                 ->send();
+                //         }
+                //     })
+                //     ->requiresConfirmation()
+                //     ->color('warning')
+                //     ->hidden(function ($record) {
+                //         return $record->refunded_at;
+                //     }),
             ]);
     }
 }

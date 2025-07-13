@@ -131,7 +131,7 @@ class Product extends Model
     {
         $datetime = now();
         return $this->hasMany(Ticket::class)
-            ->where('day', '<=', $datetime)
+            ->where('day', '<', $datetime)
             ->whereNull('canceled');
     }
 

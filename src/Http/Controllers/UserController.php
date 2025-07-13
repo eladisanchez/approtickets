@@ -9,6 +9,12 @@ use ApproTickets\Models\Booking;
 
 class UserController extends Controller
 {
+
+    public function loginForm()
+    {
+        return redirect()->route('filament.admin.auth.login');
+    }
+
     public function login(Request $request)
     {
         $request->validate([

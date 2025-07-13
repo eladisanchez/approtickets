@@ -39,6 +39,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale()], function () {
         Route::get('pdf/order/{session}/{id}', [OrderController::class, 'pdf'])->name('order.pdf');
 
         // User area
+        Route::get('login', [UserController::class, 'loginForm'])->name('login.form');
         Route::post('login', [UserController::class, 'login'])->name('login');
         Route::get('logout', [UserController::class, 'logout'])->name('logout');
 

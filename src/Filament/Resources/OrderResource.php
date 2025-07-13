@@ -121,20 +121,24 @@ class OrderResource extends Resource
                             ];
                         })
                         ->action(function (Order $record, array $data) {
-                            $refund = $record->createRefund($data['amount']);
-                            $refundRequest = RefundController::requestRefund($refund);
-                            if ($refundRequest['error']) {
-                                Notification::make()
-                                    ->title('Error en la petició de devolució')
-                                    ->body($refundRequest['error'])
-                                    ->danger()
-                                    ->send();
-                            } else {
-                                Notification::make()
-                                    ->title($refundRequest['message'])
-                                    ->success()
-                                    ->send();
-                            }
+                            $record->createRefund($data['amount']);
+                            // $refundRequest = RefundController::requestRefund($refund);
+                            Notification::make()
+                                ->title("Enllaç de devolució creat.")
+                                ->success()
+                                ->send();
+                            // if ($refundRequest['error']) {
+                            //     Notification::make()
+                            //         ->title('Error en la petició de devolució')
+                            //         ->body($refundRequest['error'])
+                            //         ->danger()
+                            //         ->send();
+                            // } else {
+                            //     Notification::make()
+                            //         ->title($refundRequest['message'])
+                            //         ->success()
+                            //         ->send();
+                            // }
                         }),
                     Tables\Actions\RestoreAction::make()
                 ])

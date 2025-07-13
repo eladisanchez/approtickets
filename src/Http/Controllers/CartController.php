@@ -154,8 +154,13 @@ class CartController extends BaseController
 	 * Cart page (may be optional if cart is integrated in confirmation)
 	 * @return \Illuminate\View\View
 	 */
-	public function show(): View
+	public function show(): RedirectResponse|View
 	{
+		// Redirect to checkout in inertia project
+		if (config('approtickets.inertia')) {
+			return redirect()->route('checkout');
+		}
+		
 		$this->initializeCart();
 		$pendingOrder = Order::where('session', Session::getId())->where('paid', 0)->first();
 		return view('cart', [

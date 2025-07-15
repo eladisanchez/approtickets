@@ -326,6 +326,7 @@ class ProductResource extends Resource
                                             ->label('Preu general')
                                             ->numeric()
                                             ->minValue(0)
+                                            ->required()
                                             ->suffix('€'),
                                         // Components\TextInput::make('pricezone')
                                         //     ->label('Preu per zones')

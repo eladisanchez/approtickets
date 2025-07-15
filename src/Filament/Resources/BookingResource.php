@@ -70,6 +70,7 @@ class BookingResource extends Resource
             ->headerActions([
                 ExportAction::make()
                     ->exporter(BookingExporter::class)
+                    ->columnMapping(false)
             ])
             ->filters([
                 Tables\Filters\Filter::make('created_at')

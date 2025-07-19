@@ -78,7 +78,7 @@ class RefundsRelationManager extends RelationManager
                     ->icon('heroicon-o-forward')
                     ->action(function (Refund $record) {
                         $refundRequest = RefundController::requestRefund($record);
-                        if ($refundRequest['error']) {
+                        if (isset($refundRequest['error'])) {
                             Notification::make()
                                 ->title('Error en la petició de devolució')
                                 ->body($refundRequest['error'])
@@ -86,7 +86,8 @@ class RefundsRelationManager extends RelationManager
                                 ->send();
                         } else {
                             Notification::make()
-                                ->title($refundRequest['message'])
+                                ->title("Devolució efectuada correctament")
+                                ->body("S'ha efectuat la devolució de {$record->total} € per la comanda {$record->order_id}.")
                                 ->success()
                                 ->send();
                         }

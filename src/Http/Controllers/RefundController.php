@@ -105,10 +105,12 @@ class RefundController extends BaseController
 	public function show(string $hash): View|InertiaResponse
 	{
 		$refund = Refund::where('hash', $hash)
-			->whereNull('refunded_at')
 			->with('order')
-			->where('created_at', '>', now()->subMonths(1))
 			->firstOrFail();
+
+		if ($refund->refunded_at) {
+			return redirect()->route('home');
+		}
 
 		$tpv = new Tpv(config('redsys'));
 		$tpv->setFormHiddens(

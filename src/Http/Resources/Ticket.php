@@ -23,7 +23,7 @@ class Ticket extends JsonResource
             'bookings' => $this->bookingsTotal,
             'bookedSeats' => $this->bookedSeats,
             'cartSeats' => $this->cartSeats,
-            
+            'lang' => $this->lang
         ];
     }
 }

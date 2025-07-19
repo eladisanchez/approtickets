@@ -25,7 +25,7 @@ class ListProducts extends ListRecords
             'active' => Tab::make('Productes actius')
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('active', 1)),
             'inactive' => Tab::make('Productes desactivats')
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('active', 0)),
+                ->modifyQueryUsing(fn(Builder $query) => $query->where('active', 0)->orderBy('created_at', 'desc')),
         ];
     }
 }

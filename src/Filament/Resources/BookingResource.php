@@ -73,17 +73,13 @@ class BookingResource extends Resource
                     ->columnMapping(false)
             ])
             ->filters([
-                Tables\Filters\Filter::make('created_at')
-                    ->form([
-                        Forms\Components\DatePicker::make('created_at')->label('Data compra'),
-                    ])
-                    ->query(fn(Builder $query, array $data): Builder => $data['created_at'] ? $query->whereDate('created_at', $data['created_at']) : $query),
                 // Filter by day with datepicker
                 Tables\Filters\Filter::make('session')
                     ->form([
-                        Forms\Components\DatePicker::make('day')->label('Sessió'),
+                        Forms\Components\DatePicker::make('day_start')->label('Dia inici'),
+                        Forms\Components\DatePicker::make('day_end')->label('Dia fi'),
                     ])
-                    ->query(fn(Builder $query, array $data): Builder => $data['day'] ? $query->where('day', $data['day']) : $query),
+                    ->query(fn(Builder $query, array $data): Builder => $data['day_start'] ? $query->whereBetween('day', [$data['day_start'], $data['day_end'] ?? $data['day_start']]) : $query),
                 // Filter by product
                 Tables\Filters\Filter::make('product')
                     ->form([
@@ -122,8 +118,8 @@ class BookingResource extends Resource
                         }
                     ),
 
-                ])
-                ->defaultSort('created_at', 'desc');
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getEloquentQuery(): Builder

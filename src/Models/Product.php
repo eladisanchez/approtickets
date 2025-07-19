@@ -140,7 +140,8 @@ class Product extends Model
     {
         return $this->belongsToMany(Rate::class, 'product_rate')
             ->using(ProductRate::class)
-            ->withPivot('price', 'pricezone');
+            ->withPivot('price', 'pricezone')
+            ->orderBy('order');
     }
 
 

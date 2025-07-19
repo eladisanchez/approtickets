@@ -3,9 +3,7 @@
 namespace ApproTickets\Filament\Resources;
 
 use ApproTickets\Filament\Resources\RateResource\Pages;
-use ApproTickets\Filament\Resources\RateResource\RelationManagers;
 use ApproTickets\Models\Rate;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -13,6 +11,7 @@ use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Resources\Concerns\Translatable;
+use Illuminate\Database\Eloquent\Builder;
 
 class RateResource extends Resource
 {
@@ -59,7 +58,12 @@ class RateResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->modifyQueryUsing(fn(Builder $query) => $query->orderBy('order', 'ASC'))
+            ->reorderable('order', function () {
+                // Només permet reordenar si l'usuari és administrador
+                return auth()->user()->hasRole('admin');
+            });
     }
 
     public static function getRelations(): array

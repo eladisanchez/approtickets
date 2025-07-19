@@ -68,7 +68,7 @@ class BookingExporter extends Exporter
 
     public function getFileName(Export $export): string
     {
-        return "orders-{$export->getKey()}.csv";
+        return "orders-{$export->getKey()}";
     }
 
 }

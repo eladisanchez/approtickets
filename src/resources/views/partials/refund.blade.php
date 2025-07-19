@@ -26,7 +26,7 @@
 
     <form action="{{ $tpv->getPath('/realizarPago') }}" method="post">
         {!! $tpv->getFormHiddens() !!}
-        <button class="button">Genera la devolució</button>
+        <button class="button">Efectua la devolució</button>
     </form>
 
 @endif

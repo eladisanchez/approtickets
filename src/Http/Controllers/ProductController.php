@@ -77,20 +77,29 @@ class ProductController extends BaseController
 			]);
 		}
 
-		if ($day && $hour) {
-			$minutesBeforeClose = 60 * $product->hour_limit;
-			$closingTime = Carbon::parse("{$day} {$hour}")->subMinutes($minutesBeforeClose);
-			if (now() > $closingTime) {
-				if (config('approtickets.inertia')) {
-					return Inertia::render('Product', [
-						'product' => new ProductResource($product)
-					]);
-				}
-				return view('product', [
-					'product' => $product,
-				]);
-			}
-		}
+		// if ($day && $hour) {
+		// 	$minutesBeforeClose = 60 * $product->hour_limit;
+		// 	$closingTime = Carbon::parse("{$day} {$hour}")->subMinutes($minutesBeforeClose);
+		// 	if (now() > $closingTime) {
+		// 		if (config('approtickets.inertia')) {
+		// 			return Inertia::render('Product', [
+		// 				'availableDays' => $availableDays,
+		// 				'product' => new ProductResource($product),
+		// 				'day' => $day,
+		// 				'hour' => $hour,
+		// 				'tickets' => TicketResource::collection([]),
+		// 				'rates' => RateResource::collection($product->rates),
+		// 			]);
+		// 		}
+		// 		return view('product', [
+		// 			'product' => $product,
+		// 		]);
+		// 	}
+		// }
+
+		$minutesBeforeClose = 60 * $product->hour_limit;
+		$closingTime = Carbon::parse("{$day} {$hour}")->subMinutes($minutesBeforeClose);
+		$notAvailable = now() > $closingTime;
 
 		if (config('approtickets.inertia')) {
 			$props = [
@@ -100,7 +109,8 @@ class ProductController extends BaseController
 				'rates' => RateResource::collection($product->rates),
 				'day' => $day,
 				'hour' => $hour,
-				'bookingPack' => session()->get('pack')
+				'bookingPack' => session()->get('pack'),
+				'notAvailable' => $notAvailable
 			];
 			return Inertia::render('Product', $props);
 		}

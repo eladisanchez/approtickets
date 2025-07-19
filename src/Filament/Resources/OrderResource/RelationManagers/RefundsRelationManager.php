@@ -85,6 +85,7 @@ class RefundsRelationManager extends RelationManager
                                 ->danger()
                                 ->send();
                         } else {
+                            $record->update(['refunded_at' => now()]);
                             Notification::make()
                                 ->title("Devolució efectuada correctament")
                                 ->body("S'ha efectuat la devolució de {$record->total} € per la comanda {$record->order_id}.")

@@ -139,7 +139,8 @@ class OrderResource extends Resource
                             //         ->success()
                             //         ->send();
                             // }
-                        }),
+                        })
+                        ->visible(fn(Order $record): bool => $record->paid && $record->payment === PaymentMethods::Card),
                     Tables\Actions\RestoreAction::make()
                 ])
             ])

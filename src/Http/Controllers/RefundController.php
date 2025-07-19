@@ -151,6 +151,7 @@ class RefundController extends BaseController
 		try {
 
 			$data = $TPV->checkTransaction($_POST);
+			Log::debug('Redsys notification', $data);
 			if (!$data['Ds_Order']) {
 				return;
 			}

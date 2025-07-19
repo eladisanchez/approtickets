@@ -155,7 +155,7 @@ class RefundController extends BaseController
 			if (!$data['Ds_Order']) {
 				return;
 			}
-			if ($data["Ds_Response"] <= 99) {
+			if ($data["Ds_Response"] == 900) {
 				$order_id = substr($data["Ds_Order"], 0, -3);
 				$refund = Refund::where('order_id', $order_id)->first();
 				if ($refund) {
@@ -164,7 +164,11 @@ class RefundController extends BaseController
 					]);
 					Mail::to(config('mail.from.address'))->send(new RefundAlertMail($refund));
 					Log::debug("Devolució efectuada de la comanda {$order_id}");
+				} else {
+					Log::error("Devolució sense comanda associada");
 				}
+			} else {
+				Log::error("Error en la devolució: {$data['Ds_Response']}", $data);
 			}
 
 		} catch (\Exception $e) {

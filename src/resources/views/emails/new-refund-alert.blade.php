@@ -1,0 +1,1 @@
+<p>S'ha efectuat la devolució de {{ $refund->total }} euros corresponents a la comanda {{ $refund->order->id }}.</p>

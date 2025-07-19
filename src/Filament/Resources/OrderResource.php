@@ -18,6 +18,7 @@ use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Support\HtmlString;
 use Filament\Notifications\Notification;
 use ApproTickets\Enums\PaymentStatus;
+use Filament\Notifications\Actions\Action;
 
 
 class OrderResource extends Resource
@@ -124,7 +125,13 @@ class OrderResource extends Resource
                             $record->createRefund($data['amount']);
                             // $refundRequest = RefundController::requestRefund($refund);
                             Notification::make()
-                                ->title("Enllaç de devolució creat.")
+                                ->title("Devolució creada.")
+                                ->actions([
+                                    Action::make('Consulta les devolucions')
+                                        ->url(fn() => route('filament.admin.resources.orders.edit', [
+                                            'record' => $record->id,
+                                        ])).'?activeRelationManager=refunds'
+                                ])
                                 ->success()
                                 ->send();
                             // if ($refundRequest['error']) {

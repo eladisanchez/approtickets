@@ -26,7 +26,7 @@ class RefundAlertMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Nova devolució',
+            subject: 'Devolució efectuada',
         );
     }
 

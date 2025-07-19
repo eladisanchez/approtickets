@@ -153,25 +153,30 @@ class RefundController extends BaseController
 		try {
 
 			$data = $TPV->checkTransaction($_POST);
-			Log::debug('Redsys notification', $data);
+
 			if (!$data['Ds_Order']) {
 				return;
 			}
-			if ($data["Ds_Response"] == 900) {
-				$order_id = substr($data["Ds_Order"], 0, -3);
-				$refund = Refund::where('order_id', $order_id)->first();
-				if ($refund) {
-					$refund->update([
-						'refunded_at' => now()
-					]);
-					Mail::to(config('mail.from.address'))->send(new RefundAlertMail($refund));
-					Log::debug("Devolució efectuada de la comanda {$order_id}");
-				} else {
-					Log::error("Devolució sense comanda associada");
-				}
-			} else {
+			if ($data["Ds_Response"] != 900) {
 				Log::error("Error en la devolució: {$data['Ds_Response']}", $data);
+				return;
 			}
+
+			$order_id = substr($data["Ds_Order"], 0, -3);
+			$refund = Refund::where('order_id', $order_id)->first();
+
+			if (!$refund) {
+				Log::error("No hi ha cap devolució per la comanda {$order_id}", $data);
+				return;
+			}
+
+			$refund->update([
+				'refunded_at' => now()
+			]);
+
+			Mail::to(config('mail.from.address'))->send(new RefundAlertMail($refund));
+			Log::debug("Devolució efectuada de la comanda {$order_id}");
+
 
 		} catch (\Exception $e) {
 			$data = $TPV->getTransactionParameters($_POST);

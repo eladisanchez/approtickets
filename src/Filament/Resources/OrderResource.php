@@ -130,7 +130,7 @@ class OrderResource extends Resource
                                     Action::make('Consulta les devolucions')
                                         ->url(fn() => route('filament.admin.resources.orders.edit', [
                                             'record' => $record->id,
-                                        ])).'?activeRelationManager=refunds'
+                                        ]).'?activeRelationManager=refunds')
                                 ])
                                 ->success()
                                 ->send();

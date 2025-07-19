@@ -12,6 +12,7 @@ enum PaymentStatus: int implements HasLabel, HasIcon, HasColor
   case PAID = 1;
   case FAILED = 2;
   case CART = 3;
+  case REFUND = 4;
 
   public function getLabel(): ?string
   {
@@ -20,6 +21,7 @@ enum PaymentStatus: int implements HasLabel, HasIcon, HasColor
       self::PAID => 'Pagat',
       self::FAILED => 'Cancel·lat / error',
       self::CART => 'Cistell',
+      self::REFUND => 'Devolució'
     };
   }
 
@@ -29,7 +31,8 @@ enum PaymentStatus: int implements HasLabel, HasIcon, HasColor
       self::UNPAID => 'heroicon-o-clock',
       self::PAID => 'heroicon-o-check',
       self::FAILED => 'heroicon-o-x-mark',
-      self::CART => 'heroicon-0-x-shopping-cart'
+      self::CART => 'heroicon-0-x-shopping-cart',
+      self::REFUND => 'heroicon-o-backward'
     };
   }
 
@@ -39,7 +42,8 @@ enum PaymentStatus: int implements HasLabel, HasIcon, HasColor
       self::UNPAID => 'warning',
       self::PAID => 'success',
       self::FAILED => 'danger',
-      self::CART => 'info'
+      self::CART => 'info',
+      self::REFUND => 'info'
     };
   }
 }

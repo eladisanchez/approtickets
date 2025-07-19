@@ -68,7 +68,7 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('bookings.product.title')
                     ->listWithLineBreaks()->label('Productes')->badge(),
                 Tables\Columns\TextColumn::make('total')->label('Total')->suffix(' €'),
-                Tables\Columns\IconColumn::make('paid')->label('Pagat'),
+                Tables\Columns\IconColumn::make('paymentStatus')->label('Pagat'),
                 Tables\Columns\TextColumn::make('payment')->badge()->label('Mètode'),
             ])
             ->filters([

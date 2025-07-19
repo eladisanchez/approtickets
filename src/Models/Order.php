@@ -24,6 +24,8 @@ class Order extends Model
         'payment' => PaymentMethods::class
     ];
 
+    //protected $with = ['refunds'];
+
     protected static function booted()
     {
         static::deleting(function ($order) {
@@ -121,6 +123,20 @@ class Order extends Model
             Log::error($e->getMessage());
             return false;
         }
+    }
+
+    public function hasRefund()
+    {
+        return $this->refunds()->whereNotNull('refunded_at')->count() > 0;
+    }
+
+    public function getPaymentStatusAttribute(): PaymentStatus
+    {
+        if ($this->hasRefund()) {
+            return PaymentStatus::REFUND;
+        }
+
+        return $this->paid;
     }
 
 }

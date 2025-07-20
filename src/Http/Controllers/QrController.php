@@ -51,44 +51,6 @@ class QrController extends BaseController
 
     }
 
-
-    // public function login(Request $request)
-    // {
-    //     if(User::where('email', $request->email)->exists()){
-
-    //         $user = User::where('email', $request->email)->first();
-
-    //         if(!$user) {
-    //             return response(array(
-    //                 'message' => 'L\'usuari no existeix',
-    //             ), 401);
-    //         }
-
-    //         $auth = Hash::check($request->password, $user->password);
-
-    //         if(!$auth) {
-    //             return response(array(
-    //                 'message' => 'Contrasenya incorrecta',
-    //             ), 401);
-    //         }
-
-    //         if($user && $auth) {
-    //             if (!$user->api_key) {
-    //                 $user->rollApiKey();
-    //             }
-    //             return response(array(
-    //                 'currentUser' => $user,
-    //                 'message' => 'Hola, '.$user->username,
-    //             ));
-    //         }
-    //     }
-
-    //     return response(array(
-    //         'message' => 'Claus incorrectes',
-    //     ), 401);
-    // }
-
-
     /**
      * Test app with fake qr
      */
@@ -123,10 +85,9 @@ class QrController extends BaseController
     {
 
         $code = explode('_', base64_decode($request->input('qr')));
-        Log::info("QR llegit", [$request]);
 
-        // Code not well formed (3 parts)
-        if (count($code) < 3) {
+        // Code not well formed (4 parts)
+        if (count($code) != 4) {
             return response()->json([
                 'message' => 'El codi no és vàlid',
                 'codi' => $request->input('qr')
@@ -135,11 +96,9 @@ class QrController extends BaseController
 
         $uniqid = $code[1];
         $count = $code[2];
-        $booking_id = $code[3] ?? false;
+        $booking_id = $code[3];
 
-        $booking = !$booking_id ?
-            Booking::where('uid', $uniqid)->orderBy('created_at', 'desc')->first() :
-            Booking::where('uid', $uniqid)->where('id', $booking_id)->first();
+        $booking = Booking::where('uid', $uniqid)->where('id', $booking_id)->first();
 
         // Booking does not exist or ticket number is greater to booking tickets
         if (!$booking || $count > $booking->tickets):

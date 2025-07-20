@@ -112,7 +112,7 @@ class Booking extends Model
 	public function qrcode($count)
 	{
 		$ch = substr(\Hash::make("{$count}$this->uid"), -2, 2);
-		$qr = base64_encode("{$ch}_'{$this->uid}_{$count}_{$this->id}");
+		$qr = base64_encode("{$ch}_{$this->uid}_{$count}_{$this->id}");
 		return $qr;
 	}
 

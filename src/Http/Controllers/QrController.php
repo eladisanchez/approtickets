@@ -9,6 +9,7 @@ use ApproTickets\Models\User;
 use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Log;
 
 class QrController extends BaseController
 {
@@ -122,6 +123,7 @@ class QrController extends BaseController
     {
 
         $code = explode('_', base64_decode($request->input('qr')));
+        Log::info("QR llegit", [$request]);
 
         // Code not well formed (3 parts)
         if (count($code) < 3) {
@@ -150,12 +152,11 @@ class QrController extends BaseController
         endif;
 
         // User can scan this code
-        // $isentitat = $request->user()->productes->contains($booking->product_id);
-        $is_entity = $request->user()->hasRole('organizer');
+        $is_organizer = $request->user()->hasRole('organizer');
         $is_admin = $request->user()->hasRole('admin');
         $is_validator = $request->user()->hasRole('validator');
 
-        if (!$is_entity && !$is_admin && !$is_validator) {
+        if (!$is_organizer && !$is_admin && !$is_validator) {
             return response()->json(
                 [
                     'message' => __("El codi no correspon a l'esdeveniment"),

@@ -251,7 +251,12 @@ class ProductResource extends Resource
                                         return !$venue || !$record;
                                     }),
                             ]),
-                        Components\Select::make('lang')->label('Idioma')->options(config('approtickets.locales'))->hidden(!config('approtickets.languages')),
+                        Components\Select::make('lang')->label('Idioma')->options([
+                            'ca' => 'Català',
+                            'es' => 'Castellà',
+                            'en' => 'Anglès',
+                            'fr' => 'Francès',
+                        ])->hidden(!config('approtickets.languages')),
                         Components\Placeholder::make('sold')
                             ->label('Venudes')
                             ->hidden(fn($record) => !$record)
@@ -306,7 +311,12 @@ class ProductResource extends Resource
                 Components\Section::make()->schema([
                     Components\TimePicker::make('hour')->label('Hora')->required(),
                     Components\TextInput::make('tickets')->label('Entrades per sessió')->numeric()->required(),
-                    Components\Select::make('lang')->label('Idioma')->options(config('approtickets.locales'))->hidden(!config('approtickets.languages')),
+                    Components\Select::make('lang')->label('Idioma')->options([
+                        'ca' => 'Català',
+                        'es' => 'Castellà',
+                        'en' => 'Anglès',
+                        'fr' => 'Francès',
+                    ])->hidden(!config('approtickets.languages')),
                 ])->columns(3),
                 Components\Toggle::make('delete')->label('Elimina totes les sessions creades prèviament per aquest producte'),
             ])
@@ -344,7 +354,7 @@ class ProductResource extends Resource
                             $ticket->day = $day;
                             $ticket->hour = $hour;
                             if (!$venue) {
-                                $ticket->language = $data["lang"];
+                                $ticket->lang = $data["lang"];
                                 $ticket->tickets = $data["tickets"];
                             } else {
                                 $ticket->seats = $venue->seats;

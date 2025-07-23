@@ -128,7 +128,6 @@ class Ticket extends Model
                         'session_canceled' => $sessionCanceled,
                         'session_new' => $newDate
                     ]);
-                    Log::debug("Devolució de {$amountRefund} creada per la comanda {$order->id}");
                     if ($order->email) {
                         try {
                             Mail::to($order->email)->queue(new RefundMail($refund));

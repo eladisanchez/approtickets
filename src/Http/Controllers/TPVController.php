@@ -16,14 +16,10 @@ class TPVController extends BaseController
 
     public function notification(): void
     {
-
-        Log::info('Notificació rebuda');
-
         $TPV = new Tpv(config('redsys'));
 
         try {
             $data = $TPV->checkTransaction($_POST);
-            Log::debug($data);
             if (!$data['Ds_Order']) {
                 return;
             }
@@ -63,7 +59,6 @@ class TPVController extends BaseController
             // Pagament fallit
         else:
 
-            Log::info('Error pagament');
             if ($order->paid != PaymentStatus::PAID) {
                 $order->paid = PaymentStatus::FAILED;
                 $order->save();

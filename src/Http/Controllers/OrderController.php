@@ -41,7 +41,7 @@ class OrderController extends BaseController
 			return redirect()->route('home');
 		}
 
-		$rules = !(auth()->check() && auth()->user()->hasRole('admin')) ? [
+		$rules = !auth()->check() ? [
 			'conditions' => 'accepted',
 			'name' => 'required',
 			'phone' => 'required',
@@ -57,6 +57,8 @@ class OrderController extends BaseController
 		if ($validator->fails()) {
 			return redirect()->back()->withErrors($validator)->withInput();
 		}
+
+		$user = auth()->check() ? auth()->user() : null;
 
 		if (!empty(request()->input('password'))) {
 			$newUserValidator = validator(request()->all(), [
@@ -91,7 +93,7 @@ class OrderController extends BaseController
 			'paid' => $paid,
 			'user_id' => $user->id ?? null,
 			'name' => request()->input('name'),
-			'email' => request()->input('email'),
+			'email' => request()->input('email') ?? $user->email,
 			'phone' => request()->input('phone'),
 			'cp' => request()->input('cp'),
 			'observations' => request()->input('observations'),

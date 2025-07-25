@@ -113,6 +113,11 @@ class Product extends Model
         return $this->belongsToMany(Product::class, 'products_packs', 'pack_id', 'product_id');
     }
 
+    public function subProducts(): HasMany
+    {
+        return $this->hasMany(SubProduct::class, 'pack_id');
+    }
+
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class)

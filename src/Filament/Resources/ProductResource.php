@@ -45,6 +45,7 @@ class ProductResource extends Resource
                         static::getVenueAndSalesConditionsTab(),
                         static::getSessionsTab($form),
                         static::getPricesTab(),
+                        static::getPackProductsTab(),
                     ])
                     ->columnSpan('full')
             ]);
@@ -208,7 +209,7 @@ class ProductResource extends Resource
                             ->suffix('%')
                             ->columnSpan(2),
                     ])->columns(6),
-            ])->columns(6);
+            ])->columns(6)->hidden(fn($record): bool => $record->is_pack);
     }
 
     /**
@@ -281,7 +282,26 @@ class ProductResource extends Resource
                         ->url(fn(Product $record): string => route('filament.admin.resources.tickets.index') . '?tableFilters[product][product]=' . $record->id . '&activeTab=previous'),
                     static::getCreateMultipleSessionsAction($id, $venue),
                 ]),
-            ]);
+            ])->hidden(fn($record): bool => $record->is_pack);
+    }
+
+    protected static function getPackProductsTab(): Components\Tabs\Tab
+    {
+        return Components\Tabs\Tab::make('Productes del pack')
+            ->icon('heroicon-m-squares-2x2')
+            ->schema([
+                Components\Repeater::make('subProducts')
+                    ->label('Productes')
+                    ->relationship()
+                    ->simple(
+                        Components\Select::make('product_id')
+                            ->label('Product')
+                            ->options(Product::where('is_pack', false)->get()->pluck('title', 'id'))
+                            ->searchable()
+                            ->required()
+                            ->distinct(),
+                    )
+            ])->hidden(fn($record): bool => !$record->is_pack);
     }
 
     /**
@@ -402,7 +422,7 @@ class ProductResource extends Resource
                             ->valueLabel('Preu')
                             ->addActionLabel('Afegeix zona')
                     ])->columns(3)
-            ]);
+            ])->hidden(fn($record): bool => $record->is_pack);
     }
 
     public static function table(Table $table): Table

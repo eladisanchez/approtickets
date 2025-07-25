@@ -18,6 +18,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use ApproTickets\Enums\PaymentStatus;
+use ApproTickets\Enums\PaymentMethods;
 
 class OrderController extends BaseController
 {
@@ -36,6 +37,18 @@ class OrderController extends BaseController
 		$cartItems = Booking::where('order_id', NULL)
 			->where('session', Session::getId())
 			->get();
+
+		$isOrganizer = false;
+		if (auth()->check() && auth()->user()->hasRole('organizer')) {
+			$organizers = $cartItems->pluck('product.user_id')->unique();
+			if ($organizers->count() > 1) {
+				$username = auth()->user()->name;
+				return redirect()->back()->withErrors([
+					'generalError' => __("Només pots reservar entrades per l'organitzador '{$username}'. Revisa el teu cistell.")
+				])->withInput();
+			}
+			$isOrganizer = true;
+		}
 
 		if (!$cartItems->count()) {
 			return redirect()->route('home');
@@ -78,7 +91,7 @@ class OrderController extends BaseController
 
 		$total = $cartItems->sum(fn($item) => $item->price * $item->tickets);
 
-		$payment = request()->input('payment') ?? 'card';
+		$payment = $isOrganizer ? 'credit' : request()->input('payment', 'card');
 		$paid = $payment == 'card' ? 0 : 1;
 		if ($total == 0) {
 			$paid = 1;
@@ -99,10 +112,13 @@ class OrderController extends BaseController
 			'observations' => request()->input('observations'),
 		]);
 
+		//$organizers = [];
+
 		foreach ($cartItems as $booking) {
 			$booking->order_id = $order->id;
 			$booking->uid = substr(bin2hex(random_bytes(20)), -5);
 			$booking->save();
+			//$organizers[] = $booking->product->organizer_id;
 		}
 
 		if ($order) {
@@ -163,8 +179,11 @@ class OrderController extends BaseController
 		Session::forget('coupon_name');
 		if (config('approtickets.inertia')) {
 			$download = route('order.pdf', ['session' => $order->session, 'id' => $order->id]);
+			$title = $order->payment == PaymentMethods::Card ? 
+				__('Gràcies per la teva compra') : 
+				__('Entrades reservades');
 			return Inertia::render('order/Thanks', [
-				'title' => __('Gràcies per la teva compra'),
+				'title' => $title,
 				'download' => $download
 			]);
 		}

@@ -422,7 +422,7 @@ class ProductResource extends Resource
                             ->valueLabel('Preu')
                             ->addActionLabel('Afegeix zona')
                     ])->columns(3)
-            ])->hidden(fn($record): bool => $record->is_pack);
+                ]);
     }
 
     public static function table(Table $table): Table

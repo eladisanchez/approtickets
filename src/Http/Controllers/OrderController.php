@@ -39,15 +39,23 @@ class OrderController extends BaseController
 			->get();
 
 		$isOrganizer = false;
-		if (auth()->check() && auth()->user()->hasRole('organizer')) {
-			$organizers = $cartItems->pluck('product.user_id')->unique();
-			if ($organizers->count() > 1) {
-				$username = auth()->user()->name;
-				return redirect()->back()->withErrors([
-					'generalError' => __("Només pots reservar entrades per l'organitzador '{$username}'. Revisa el teu cistell.")
-				])->withInput();
+
+		if (auth()->check()) {
+			$user = auth()->user();
+
+			if ($user->hasRole('admin')) {
+				$isOrganizer = true;
+			} elseif ($user->hasRole('organizer')) {
+				$productOrganizers = $cartItems->pluck('product.user_id')->unique();
+
+				if ($productOrganizers->count() > 1) {
+					return redirect()->back()->withErrors([
+						'generalError' => __("Només pots reservar entrades per l'organitzador ':username'. Revisa el teu cistell.", ['username' => $user->name])
+					])->withInput();
+				}
+
+				$isOrganizer = true;
 			}
-			$isOrganizer = true;
 		}
 
 		if (!$cartItems->count()) {
@@ -179,8 +187,8 @@ class OrderController extends BaseController
 		Session::forget('coupon_name');
 		if (config('approtickets.inertia')) {
 			$download = route('order.pdf', ['session' => $order->session, 'id' => $order->id]);
-			$title = $order->payment == PaymentMethods::Card ? 
-				__('Gràcies per la teva compra') : 
+			$title = $order->payment == PaymentMethods::Card ?
+				__('Gràcies per la teva compra') :
 				__('Entrades reservades');
 			return Inertia::render('order/Thanks', [
 				'title' => $title,

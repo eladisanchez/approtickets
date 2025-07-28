@@ -130,7 +130,9 @@ class Product extends Model
         return $this->hasMany(Ticket::class)
             ->where('day', '>=', $datetime->format('Y-m-d'))
             ->whereRaw('hour >= ' . $datetime->format('H'))
-            ->whereNull('canceled');
+            ->whereNull('canceled')
+            ->orderBy('day', 'asc')
+            ->orderBy('hour', 'asc');
     }
 
     public function previousTickets()

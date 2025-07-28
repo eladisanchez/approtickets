@@ -26,6 +26,11 @@ class TicketPolicy
         return $user->hasRole('organizer') && $ticket->product->user_id == $user->id;
     }
 
+    public function create(User $user): bool
+    {
+        return $user->hasRole('admin');
+    }
+
     public function update(User $user, Ticket $ticket): bool
     {
         return false;

@@ -17,6 +17,8 @@ use Filament\Forms\Get;
 use Filament\Forms\Components\Actions;
 use Filament\Resources\Concerns\Translatable;
 use Filament\Forms\Components\Actions\Action;
+use Filament\Notifications\Notification;
+use Filament\Notifications\Actions\Action as NotificationAction;
 
 class ProductResource extends Resource
 {
@@ -261,7 +263,7 @@ class ProductResource extends Resource
                         Components\Placeholder::make('sold')
                             ->label('Venudes')
                             ->hidden(fn($record) => !$record)
-                            ->content(fn($record): string => $record ? $record->bookings->count() : '')
+                            ->content(fn($record): string => $record ? $record->bookings->sum('tickets') : '')
                             ->hintActions([
                                 Action::make('map')
                                     ->label('Plànol')
@@ -340,12 +342,9 @@ class ProductResource extends Resource
                 ])->columns(3),
                 Components\Toggle::make('delete')->label('Elimina totes les sessions creades prèviament per aquest producte'),
             ])
-            ->action(function (array $data) use ($id, $venue): void {
-                $product = Product::findOrFail($id);
-                $weekdaysToConsider = [0, 1, 2, 3, 4, 5, 6];
-                if ($data["weekdays"]) {
-                    $weekdaysToConsider = $data["weekdays"];
-                }
+            ->action(function (array $data, Actions\Action $action) use ($id, $venue): void {
+
+                $weekdaysToConsider = $data["weekdays"] ?? [0, 1, 2, 3, 4, 5, 6];
 
                 if ($data["delete"] == 1) {
                     Ticket::where('product_id', $id)->delete();
@@ -384,6 +383,23 @@ class ProductResource extends Resource
                         }
                     }
                 }
+
+                // Afegeix aquesta línia per recarregar la pàgina
+                Notification::make()
+                    ->title('Sessions creades correctament!')
+                    ->body('Refresqueu la pàgina per actualitzar la llista de sessions.')
+                    ->success()
+                    // ->actions([
+                    //     NotificationAction::make('refresh')
+                    //         ->label('Refresca la pàgina')
+                    //         ->button()
+                    //         ->action(),
+                    // ])
+                    ->send();
+
+                // This is the correct way to refresh the Livewire component:
+                $action->success();
+
             })
             ->slideOver()
             ->hidden(!!$venue || !auth()->user()->hasRole('admin'));
@@ -422,7 +438,7 @@ class ProductResource extends Resource
                             ->valueLabel('Preu')
                             ->addActionLabel('Afegeix zona')
                     ])->columns(3)
-                ]);
+            ]);
     }
 
     public static function table(Table $table): Table

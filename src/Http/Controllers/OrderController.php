@@ -247,17 +247,22 @@ class OrderController extends BaseController
 		// 	return response()->file($pdfPath);
 		// }
 
-		$pdf = Pdf::setOptions(['isRemoteEnabled' => true])->loadView(
-			'pdf.order',
-			[
-				'order' => $order,
-				'conditions' => $conditions
-			]
-		);
+		// $pdf = Pdf::setOptions(['isRemoteEnabled' => true])->loadView(
+		// 	'pdf.order',
+		// 	[
+		// 		'order' => $order,
+		// 		'conditions' => $conditions
+		// 	]
+		// );
 
 		// $pdf->save($pdfPath);
 
-		return $pdf->stream("entrades-{$id}.pdf");
+		return view('pdf.order', [
+			'order' => $order,
+			'conditions' => $conditions
+		]);
+
+		//return $pdf->stream("entrades-{$id}.pdf");
 
 	}
 

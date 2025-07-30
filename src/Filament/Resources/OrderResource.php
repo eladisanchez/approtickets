@@ -47,7 +47,8 @@ class OrderResource extends Resource
                 Forms\Components\TextInput::make('tpv_id')->label('ID TPV')->disabled()->columnSpan(2),
                 Forms\Components\Grid::make([
                     Forms\Components\TextInput::make('bookings')->label('Productes')->disabled()->columnSpan(6),
-                ])
+                ]),
+                Forms\Components\Textarea::make('observations')->label('Observacions')->disabled()->columnSpan(6)->rows(3),
             ])->columns(6);
     }
 

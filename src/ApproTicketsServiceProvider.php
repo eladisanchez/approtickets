@@ -67,7 +67,7 @@ class ApproTicketsServiceProvider extends ServiceProvider
 
         $this->app['router']->middlewareGroup('web', [
             HandleInertiaRequests::class,
-            RedirectIfNotAuthorized::class,
+            RedirectIfNotAuthorized::class
         ]);
 
         JsonResource::withoutWrapping();

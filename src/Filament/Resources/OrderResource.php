@@ -48,7 +48,7 @@ class OrderResource extends Resource
                 Forms\Components\Grid::make([
                     Forms\Components\TextInput::make('bookings')->label('Productes')->disabled()->columnSpan(6),
                 ]),
-                Forms\Components\Textarea::make('observations')->label('Observacions')->disabled()->columnSpan(6)->rows(3),
+                Forms\Components\Textarea::make('observations')->label('Observacions')->columnSpan(6)->rows(3),
             ])->columns(6);
     }
 

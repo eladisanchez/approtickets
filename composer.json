@@ -11,12 +11,12 @@
     "intervention/image-laravel": "^1.2",
     "redsys/tpv": "^2.3",
     "simplesoftwareio/simple-qrcode": "^4.2",
-    "shanmuga/laravel-entrust": "^5.0",
     "laravel/sanctum": "^4.0",
     "inertiajs/inertia-laravel": "^1.3",
     "filament/spatie-laravel-translatable-plugin": "^3.2",
     "spatie/icalendar-generator": "^2.8",
-    "mcamara/laravel-localization": "^2.0"
+    "mcamara/laravel-localization": "^2.0",
+    "shanmuga/laravel-entrust": "^6.0"
   },
   "autoload": {
     "psr-4": {

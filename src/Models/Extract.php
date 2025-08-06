@@ -5,6 +5,7 @@ namespace ApproTickets\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 class Extract extends Model
 {
@@ -16,9 +17,9 @@ class Extract extends Model
         'date_start' => 'date',
         'date_end' => 'date'
     ];
-    protected $append = [
-        'total_sales'
-    ];
+    // protected $append = [
+    //     'total_sales'
+    // ];
 
     public function user()
     {
@@ -83,10 +84,9 @@ class Extract extends Model
         return $sales;
     }
 
-    public function getTotalSalesAttribute()
+    public function getTotalBookingsAttribute()
     {
-        $bookings = Booking::with('Rate')->with('product')
-            ->whereDate('created_at', '>=', $this->date_start)
+        return Booking::whereDate('created_at', '>=', $this->date_start)
             ->whereDate('created_at', '<=', $this->date_end)
             ->whereHas("order", function ($q) {
                 $q->where('payment', 'card')->where('paid', 1);
@@ -97,38 +97,9 @@ class Extract extends Model
                 } else {
                     $q->where("user_id", $this->user_id);
                 }
-            })->get();
-        $total = $bookings->reduce(function ($total, $item) {
-            return $total + $item->tickets * $item->price;
-        });
-        return $total;
-    }
-
-    public function getTotalRefundsAttribute()
-    {
-        $bookings = Booking::with('Rate')->with('product')
-            ->whereDate('created_at', '>=', $this->date_start)
-            ->whereDate('created_at', '<=', $this->date_end)
-            ->where('refund', 1)
-            ->whereHas("order", function ($q) {
-                $q->where('payment', 'card')->where('paid', 1);
             })
-            ->whereHas('product', function ($q) {
-                if ($this->product_id) {
-                    $q->where("id", $this->product_id);
-                } else {
-                    $q->where("user_id", $this->user_id);
-                }
-            })->get();
-        $total = $bookings->reduce(function ($total, $item) {
-            return $total + $item->numEntrades * $item->preu;
-        });
-        return $total;
-    }
-
-    public function getTotalAttribute(): float
-    {
-        return $this->totalSales - $this->totalRefunds;
+            ->whereNull('refund')
+            ->sum(\DB::raw('tickets * price'));
     }
 
 }

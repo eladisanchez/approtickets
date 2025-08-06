@@ -205,10 +205,8 @@ class OrderController extends BaseController
 	 * @param string $id
 	 * @return \Illuminate\View\View|\Inertia\Response
 	 */
-	public function error(string $session, string $id): View|InertiaResponse
+	public function error(string $session, string $id): View|InertiaResponse|RedirectResponse
 	{
-
-
 		if (!$session == Session::getId()) {
 			return redirect()->route('home');
 		}

@@ -11,6 +11,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
+use ApproTickets\Models\Booking;
 
 class ExtractResource extends Resource
 {
@@ -59,7 +60,7 @@ class ExtractResource extends Resource
                         endforeach;
                         $content .= '<tr>
                             <td colspan="3" class="text-left px-6 py-4 whitespace-nowrap border-b border-gray-300"><strong>Total</strong></td>
-                            <td class="text-left px-6 py-4 whitespace-nowrap border-b border-gray-300"><strong>' . $record->total . ' €</strong></td>
+                            <td class="text-left px-6 py-4 whitespace-nowrap border-b border-gray-300"><strong>' . $record->total_bookings . ' €</strong></td>
                         </tr>';
                         $content .= '</tbody></table></div>';
                         return new HtmlString($content);
@@ -75,9 +76,9 @@ class ExtractResource extends Resource
                 Tables\Columns\TextColumn::make('product.title')->label('Producte')->sortable()->searchable(),
                 Tables\Columns\TextColumn::make('date_start')->dateTime('d/m/Y')->label('Data inici')->sortable(),
                 Tables\Columns\TextColumn::make('date_end')->dateTime('d/m/Y')->label('Data fi')->sortable(),
-                Tables\Columns\TextColumn::make('total')->label('Entrades')->sortable(),
+                //Tables\Columns\TextColumn::make('total')->label('Entrades')->sortable(),
                 Tables\Columns\ToggleColumn::make('paid')->label('Pagat')->sortable(),
-                Tables\Columns\TextColumn::make('total')->label('Total')->suffix('€'),
+                Tables\Columns\TextColumn::make('total')->label('Total vendes')->suffix('€'),
             ])
             ->filters([
                 //

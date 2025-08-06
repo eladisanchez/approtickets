@@ -36,6 +36,7 @@ class BookingResource extends Resource
                 Forms\Components\TimePicker::make('hour')->label('Hora')->required()->columnSpan(2),
                 Forms\Components\TextInput::make('row')->numeric()->label('Fila')->columnSpan(1)->visible(fn($record): bool => !!$record?->product?->venue_id),
                 Forms\Components\TextInput::make('seat')->numeric()->label('Seient')->columnSpan(1)->visible(fn($record): bool => !!$record?->product?->venue_id),
+                Forms\Components\Toggle::make('refund')->label('Entrada reemborsada')->columnSpan(2),
             ])->columns(6);
     }
 
@@ -43,7 +44,30 @@ class BookingResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\IconColumn::make('order.paid')->label('Estat')->default(3),
+                Tables\Columns\IconColumn::make('order')->label('Estat')->default(3)->icon(function ($record) {
+                    if ($record->refund == 1) {
+                        return 'heroicon-o-backward';
+                    }
+                    if (!$record->order) {
+                        return 'heroicon-o-shopping-cart';
+                    } else {
+                        if ($record->order->paid == 0) {
+                            return 'heroicon-o-clock';
+                        }
+                        if ($record->order->paid == 2) {
+                            return 'heroicon-o-x-mark';
+                        }
+                    }
+                    return 'heroicon-o-check';
+                })->color(function ($record) {
+                    if ($record->refund == 1) {
+                        return 'info';
+                    }
+                    if (!$record->order || $record->order->paid == 0 || $record->order->paid == 2) {
+                        return 'gray';
+                    }
+                    return 'success';
+                }),
                 Tables\Columns\TextColumn::make('created_at')->label('Data compra')->sortable()->searchable()->date('d/m/Y H:i'),
                 Tables\Columns\TextColumn::make('order.email')->label('Client')->sortable()->searchable(isIndividual: true, isGlobal: true),
                 Tables\Columns\TextColumn::make('product.title')->label('Producte')->sortable()->searchable(isIndividual: true, isGlobal: true)->wrap(),

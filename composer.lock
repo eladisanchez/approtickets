@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "082d3d0a79706b000405d4387a80f3e7",
+    "content-hash": "ad2512b3fc14e18297eaf54760d9c250",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -5490,20 +5490,20 @@
         },
         {
             "name": "shanmuga/laravel-entrust",
-            "version": "v5.0",
+            "version": "v6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shanmuga3/laravel-entrust.git",
-                "reference": "d7c9c1787ffc4f8b5005f1cd2c145e17f392a573"
+                "reference": "e1f97a5e0aa907a081dd698bcbfc8fa0566c8c79"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shanmuga3/laravel-entrust/zipball/d7c9c1787ffc4f8b5005f1cd2c145e17f392a573",
-                "reference": "d7c9c1787ffc4f8b5005f1cd2c145e17f392a573",
+                "url": "https://api.github.com/repos/shanmuga3/laravel-entrust/zipball/e1f97a5e0aa907a081dd698bcbfc8fa0566c8c79",
+                "reference": "e1f97a5e0aa907a081dd698bcbfc8fa0566c8c79",
                 "shasum": ""
             },
             "require": {
-                "illuminate/support": "^10.0|^11.0",
+                "illuminate/support": "^10.0|^11.0|^12.0",
                 "php": "^8.1"
             },
             "require-dev": {
@@ -5548,9 +5548,9 @@
             ],
             "support": {
                 "issues": "https://github.com/shanmuga3/laravel-entrust/issues",
-                "source": "https://github.com/shanmuga3/laravel-entrust/tree/v5.0"
+                "source": "https://github.com/shanmuga3/laravel-entrust/tree/v6.0"
             },
-            "time": "2024-03-15T04:49:30+00:00"
+            "time": "2025-03-13T04:42:00+00:00"
         },
         {
             "name": "simplesoftwareio/simple-qrcode",

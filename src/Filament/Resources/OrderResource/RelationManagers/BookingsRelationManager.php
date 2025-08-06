@@ -44,6 +44,7 @@ class BookingsRelationManager extends RelationManager
                 Forms\Components\TimePicker::make('hour')
                     ->label('Hora')
                     ->required(),
+                Forms\Components\Toggle::make('refund')->label('Entrada reemborsada'),
             ])->columns(3);
     }
 
@@ -70,7 +71,10 @@ class BookingsRelationManager extends RelationManager
                     ->date('H:i'),
                 Tables\Columns\TextColumn::make('price')
                     ->label('Preu')
-                    ->suffix(' €')
+                    ->suffix(' €'),
+                Tables\Columns\IconColumn::make('refund')
+                    ->label('Devolució')
+                    ->boolean(),
             ])
             ->filters([
                 //

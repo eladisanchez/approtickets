@@ -139,10 +139,15 @@ class ProductResource extends Resource
                     ->searchable()
                     ->preload()
                     ->helperText("Escollint un espai el producte serà un esdeveniment amb entrades numerades.")
-                    ->columnSpan(3),
+                    ->columnSpan(2),
                 Components\TextInput::make('place')
                     ->label("Lloc de l'esdeveniment / punt inicial de la visita")
-                    ->columnSpan(3),
+                    ->columnSpan(2),
+
+                // Components\DateTimePicker::make('open_at')
+                //     ->label('Inici venda')
+                //     ->columnSpan(2)
+                //     ->helperText('El producte no serà visible al web fins a aquesta data.'),
                 Components\TextInput::make('min_tickets')
                     ->label('Mínim entrades')
                     ->numeric()
@@ -171,6 +176,7 @@ class ProductResource extends Resource
                     ->suffix('hores')
                     ->required()
                     ->columnSpan(2),
+                
                 Components\Toggle::make('qr')
                     ->label('Entrades amb QR')
                     ->helperText('Habilita la lectura de QR per controlar l\'accés')

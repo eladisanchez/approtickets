@@ -38,7 +38,7 @@ class Product extends JsonResource
             'venue_id' => $this->venue_id,
             'packs' => $this->packs->modelKeys(),
             'hour_limit' => $this->hour_limit,
-            'venue_stage' => $this->venue->stage,
+            'venue_stage' => $this->venue->stage ?? null,
         ];
     }
 }

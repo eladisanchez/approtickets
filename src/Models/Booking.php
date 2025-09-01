@@ -68,6 +68,11 @@ class Booking extends Model
 		return $this->hasMany(Booking::class, 'pack_booking_id');
 	}
 
+	public function pack()
+	{
+		return $this->belongsTo(Booking::class, 'pack_booking_id');
+	}
+
 	public function getFormattedSeatAttribute()
 	{
 		if (empty($this->row) || $this->row == 0) {

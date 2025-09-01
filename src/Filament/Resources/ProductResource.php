@@ -217,7 +217,7 @@ class ProductResource extends Resource
                             ->suffix('%')
                             ->columnSpan(2),
                     ])->columns(6),
-            ])->columns(6)->hidden(fn($record): bool => $record->is_pack);
+            ])->columns(6);
     }
 
     /**

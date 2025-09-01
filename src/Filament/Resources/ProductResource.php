@@ -73,6 +73,7 @@ class ProductResource extends Resource
                     ->columnSpan(2),
                 Components\Select::make('category_id')
                     ->label('Categoria')
+                    ->searchable()
                     ->relationship(name: 'category', titleAttribute: 'title')
                     ->required()
                     ->native(false)

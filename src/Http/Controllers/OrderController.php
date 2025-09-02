@@ -66,8 +66,7 @@ class OrderController extends BaseController
 			'conditions' => 'accepted',
 			'name' => 'required',
 			'phone' => 'required',
-			'email' => 'required|email',
-			'cp' => 'required|size:5'
+			'email' => 'required|email'
 		] : [
 			'conditions' => 'accepted',
 			'name' => 'required',

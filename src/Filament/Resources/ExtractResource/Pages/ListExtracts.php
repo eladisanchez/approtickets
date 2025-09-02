@@ -37,7 +37,7 @@ class ListExtracts extends ListRecords
                                 ->whereColumn('products.user_id', 'extracts.user_id');
                         });
                 })
-                ->whereNull('refund'),
+                ->where(fn($q) => $q->whereNull('refund')->orWhere('refund', 0)),
         ]);
         return $query;
     }

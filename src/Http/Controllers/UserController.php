@@ -3,8 +3,6 @@
 namespace ApproTickets\Http\Controllers;
 
 use Illuminate\Http\Request;
-use ApproTickets\Models\User;
-use ApproTickets\Models\Order;
 use ApproTickets\Models\Booking;
 
 class UserController extends Controller
@@ -22,7 +20,16 @@ class UserController extends Controller
             'password' => 'required'
         ]);
 
+        $sessionId = session()->getId();
+        $cartItems = Booking::where('order_id', NULL)
+			->where('session', $sessionId)
+			->get();
+
         if (auth()->attempt($request->only('email', 'password'))) {
+            foreach ($cartItems as $item) {
+                $item->session = session()->getId();
+                $item->save();
+            }
             return redirect()->route('checkout');
         }
         return redirect()->back()->with('error', 'El correu o la contrassenya són incorrectes');

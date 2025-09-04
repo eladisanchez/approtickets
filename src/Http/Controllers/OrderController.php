@@ -130,7 +130,7 @@ class OrderController extends BaseController
 
 		if ($order) {
 
-			if ($order->paid == 1) {
+			if ($order->paid == PaymentStatus::PAID) {
 				try {
 					Mail::to($order->email)->send(new NewOrder($order));
 				} catch (\Exception $e) {

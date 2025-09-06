@@ -157,7 +157,8 @@ class OrderResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->modifyQueryUsing(fn(Builder $query) => $query->orderBy('created_at', 'DESC'));
+            ->modifyQueryUsing(fn(Builder $query) => $query->orderBy('created_at', 'DESC'))
+            ->paginationPageOptions([10, 25]);
     }
 
     public static function getRelations(): array

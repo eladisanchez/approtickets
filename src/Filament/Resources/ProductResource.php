@@ -457,14 +457,14 @@ class ProductResource extends Resource
                 Tables\Columns\TextColumn::make('category.title')->label('Categoria')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('bookings_count')->counts('bookings')->badge()->sortable()
                     ->badge()->label('Vendes'),
-                Tables\Columns\ToggleColumn::make('active')->label('Actiu')->sortable()->hidden(!auth()->user()->hasRole('admin')),
+                Tables\Columns\ToggleColumn::make('active')->label('Actiu')->sortable()->hidden(!auth()->user()->isAdmin()),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make()->hidden(auth()->user()->hasRole('admin')),
+                Tables\Actions\ViewAction::make()->hidden(auth()->user()->isAdmin()),
                 Tables\Actions\Action::make('open')
                     ->label('Obre')
                     ->icon('heroicon-o-arrow-top-right-on-square')
@@ -477,13 +477,13 @@ class ProductResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()->hidden(!auth()->user()->hasRole('admin')),
+                    Tables\Actions\DeleteBulkAction::make()->hidden(!auth()->user()->isAdmin()),
                 ]),
             ])
             ->modifyQueryUsing(fn(Builder $query) => $query->orderBy('order', 'ASC'))
             ->reorderable('order', function () {
                 // Només permet reordenar si l'usuari és administrador
-                return auth()->user()->hasRole('admin');
+                return auth()->user()->isAdmin();
             });
     }
 
@@ -497,7 +497,7 @@ class ProductResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        if (!auth()->user()->hasRole('admin')) {
+        if (!auth()->user()->isAdmin()) {
             return parent::getEloquentQuery()->where('user_id', auth()->user()->id);
         }
         return parent::getEloquentQuery();

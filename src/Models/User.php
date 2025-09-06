@@ -10,6 +10,7 @@ use Shanmuga\LaravelEntrust\Traits\LaravelEntrustUserTrait;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
+use Cache;
 
 class User extends Authenticatable implements HasName, FilamentUser
 {
@@ -55,6 +56,13 @@ class User extends Authenticatable implements HasName, FilamentUser
     public function getFilamentName(): string
     {
         return $this->name;
+    }
+
+    public function isAdmin(): bool
+    {
+        return Cache::remember("user_{$this->id}_is_admin", 600, function () {
+            return $this->hasRole('admin') ? true : null;     
+        });
     }
 
     public function isSuperadmin(): bool

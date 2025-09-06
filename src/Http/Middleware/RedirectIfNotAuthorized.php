@@ -12,7 +12,7 @@ class RedirectIfNotAuthorized
   public function handle(Request $request, Closure $next)
   {
 
-    $canAccessPanel = auth()->check() && (auth()->user()->hasRole('admin') || auth()->user()->hasRole('organizer'));
+    $canAccessPanel = auth()->check() && (auth()->user()->isAdmin() || auth()->user()->hasRole('organizer'));
 
     if ($canAccessPanel) {
       return $next($request);

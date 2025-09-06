@@ -24,7 +24,7 @@ class Order extends Model
         'payment' => PaymentMethods::class
     ];
 
-    //protected $with = ['refunds'];
+    protected $withCount = ['completedRefunds'];
 
     protected static function booted()
     {
@@ -125,14 +125,14 @@ class Order extends Model
         }
     }
 
-    public function hasRefund()
+    public function completedRefunds()
     {
-        return $this->refunds()->whereNotNull('refunded_at')->count() > 0;
+        return $this->hasMany(Refund::class)->whereNotNull('refunded_at');
     }
 
     public function getPaymentStatusAttribute(): PaymentStatus
     {
-        if ($this->hasRefund()) {
+        if ($this->completed_refunds_count > 0) {
             return PaymentStatus::REFUND;
         }
 

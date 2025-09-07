@@ -44,6 +44,10 @@ class BookingsRelationManager extends RelationManager
                 Forms\Components\TimePicker::make('hour')
                     ->label('Hora')
                     ->required(),
+                Forms\Components\TextInput::make('row')
+                    ->label('Fila')->hidden(fn($record): bool => !$record?->product?->venue_id),
+                Forms\Components\TextInput::make('seat')
+                    ->label('Seient')->hidden(fn($record): bool => !$record?->product?->venue_id),
                 Forms\Components\Toggle::make('refund')->label('Entrada reemborsada'),
             ])->columns(3);
     }
@@ -83,7 +87,7 @@ class BookingsRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make()->label('Afegir producte a la comanda'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->modalHeading('Editar entrada'),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

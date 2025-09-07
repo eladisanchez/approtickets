@@ -61,7 +61,7 @@ class User extends Authenticatable implements HasName, FilamentUser
     public function isAdmin(): bool
     {
         return Cache::remember("user_{$this->id}_is_admin", 600, function () {
-            return $this->hasRole('admin') ? true : null;     
+            return $this->hasRole('admin');     
         });
     }
 

@@ -92,6 +92,12 @@ class RefundController extends BaseController
 		if (isset($response['error'])) {
 			return $response;
 		}
+
+		$refund->update(['refunded_at' => now()]);
+		if ($refund->total == $refund->order->total) {
+			$refund->order->bookings()->update(['refund' => 1]);
+		}
+
 		return [
 			'success' => true
 		];

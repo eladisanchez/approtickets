@@ -28,7 +28,7 @@ class RefundsRelationManager extends RelationManager
                     ->suffix(' €')
                     ->required()
                     ->columnSpanFull()
-                    ->default($state->total ?? 0),
+                    ->default($this->getOwnerRecord()->total ?? 0),
             ])->columns(3);
     }
 
@@ -51,13 +51,13 @@ class RefundsRelationManager extends RelationManager
                     ->suffix(' €')
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()->label('Crear devolució')
+                Tables\Actions\CreateAction::make()->label('Crear devolució')->modalHeading('Crear devolució')
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->hidden(function ($record) {
                         return $record->refunded_at;
-                    }),
+                    })->modalHeading('Editar devolució'),
                 Tables\Actions\Action::make('url')
                     ->label('Enllaç')
                     ->icon('heroicon-o-link')
@@ -85,7 +85,6 @@ class RefundsRelationManager extends RelationManager
                                 ->danger()
                                 ->send();
                         } else {
-                            $record->update(['refunded_at' => now()]);
                             Notification::make()
                                 ->title("Devolució efectuada correctament")
                                 ->body("S'ha efectuat la devolució de {$record->total} € per la comanda {$record->order_id}.")

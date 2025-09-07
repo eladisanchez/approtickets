@@ -81,7 +81,7 @@ class Ticket extends Model
 
         return $this->bookings
             ->reject(function ($booking) use ($cartSeats) {
-                return $cartSeats->contains(fn($cart) => $cart['s'] === $booking->seat && $cart['f'] === $booking->row);
+                return $cartSeats->contains(fn($cart) => $cart['s'] === $booking->seat && $cart['f'] === $booking->row) || $booking->refund;
             })
             ->map(function ($booking) {
                 return ['s' => $booking->seat, 'f' => $booking->row];

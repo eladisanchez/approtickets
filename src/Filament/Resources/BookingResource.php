@@ -80,9 +80,6 @@ class BookingResource extends Resource
                 Tables\Columns\TextColumn::make('reducedSeat')->label('Localitat')->sortable(),
                 Tables\Columns\TextColumn::make('scans_count')->counts('scans')->label('QR')->badge()->color('success')->tooltip(fn(Booking $record): string => $record->scans->pluck('scan_id')->implode(', ')),
             ])
-            ->filters([
-                //
-            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])

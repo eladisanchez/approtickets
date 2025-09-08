@@ -6,8 +6,7 @@ use Illuminate\Console\Command;
 use ApproTickets\Models\Order;
 use Mail;
 use Log;
-use ApproTickets\Mail\RememberMail;
-use ApproTickets\Enums\PaymentStatus;
+use ApproTickets\Mail\NewOrder;
 
 class SendMailsCommand extends Command
 {
@@ -21,36 +20,38 @@ class SendMailsCommand extends Command
 
         $this->info("Sending emails");
 
-        $orders = Order::where('payment', 'card')
-            ->where('created_at', '>', '2025-02-06 00:00:00')
+        $orders = Order::whereNull('email_sent_at')
+            ->where('payment', 'card')
+            ->where('paid', 1)
+            ->where('created_at', '>', '2025-09-08 00:00:00')
+            ->limit(10)
             ->get();
 
         foreach ($orders as $order) {
             $this->line("Sending {$order->id} - {$order->email}");
-            if ($order->paid == PaymentStatus::PAID) {
-                try {
-
-                    $failedOrders = [1742, 1744, 1748, 1750, 1753, 1758, 1761, 1770, 1771, 1775, 1777, 1779];
-                    $numTickets = 0;
-                    $failed = in_array($order->id, $failedOrders);
-                    if ($failed) {
-                        $booking = $order->bookings->first();
-                        $numTickets = $booking->tickets;
-                        $booking->update([
-                            'tickets' => 1
-                        ]);
-                        $this->line("Tickets fixed for {$order->id} - {$order->email}");
-                    }
-                    Mail::to($order->email)->send(new RememberMail($order, $failed, $numTickets));
-                    $order->email_sent_at = now();
-                    $order->save();
-                    $this->line("Email sent to {$order->id} - {$order->email}");
-                } catch (\Exception $e) {
-                    $this->line("Error sending to {$order->id} - {$order->email}");
-                    Log::error($e->getMessage());
-                }
+            try {
+                Mail::to($order->email)->send(new NewOrder($order));
+                $order->email_sent_at = now();
+                $order->save();
+                $this->line("Email sent to {$order->id} - {$order->email}");
+            } catch (\Exception $e) {
+                $this->line("Error sending to {$order->id} - {$order->email}");
+                Log::error($e->getMessage());
             }
-            //sleep(1);
+            sleep(1);
+
+            // else {
+            //     try {
+            //         Mail::to($order->email)->send(new PaymentMail($order));
+            //         $order->email_sent_at = '2025-09-08 00:00:00';
+            //         $order->save();
+            //         $this->line("Email sent to {$order->id} - {$order->email}");
+            //     } catch (\Exception $e) {
+            //         $this->line("Error sending to {$order->id} - {$order->email}");
+            //         Log::error($e->getMessage());
+            //     }
+            // }
+            
         }
 
         $this->info("Done");

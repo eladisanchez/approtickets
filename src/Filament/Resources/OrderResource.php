@@ -73,7 +73,23 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('payment')->badge()->label('Mètode'),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('paid_status')
+                    ->form([
+                        Forms\Components\Select::make('paid_status')
+                            ->label('Estat')
+                            ->options([
+                                '0' => 'Pendent',
+                                '1' => 'Comanda completada',
+                            ])
+                    ])
+                    ->query(
+                        function (Builder $query, array $data) {
+                            if ($data['paid_status'] !== null) {
+                                return $query->where('paid', $data['paid_status']);
+                            }
+                            return $query;
+                        }
+                    ),
             ])
             ->actions([
                 ActionGroup::make([
@@ -105,6 +121,14 @@ class OrderResource extends Resource
                                     ->send();
                             }
                         }),
+                    Tables\Actions\Action::make('payment')
+                        ->label('Enllaç pagament')
+                        ->icon('heroicon-o-credit-card')
+                        ->modalHeading('Enllaç de pagament')
+                        ->modalContent(fn(Order $record) => new HtmlString(route('order.payment', [
+                            'id' => $record->id
+                        ]) . '?' . $record->session))
+                        ->visible(fn(Order $record): bool => $record->paid == PaymentStatus::UNPAID),
                     Tables\Actions\Action::make('refund')
                         ->label('Devolució')
                         ->icon('heroicon-o-arrow-left-circle')
@@ -131,7 +155,7 @@ class OrderResource extends Resource
                                     Action::make('Consulta les devolucions')
                                         ->url(fn() => route('filament.admin.resources.orders.edit', [
                                             'record' => $record->id,
-                                        ]).'?activeRelationManager=refunds')
+                                        ]) . '?activeRelationManager=refunds')
                                 ])
                                 ->success()
                                 ->send();

@@ -13,7 +13,7 @@ class SendMailsCommand extends Command
 
     protected $signature = 'approtickets:send-mails';
 
-    protected $description = 'Cleans abandoned cart items';
+    protected $description = 'Send mails for non sent orders';
 
     public function handle()
     {

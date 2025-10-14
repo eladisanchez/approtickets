@@ -224,8 +224,9 @@ class ProductController extends BaseController
 		$product = Product::findOrFail($product_id);
 
 		if (
-			!auth()->user()->hasRole('admin') &&
-			!(auth()->user()->hasRole('organizer') && auth()->user()->id == $product->user_id)
+			!auth()->check() ||
+			(!auth()->user()->hasRole('admin') &&
+				!(auth()->user()->hasRole('organizer') && auth()->user()->id == $product->user_id))
 		) {
 			abort(403);
 		}

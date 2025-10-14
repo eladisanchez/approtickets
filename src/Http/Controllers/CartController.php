@@ -338,6 +338,10 @@ class CartController extends BaseController
 			$this->handleErrorResponse(__('approtickets::cart.taken_seats'));
 		}
 
+		if ($product->packs->count() > 0) {
+			$this->convertToPack($product, [$rate_id]);
+		}
+
 		if (request()->wantsJson()) {
 			return $this->returnCartContent();
 		}

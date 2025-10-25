@@ -30,7 +30,7 @@ class TPVController extends BaseController
 
         } catch (\Exception $e) {
             $data = $TPV->getTransactionParameters($_POST);
-            Log::error('Error en la resposta del TPV: ' . $e->getMessage(), $data);
+            Log::debug('Error en la resposta del TPV: ' . $e->getMessage(), $data);
         }
 
     }
@@ -53,7 +53,7 @@ class TPVController extends BaseController
                 $order->save();
                 Mail::to(config('mail.from.address'))->send(new NewOrderAlert($order));
             } catch (\Exception $e) {
-                Log::error($e->getMessage());
+                Log::debug($e->getMessage());
             }
 
             // Pagament fallit

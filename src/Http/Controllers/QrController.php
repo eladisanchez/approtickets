@@ -126,40 +126,42 @@ class QrController extends BaseController
         }
 
         // Comprovar temps 
-        $to_time = strtotime($booking->day->format('Y-m-d') . ' ' . $booking->hour . ':00');
-        $from_time = strtotime('now');
-        $diff = round(($to_time - $from_time) / 60);
-        // Minuts previs a l'inici de la sessió a partir dels que es podrà llegir l'entrada
-        $minutesLeft = $booking->product->validation_start ?? 60;
-        // Caducitat de l'entrada a partir de l'inici de sessió
-        $minutesPast = $booking->product->validation_end ?? 60;
+        if ($booking->day):
+            $to_time = strtotime($booking->day->format('Y-m-d') . ' ' . $booking->hour . ':00');
+            $from_time = strtotime('now');
+            $diff = round(($to_time - $from_time) / 60);
+            // Minuts previs a l'inici de la sessió a partir dels que es podrà llegir l'entrada
+            $minutesLeft = $booking->product->validation_start ?? 60;
+            // Caducitat de l'entrada a partir de l'inici de sessió
+            $minutesPast = $booking->product->validation_end ?? 60;
 
-        // Esdeveniment futur
-        if ($diff > $minutesLeft):
-            $units = 'minuts';
-            if ($diff / 60 > 1) {
-                $units = 'hores';
-                $diff = round($diff / 60);
-                if ($diff / 24 > 1) {
-                    $units = 'dies';
-                    $diff = round($diff / 24);
+            // Esdeveniment futur
+            if ($diff > $minutesLeft):
+                $units = 'minuts';
+                if ($diff / 60 > 1) {
+                    $units = 'hores';
+                    $diff = round($diff / 60);
+                    if ($diff / 24 > 1) {
+                        $units = 'dies';
+                        $diff = round($diff / 24);
+                    }
                 }
-            }
-            return response()->json([
-                'message' => "Falten {$diff} {$units} per l'espectacle",
-                'codi' => $code
-            ], 403);
-        endif;
-
-        // Entrada caducada
-        if ($diff < -$minutesPast):
-            return response()->json(
-                [
-                    'message' => "Aquest codi ja no és vàlid",
+                return response()->json([
+                    'message' => "Falten {$diff} {$units} per l'espectacle",
                     'codi' => $code
-                ],
-                403
-            );
+                ], 403);
+            endif;
+
+            // Entrada caducada
+            if ($diff < -$minutesPast):
+                return response()->json(
+                    [
+                        'message' => "Aquest codi ja no és vàlid",
+                        'codi' => $code
+                    ],
+                    403
+                );
+            endif;
         endif;
 
         // QR already scanned

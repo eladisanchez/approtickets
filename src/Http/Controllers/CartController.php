@@ -9,6 +9,7 @@ use ApproTickets\Models\Booking;
 use ApproTickets\Models\ProductRate;
 use ApproTickets\Models\Coupon;
 use DB;
+use Log;
 use Illuminate\Http\JsonResponse;
 use Session;
 use Illuminate\View\View;
@@ -160,7 +161,7 @@ class CartController extends BaseController
 		if (config('approtickets.inertia')) {
 			return redirect()->route('checkout');
 		}
-		
+
 		$this->initializeCart();
 		$pendingOrder = Order::where('session', Session::getId())->where('paid', 0)->first();
 		return view('cart', [
@@ -227,10 +228,12 @@ class CartController extends BaseController
 
 		foreach ($qtys as $i => $qty) {
 
-			if ($qty <= 0) continue;
+			if ($qty <= 0)
+				continue;
 
 			$rate_id = $rates[$i] ?? null;
-			if (!$rate_id || !isset($prices[$rate_id])) continue;
+			if (!$rate_id || !isset($prices[$rate_id]))
+				continue;
 
 			$price = $prices[$rate_id];
 
@@ -292,7 +295,7 @@ class CartController extends BaseController
 
 		try {
 			DB::transaction(function () use ($seats, $product, $rate_id, $day, $hour, $takenSeats) {
-				
+
 				// Lock the rows for update to prevent race conditions
 				// Since we are creating new rows, we can't lock them directly.
 				// We should lock the checking query.
@@ -303,18 +306,18 @@ class CartController extends BaseController
 				// 2. Insert
 				// 3. If unique constraint fails, rollback (handled by DB)
 				// But here we want to prevent overbooking.
-				
+
 				// Let's use lockForUpdate on the check query if possible, but it only locks existing rows.
 				// To be safe against race conditions where two people book the same seat at the same time:
 				// We should rely on a unique constraint in the DB (product_id, day, hour, seat, row).
 				// Assuming the user will add that constraint or we handle the exception.
 				// For now, let's wrap in transaction and do a 'lock' by selecting for update on the product maybe?
 				// Or just use the transaction to ensure atomicity.
-				
+
 				// A better way without unique constraint (if we can't add it now) is to lock the product record
 				// This serializes bookings for the same product, which is safe but might be slightly slower under high load.
 				$product = Product::lockForUpdate()->find($product->id);
-				
+
 				$rate = Rate::find($rate_id);
 				$productRate = ProductRate::where('product_id', $product->id)
 					->where('rate_id', $rate->id)->first();
@@ -338,7 +341,7 @@ class CartController extends BaseController
 						->where('seat', $seat->s)
 						->where('row', $seat->f)
 						->first();
-						
+
 					if ($booking) {
 						// Throw exception to rollback or handle gracefully
 						Log::error('Seat taken: ' . $seat->s . ' ' . $seat->f);
@@ -359,7 +362,7 @@ class CartController extends BaseController
 				}
 			});
 
-		// Error handling is now done via exception in transaction
+			// Error handling is now done via exception in transaction
 		} catch (\Exception $e) {
 			Log::error('Error adding seats to cart: ' . $e->getMessage());
 			return $this->handleErrorResponse($e->getMessage());

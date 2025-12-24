@@ -218,20 +218,21 @@ class CartController extends BaseController
 			return $this->handleErrorResponse(__('approtickets::cart.max_tickets', ['max' => $product->max_tickets]));
 		}
 
+		// Optimized price fetching
+		$rateIds = array_filter($rates, fn($r) => !is_null($r));
+		$prices = DB::table('product_rate')
+			->where('product_id', $product_id)
+			->whereIn('rate_id', $rateIds)
+			->pluck('price', 'rate_id');
+
 		foreach ($qtys as $i => $qty) {
 
-			if ($qty <= 0)
-				continue;
+			if ($qty <= 0) continue;
 
 			$rate_id = $rates[$i] ?? null;
+			if (!$rate_id || !isset($prices[$rate_id])) continue;
 
-			if (!$rate_id)
-				continue;
-
-			$price = DB::table('product_rate')
-				->where('product_id', $product_id)
-				->where('rate_id', $rate_id)
-				->pluck('price')[0];
+			$price = $prices[$rate_id];
 
 			if (Session::has("coupon.p{$product_id}_t{$rate_id}")) {
 				$price *= 1 - Session::get('coupon.discount') / 100;
@@ -248,10 +249,11 @@ class CartController extends BaseController
 				'tickets' => DB::raw('tickets + ' . $qty),
 				'price' => $price
 			]);
-
 		}
 
 		if ($product->packs->count() > 0) {
+			// Eager load relationships to prevent N+1 in convertToPack
+			$product->load(['packs.rates', 'packs.packProducts']);
 			$packsCreated = $this->convertToPack($product, $rates);
 		}
 
@@ -288,54 +290,79 @@ class CartController extends BaseController
 	public function addEvent(array $seats, $product, $rate_id, $day, $hour): RedirectResponse|JsonResponse
 	{
 
-		$rate = Rate::find($rate_id);
+		try {
+			DB::transaction(function () use ($seats, $product, $rate_id, $day, $hour, $takenSeats) {
+				
+				// Lock the rows for update to prevent race conditions
+				// Since we are creating new rows, we can't lock them directly.
+				// We should lock the checking query.
+				// However, standard select for update might not work if rows don't exist.
+				// A common approach is to lock the product or a parent record, but that might be too aggressive.
+				// Better approach for seat reservation:
+				// 1. Check availability
+				// 2. Insert
+				// 3. If unique constraint fails, rollback (handled by DB)
+				// But here we want to prevent overbooking.
+				
+				// Let's use lockForUpdate on the check query if possible, but it only locks existing rows.
+				// To be safe against race conditions where two people book the same seat at the same time:
+				// We should rely on a unique constraint in the DB (product_id, day, hour, seat, row).
+				// Assuming the user will add that constraint or we handle the exception.
+				// For now, let's wrap in transaction and do a 'lock' by selecting for update on the product maybe?
+				// Or just use the transaction to ensure atomicity.
+				
+				// A better way without unique constraint (if we can't add it now) is to lock the product record
+				// This serializes bookings for the same product, which is safe but might be slightly slower under high load.
+				$product = Product::lockForUpdate()->find($product->id);
+				
+				$rate = Rate::find($rate_id);
+				$productRate = ProductRate::where('product_id', $product->id)
+					->where('rate_id', $rate->id)->first();
+				$generalPrice = $productRate->price;
 
-		$productRate = ProductRate::where('product_id', $product->id)
-			->where('rate_id', $rate->id)->first();
+				foreach ($seats as $seat) {
 
-		$generalPrice = $productRate->price;
+					if (is_array($seat)) {
+						$seat = (object) $seat;
+					}
 
-		$takenSeats = [];
+					$price = $productRate->pricezone ? $productRate->pricezone[$seat->z] : $generalPrice;
+					if (Session::has("coupon.p{$product->id}_t{$rate->id}")) {
+						$price *= 1 - Session::get('coupon.discount') / 100;
+					}
 
-		foreach ($seats as $seat) {
+					// Check if seat is available
+					$booking = Booking::where('product_id', $product->id)
+						->where('day', $day)
+						->where('hour', $hour)
+						->where('seat', $seat->s)
+						->where('row', $seat->f)
+						->first();
+						
+					if ($booking) {
+						// Throw exception to rollback or handle gracefully
+						Log::error('Seat taken: ' . $seat->s . ' ' . $seat->f);
+						throw new \Exception(__('approtickets::cart.taken_seats'));
+					}
 
-			if (is_array($seat)) {
-				$seat = (object) $seat;
-			}
+					$booking = new Booking();
+					$booking->product_id = $product->id;
+					$booking->rate_id = $rate->id;
+					$booking->day = $day;
+					$booking->hour = $hour;
+					$booking->tickets = 1;
+					$booking->price = $price;
+					$booking->session = Session::getId();
+					$booking->seat = intval($seat->s);
+					$booking->row = intval($seat->f);
+					$booking->save();
+				}
+			});
 
-			$price = $productRate->pricezone ? $productRate->pricezone[$seat->z] : $generalPrice;
-			if (Session::has("coupon.p{$product->id}_t{$rate->id}")) {
-				$price *= 1 - Session::get('coupon.discount') / 100;
-			}
-
-			// Check if seat is available
-			$booking = Booking::where('product_id', $product->id)
-				->where('day', $day)
-				->where('hour', $hour)
-				->where('seat', $seat->s)
-				->where('row', $seat->f)
-				->first();
-			if ($booking) {
-				$takenSeats[] = [$seat->s, $seat->f];
-				continue;
-			}
-
-			$booking = new Booking();
-			$booking->product_id = $product->id;
-			$booking->rate_id = $rate->id;
-			$booking->day = $day;
-			$booking->hour = $hour;
-			$booking->tickets = 1;
-			$booking->price = $price;
-			$booking->session = Session::getId();
-			$booking->seat = intval($seat->s);
-			$booking->row = intval($seat->f);
-			$booking->save();
-
-		}
-
-		if (count($takenSeats)) {
-			$this->handleErrorResponse(__('approtickets::cart.taken_seats'));
+		// Error handling is now done via exception in transaction
+		} catch (\Exception $e) {
+			Log::error('Error adding seats to cart: ' . $e->getMessage());
+			return $this->handleErrorResponse($e->getMessage());
 		}
 
 		if ($product->packs->count() > 0) {

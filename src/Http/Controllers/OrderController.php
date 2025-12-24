@@ -64,13 +64,17 @@ class OrderController extends BaseController
 
 		$rules = !auth()->check() ? [
 			'conditions' => 'accepted',
-			'name' => 'required',
-			'phone' => 'required',
-			'email' => 'required|email'
+			'name' => 'required|string|max:255',
+			'phone' => 'required|string|max:20',
+			'email' => 'required|email|max:255',
+			'cp' => 'nullable|string|max:10',
+			'observations' => 'nullable|string|max:1000',
 		] : [
 			'conditions' => 'accepted',
-			'name' => 'required',
-			'email' => 'required|email',
+			'name' => 'required|string|max:255',
+			'email' => 'required|email|max:255',
+			'cp' => 'nullable|string|max:10',
+			'observations' => 'nullable|string|max:1000',
 		];
 
 		$validator = validator(request()->all(), $rules);
@@ -104,28 +108,34 @@ class OrderController extends BaseController
 			$paid = 1;
 		}
 
-		$order = Order::create([
-			'lang' => app()->getLocale(),
-			'session' => Session::getId(),
-			'total' => $total,
-			'coupon' => Session::get('coupon.name'),
-			'payment' => $payment,
-			'paid' => $paid,
-			'user_id' => $user->id ?? null,
-			'name' => request()->input('name'),
-			'email' => request()->input('email') ?? $user->email,
-			'phone' => request()->input('phone'),
-			'cp' => request()->input('cp'),
-			'observations' => request()->input('observations'),
-		]);
+		try {
+			$order = DB::transaction(function () use ($cartItems, $total, $payment, $paid, $user) {
+				$order = Order::create([
+					'lang' => app()->getLocale(),
+					'session' => Session::getId(),
+					'total' => $total,
+					'coupon' => Session::get('coupon.name'),
+					'payment' => $payment,
+					'paid' => $paid,
+					'user_id' => $user->id ?? null,
+					'name' => request()->input('name'),
+					'email' => request()->input('email') ?? $user->email,
+					'phone' => request()->input('phone'),
+					'cp' => request()->input('cp'),
+					'observations' => request()->input('observations'),
+				]);
 
-		//$organizers = [];
+				foreach ($cartItems as $booking) {
+					$booking->order_id = $order->id;
+					$booking->uid = substr(bin2hex(random_bytes(20)), -5);
+					$booking->save();
+				}
 
-		foreach ($cartItems as $booking) {
-			$booking->order_id = $order->id;
-			$booking->uid = substr(bin2hex(random_bytes(20)), -5);
-			$booking->save();
-			//$organizers[] = $booking->product->organizer_id;
+				return $order;
+			});
+		} catch (\Exception $e) {
+			Log::error('Error creating order: ' . $e->getMessage());
+			return redirect()->back()->withErrors('Error al processar la comanda. Si us plau, torni a intentar-ho.');
 		}
 
 		if ($order) {

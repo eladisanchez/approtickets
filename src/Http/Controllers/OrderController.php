@@ -10,6 +10,7 @@ use ApproTickets\Models\Booking;
 use ApproTickets\Models\User;
 use Session;
 use Mail;
+use DB;
 use ApproTickets\Mail\NewOrder;
 use Redsys\Tpv\Tpv;
 use Barryvdh\DomPDF\Facade\Pdf;

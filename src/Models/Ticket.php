@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Mail;
 use Log;
 use ApproTickets\Mail\RefundMail;
+use DB;
+use Carbon\Carbon;
 
 class Ticket extends Model
 {
@@ -90,56 +92,72 @@ class Ticket extends Model
             ->toArray();
     }
 
-    public function cancel(
-        string|null $newDate = null
-    ) {
-        $sessionCanceled = "{$this->day->format('Y-m-d')} {$this->hour->format('H:i:s')}";
+    public function cancel(?string $newDate = null)
+    {
+        $day = $this->day instanceof Carbon ? $this->day : Carbon::parse($this->day);
+        $hour = $this->hour instanceof Carbon ? $this->hour : Carbon::parse($this->hour);
+
+        $sessionCanceled = "{$day->format('Y-m-d')} {$hour->format('H:i:s')}";
         $oldDay = $this->day;
         $oldHour = $this->hour;
-        if ($newDate) {
-            $this->day = date('Y-m-d', strtotime($newDate));
-            $this->hour = date('H:i:s', strtotime($newDate));
-        }
-        $this->save();
 
-        $bookings = Booking::where("product_id", $this->product_id)
-            ->where("day", $oldDay)
-            ->where("hour", $oldHour)
-            ->get()
-            ->groupBy('order_id');
-
-        if (count($bookings) > 0) {
-            foreach ($bookings as $orderId => $orderBookings) {
-                $amountRefund = 0;
-                foreach ($orderBookings as $booking) {
-                    $booking->refund = 1;
-                    if ($newDate) {
-                        $booking->day = $this->day;
-                        $booking->hour = $this->hour;
-                    }
-                    $booking->save();
-                    $amountRefund += $booking->tickets * $booking->price;
+        try {
+            DB::transaction(function () use ($newDate, $oldDay, $oldHour, $sessionCanceled) {
+                if ($newDate) {
+                    $newDateCarbon = Carbon::parse($newDate);
+                    $this->day = $newDateCarbon->format('Y-m-d');
+                    $this->hour = $newDateCarbon->format('H:i:s');
                 }
-                $order = Order::find($orderId);
-                if ($order && $order->tpv_id) {
-                    $refund = Refund::create([
-                        'product_id' => $this->product_id,
-                        'order_id' => $order->id,
-                        'total' => $amountRefund,
-                        'session_canceled' => $sessionCanceled,
-                        'session_new' => $newDate
-                    ]);
-                    if ($order->email) {
-                        try {
-                            Mail::to($order->email)->queue(new RefundMail($refund));
-                        } catch (\Exception $e) {
-                            Log::error('Error a l\'enviar correu de devolució: ' . $e);
+                $this->canceled = 1;
+                $this->save();
+
+                $bookings = Booking::with('order')
+                    ->where("product_id", $this->product_id)
+                    ->where("day", $oldDay)
+                    ->where("hour", $oldHour)
+                    ->get()
+                    ->groupBy('order_id');
+
+                if ($bookings->isNotEmpty()) {
+                    foreach ($bookings as $orderId => $orderBookings) {
+                        $amountRefund = 0;
+                        foreach ($orderBookings as $booking) {
+                            $booking->refund = 1;
+                            if ($newDate) {
+                                $booking->day = $this->day;
+                                $booking->hour = $this->hour;
+                            }
+                            $booking->save();
+                            $amountRefund += $booking->tickets * $booking->price;
+                        }
+
+                        $order = $orderBookings->first()->order;
+
+                        if ($order && $order->tpv_id) {
+                            $refund = Refund::create([
+                                'product_id' => $this->product_id,
+                                'order_id' => $order->id,
+                                'total' => $amountRefund,
+                                'session_canceled' => $sessionCanceled,
+                                'session_new' => $newDate
+                            ]);
+
+                            if ($order->email) {
+                                try {
+                                    Mail::to($order->email)->send(new RefundMail($refund));
+                                } catch (\Exception $e) {
+                                    Log::error("Error sending refund email for order {$order->id}: " . $e->getMessage());
+                                }
+                            }
                         }
                     }
                 }
-            }
+            });
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Error cancelling ticket session {$this->id}: " . $e->getMessage());
+            throw $e;
         }
-
     }
 
 }

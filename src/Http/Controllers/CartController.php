@@ -294,7 +294,7 @@ class CartController extends BaseController
 	{
 
 		try {
-			DB::transaction(function () use ($seats, $product, $rate_id, $day, $hour, $takenSeats) {
+			DB::transaction(function () use ($seats, $product, $rate_id, $day, $hour) {
 
 				// Lock the rows for update to prevent race conditions
 				// Since we are creating new rows, we can't lock them directly.

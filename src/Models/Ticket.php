@@ -86,6 +86,7 @@ class Ticket extends Model
             ->map(function ($booking) {
                 return ['s' => $booking->seat, 'f' => $booking->row];
             })
+            ->values()
             ->toArray();
     }
 

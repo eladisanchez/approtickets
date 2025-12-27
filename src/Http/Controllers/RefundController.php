@@ -108,14 +108,14 @@ class RefundController extends BaseController
 	 * @param string $hash
 	 * @return \Illuminate\View\View|\Inertia\Response
 	 */
-	public function show(string $hash): View|InertiaResponse
+	public function show(string $hash): View|InertiaResponse|string
 	{
 		$refund = Refund::where('hash', $hash)
 			->with('order')
 			->firstOrFail();
 
 		if ($refund->refunded_at) {
-			return redirect()->route('home');
+			return "La devolució s'ha autoritzat correctament. Pot trigar un màxim de 14 dies laborables a efectuar-se, depenent del tipus de targeta i l'entitat bancària.";
 		}
 
 		$tpv = new Tpv(config('redsys'));

@@ -50,7 +50,9 @@ class Ticket extends Model
 
     public function getBookingsTotalAttribute()
     {
-        return $this->bookings->sum('tickets');
+        return $this->bookings()->where(function ($query) {
+            $query->where('refund', '!=', 1)->orWhereDoesntHave('order.completedRefunds');
+        })->sum('tickets');
     }
 
     public function getAvailableAttribute()
@@ -122,6 +124,9 @@ class Ticket extends Model
                     foreach ($bookings as $orderId => $orderBookings) {
                         $amountRefund = 0;
                         foreach ($orderBookings as $booking) {
+                            if ($booking->refund) {
+                                continue;
+                            }
                             $booking->refund = 1;
                             if ($newDate) {
                                 $booking->day = $this->day;
@@ -133,7 +138,7 @@ class Ticket extends Model
 
                         $order = $orderBookings->first()->order;
 
-                        if ($order && $order->tpv_id) {
+                        if ($order && $order->tpv_id && $amountRefund > 0) {
                             $refund = Refund::create([
                                 'product_id' => $this->product_id,
                                 'order_id' => $order->id,

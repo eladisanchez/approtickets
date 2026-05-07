@@ -126,7 +126,7 @@ class Product extends Model
 
     public function nextTickets()
     {
-        $datetime = now()->subHours($this->hour_limit);
+        $datetime = now()->subSeconds($this->hour_limit * 3600);
         return $this->hasMany(Ticket::class)
             ->where('day', '>=', $datetime->format('Y-m-d'))
             ->whereRaw('hour >= ' . $datetime->format('H'))
@@ -167,7 +167,7 @@ class Product extends Model
 
     public function availableDays()
     {
-        $datetime = now()->subHours($this->hour_limit);
+        $datetime = now()->subSeconds($this->hour_limit * 3600);
         return Ticket::where('product_id', $this->id)
             ->where('day', '>=', $datetime->format('Y-m-d'))
             ->whereRaw('hour >= ' . $datetime->format('H'))

@@ -97,8 +97,8 @@ class ProductController extends BaseController
 		// 	}
 		// }
 
-		$minutesBeforeClose = 60 * $product->hour_limit;
-		$closingTime = Carbon::parse("{$day} {$hour}")->subMinutes($minutesBeforeClose);
+		$secondsBeforeClose = 3600 * $product->hour_limit;
+		$closingTime = Carbon::parse("{$day} {$hour}")->subSeconds($secondsBeforeClose);
 		$notAvailable = now() > $closingTime;
 
 		if (config('approtickets.inertia')) {

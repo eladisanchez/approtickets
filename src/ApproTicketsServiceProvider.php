@@ -28,6 +28,9 @@ use Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Console\Scheduling\Schedule;
 use ApproTickets\Http\Middleware\RedirectIfNotAuthorized;
+use Illuminate\Contracts\Debug\ExceptionHandler;
+use Illuminate\Support\Facades\Log;
+use Livewire\Livewire;
 
 class ApproTicketsServiceProvider extends ServiceProvider
 {
@@ -78,6 +81,44 @@ class ApproTicketsServiceProvider extends ServiceProvider
         $kernel = $this->app->make(Kernel::class);
         $kernel->pushMiddleware(LaravelLocalizationRedirectFilter::class);
 
+        $this->silenceLivewireTamperingNoise();
+        $this->throttleLivewireUpdateRoute();
+    }
+
+    /**
+     * Livewire/Filament get probed constantly by bots sending malformed
+     * "updates" payloads trying to type-juggle a component property
+     * (see CVE-2025-54068 and similar). Livewire already rejects these
+     * with a TypeError before anything is executed, but each attempt was
+     * still logged as a full production.ERROR, flooding logs/alerts with
+     * noise that isn't an application bug.
+     */
+    protected function silenceLivewireTamperingNoise(): void
+    {
+        $handler = $this->app->make(ExceptionHandler::class);
+
+        if (!method_exists($handler, 'reportable')) {
+            return;
+        }
+
+        $handler->reportable(function (\TypeError $e) {
+            if (str_contains($e->getFile(), 'livewire'.DIRECTORY_SEPARATOR.'livewire'.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'Mechanisms'.DIRECTORY_SEPARATOR.'HandleComponents')) {
+                Log::channel(config('logging.default'))->debug('Blocked malformed Livewire update request (property type tampering).', [
+                    'message' => $e->getMessage(),
+                    'ip' => request()->ip(),
+                ]);
+
+                return false;
+            }
+        });
+    }
+
+    protected function throttleLivewireUpdateRoute(): void
+    {
+        Livewire::setUpdateRoute(function ($handle) {
+            return \Illuminate\Support\Facades\Route::post('/livewire/update', $handle)
+                ->middleware('throttle:60,1');
+        });
     }
 
     public function panel(Panel $panel): Panel

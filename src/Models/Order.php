@@ -29,10 +29,15 @@ class Order extends Model
     protected static function booted()
     {
         static::deleting(function ($order) {
+            if ($order->paid == PaymentStatus::PAID) {
+                return false;
+            }
+
             foreach ($order->bookings()->get() as $booking) {
                 $booking->delete();
             }
         });
+
         static::restoring(function ($order) {
             foreach ($order->bookings()->get() as $booking) {
                 $booking->restore();
@@ -76,15 +81,6 @@ class Order extends Model
 
     }
 
-    protected static function boot()
-    {
-        parent::boot();
-        static::deleting(function ($order) {
-            foreach ($order->bookings()->get() as $booking) {
-                $booking->delete();
-            }
-        });
-    }
 
     public function refunds()
     {

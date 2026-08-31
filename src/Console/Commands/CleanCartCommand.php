@@ -32,7 +32,7 @@ class CleanCartCommand extends Command
         $formatted = $date->format('Y-m-d H:i:s');
         $abandonedOrders = Order::where('paid', '!=', 1)
             ->where('payment', 'card')
-            ->where('created_at', '<=', $formatted)
+            ->where('updated_at', '<=', $formatted)
             ->get();
         foreach ($abandonedOrders as $order) {
             $order->delete();

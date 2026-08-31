@@ -6,9 +6,10 @@ use ApproTickets\Filament\Resources\CouponResource\Pages;
 use ApproTickets\Filament\Resources\CouponResource\RelationManagers;
 use ApproTickets\Models\Coupon;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Actions;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -17,14 +18,14 @@ class CouponResource extends Resource
 {
     protected static ?string $model = Coupon::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-receipt-percent';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
     protected static ?string $navigationLabel = 'Codis descompte';
     protected static ?string $modelLabel = 'codi';
     protected static ?string $pluralModelLabel = 'codis';
-    protected static ?string $navigationGroup = 'Entrades';
+    protected static string|\UnitEnum|null $navigationGroup = 'Entrades';
     protected static ?int $navigationSort = 5;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
         return $form
             ->schema([
@@ -50,11 +51,11 @@ class CouponResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

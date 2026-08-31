@@ -7,36 +7,36 @@ use ApproTickets\Models\Product;
 use ApproTickets\Models\Ticket;
 use ApproTickets\Models\Rate;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Actions;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components;
-use Filament\Forms\Get;
-use Filament\Forms\Components\Actions;
-use Filament\Resources\Concerns\Translatable;
-use Filament\Forms\Components\Actions\Action;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Actions as SchemaActions;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
-use Filament\Notifications\Actions\Action as NotificationAction;
+
 
 class ProductResource extends Resource
 {
 
-    use Translatable;
+
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
     protected static ?string $navigationLabel = 'Productes';
     protected static ?string $modelLabel = 'producte';
     protected static ?string $pluralModelLabel = 'productes';
-    protected static ?string $navigationGroup = 'Entrades';
+    protected static string|\UnitEnum|null $navigationGroup = 'Entrades';
     protected static ?int $navigationSort = 1;
 
     /**
      * Defines the form schema for the product resource.
      */
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
         return $form
             ->schema([
@@ -285,7 +285,7 @@ class ProductResource extends Resource
                                     ->visible(fn(Ticket $record) => $record->product->venue_id)
                             ])
                     ])->columns(6),
-                Actions::make([
+                SchemaActions::make([
                     Actions\Action::make('previous-tickets')
                         ->label('Sessions anteriors')
                         ->url(fn(Product $record): string => route('filament.admin.resources.tickets.index') . '?tableFilters[product][product]=' . $record->id . '&activeTab=previous'),
@@ -463,9 +463,9 @@ class ProductResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make()->hidden(auth()->user()->isAdmin()),
-                Tables\Actions\Action::make('open')
+                Actions\EditAction::make(),
+                Actions\ViewAction::make()->hidden(auth()->user()->isAdmin()),
+                Actions\Action::make('open')
                     ->label('Obre')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->url(function ($record) {
@@ -476,8 +476,8 @@ class ProductResource extends Resource
                     ->openUrlInNewTab(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()->hidden(!auth()->user()->isAdmin()),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make()->hidden(!auth()->user()->isAdmin()),
                 ]),
             ])
             ->modifyQueryUsing(fn(Builder $query) => $query->orderBy('order', 'ASC'))

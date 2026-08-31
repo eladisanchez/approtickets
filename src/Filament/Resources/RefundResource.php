@@ -5,15 +5,15 @@ namespace ApproTickets\Filament\Resources;
 use ApproTickets\Filament\Resources\RefundResource\Pages;
 use ApproTickets\Models\Refund;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Actions;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Select;
-use Filament\Resources\Concerns\Translatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 use Log;
@@ -23,11 +23,11 @@ class RefundResource extends Resource
 
     protected static ?string $model = Refund::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-receipt-refund';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-receipt-refund';
     protected static ?string $navigationLabel = 'Devolucions';
     protected static ?string $modelLabel = 'devolució';
     protected static ?string $pluralModelLabel = 'devolucions';
-    protected static ?string $navigationGroup = 'Vendes';
+    protected static string|\UnitEnum|null $navigationGroup = 'Vendes';
     protected static ?int $navigationSort = 8;
 
     public static function table(Table $table): Table
@@ -69,7 +69,7 @@ class RefundResource extends Resource
                     ->query(fn(Builder $query, array $data): Builder => $data['product'] ? $query->where('product_id', $data['product']) : $query),
             ])
             ->actions([
-                Tables\Actions\Action::make('url')
+                Actions\Action::make('url')
                     ->label('Enllaç')
                     ->icon('heroicon-o-link')
                     ->url(function (Refund $record) {

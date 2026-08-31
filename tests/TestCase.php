@@ -40,6 +40,7 @@ class TestCase extends Orchestra
             \Filament\Forms\FormsServiceProvider::class,
             \Filament\Tables\TablesServiceProvider::class,
             \Filament\Actions\ActionsServiceProvider::class,
+            \Filament\Schemas\SchemasServiceProvider::class,
         ];
     }
 

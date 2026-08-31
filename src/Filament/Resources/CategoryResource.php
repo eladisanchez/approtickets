@@ -4,30 +4,29 @@ namespace ApproTickets\Filament\Resources;
 
 use ApproTickets\Filament\Resources\CategoryResource\Pages;
 use ApproTickets\Models\Category;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Actions;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
-use Filament\Resources\Concerns\Translatable;
 
 class CategoryResource extends Resource
 {
 
-    use Translatable;
     protected static ?string $model = Category::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
     protected static ?string $navigationLabel = 'Categories';
     protected static ?string $modelLabel = 'categoria';
     protected static ?string $pluralModelLabel = 'categories';
-    protected static ?string $navigationGroup = 'Entrades';
+    protected static string|\UnitEnum|null $navigationGroup = 'Entrades';
     protected static ?int $navigationSort = 2;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
         return $form
             ->schema([
@@ -68,12 +67,12 @@ class CategoryResource extends Resource
                 //Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\EditAction::make(),
+                Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->reorderable('order')

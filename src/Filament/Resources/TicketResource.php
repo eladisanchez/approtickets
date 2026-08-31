@@ -5,32 +5,31 @@ namespace ApproTickets\Filament\Resources;
 use ApproTickets\Filament\Resources\TicketResource\Pages;
 use ApproTickets\Models\Ticket;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Actions;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
-use Filament\Resources\Concerns\Translatable;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Notifications\Notification;
 
 class TicketResource extends Resource
 {
-    use Translatable;
     protected static ?string $model = Ticket::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calendar';
     protected static ?string $navigationLabel = 'Sessions';
     protected static ?string $modelLabel = 'sessió';
     protected static ?string $pluralModelLabel = 'sessions';
-    protected static ?string $navigationGroup = 'Entrades';
+    protected static string|\UnitEnum|null $navigationGroup = 'Entrades';
     protected static ?int $navigationSort = 2;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
         return $form->schema([
             Select::make('product_id')->label('Producte')->relationship('product', 'title')->columnSpanFull(),
@@ -59,9 +58,9 @@ class TicketResource extends Resource
                 //Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()->requiresConfirmation()->modalHeading('Eliminar entrades')->modalDescription("Alerta! Les entrades ja adquirides per aquest dia i hora seguiran sent vàlides. Si vols cancel·lar totes les entrades, selecciona 'Cancelar sessió'."),
-                Tables\Actions\Action::make('cancel')
+                Actions\EditAction::make(),
+                Actions\DeleteAction::make()->requiresConfirmation()->modalHeading('Eliminar entrades')->modalDescription("Alerta! Les entrades ja adquirides per aquest dia i hora seguiran sent vàlides. Si vols cancel·lar totes les entrades, selecciona 'Cancelar sessió'."),
+                Actions\Action::make('cancel')
                     ->label('Cancel·lar sessió')
                     ->requiresConfirmation()
                     ->modalHeading('Cancel·lar sessió')
@@ -76,7 +75,7 @@ class TicketResource extends Resource
                     ->icon('heroicon-o-x-circle')
                     ->color('warning')
                     ->visible(fn(Ticket $record) => auth()->user()->hasRole('admin') && !$record->canceled),
-                Tables\Actions\Action::make('map')
+                Actions\Action::make('map')
                     ->label('Plànol')
                     ->url(
                         fn(Ticket $record) => route('map', [
@@ -90,7 +89,7 @@ class TicketResource extends Resource
                     ->openUrlInNewTab()
                     ->visible(fn(Ticket $record) => $record->product && $record->product->venue_id),
             ])
-            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()->visible(auth()->user()->hasRole('admin'))])])
+            ->bulkActions([Actions\BulkActionGroup::make([Actions\DeleteBulkAction::make()->visible(auth()->user()->hasRole('admin'))])])
             ->defaultSort('day', 'asc');
     }
 

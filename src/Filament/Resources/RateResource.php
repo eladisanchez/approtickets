@@ -4,27 +4,26 @@ namespace ApproTickets\Filament\Resources;
 
 use ApproTickets\Filament\Resources\RateResource\Pages;
 use ApproTickets\Models\Rate;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Actions;
 use Filament\Tables\Table;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Resources\Concerns\Translatable;
 use Illuminate\Database\Eloquent\Builder;
 
 class RateResource extends Resource
 {
-    use Translatable;
     protected static ?string $model = Rate::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-currency-euro';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-currency-euro';
     protected static ?string $modelLabel = 'tarifa';
     protected static ?string $pluralModelLabel = 'tarifes';
-    protected static ?string $navigationGroup = 'Entrades';
+    protected static string|\UnitEnum|null $navigationGroup = 'Entrades';
     protected static ?int $navigationSort = 3;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
         return $form
             ->schema([
@@ -52,11 +51,11 @@ class RateResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->modifyQueryUsing(fn(Builder $query) => $query->orderBy('order', 'ASC'))

@@ -6,9 +6,10 @@ use ApproTickets\Filament\Resources\UserResource\Pages;
 use ApproTickets\Filament\Resources\UserResource\RelationManagers;
 use ApproTickets\Models\User;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Actions;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -18,14 +19,14 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user';
     protected static ?string $navigationLabel = 'Usuaris';
     protected static ?string $modelLabel = 'usuari';
     protected static ?string $pluralModelLabel = 'usuaris';
-    protected static ?string $navigationGroup = 'Usuaris';
+    protected static string|\UnitEnum|null $navigationGroup = 'Usuaris';
     protected static ?int $navigationSort = 8;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
         return $form
             ->schema([
@@ -53,11 +54,11 @@ class UserResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

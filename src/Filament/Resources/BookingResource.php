@@ -5,26 +5,28 @@ namespace ApproTickets\Filament\Resources;
 use ApproTickets\Filament\Resources\BookingResource\Pages;
 use ApproTickets\Models\Booking;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Actions;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use ApproTickets\Filament\Exports\BookingExporter;
-use Filament\Tables\Actions\ExportAction;
+use Filament\Actions\ExportAction;
+use ApproTickets\Enums\PaymentStatus;
 
 class BookingResource extends Resource
 {
     protected static ?string $model = Booking::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-ticket';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-ticket';
     protected static ?string $navigationLabel = 'Entrades venudes';
     protected static ?string $modelLabel = 'entrada';
     protected static ?string $pluralModelLabel = 'entrades';
-    protected static ?string $navigationGroup = 'Vendes';
+    protected static string|\UnitEnum|null $navigationGroup = 'Vendes';
     protected static ?int $navigationSort = 6;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
         return $form
             ->schema([
@@ -81,11 +83,13 @@ class BookingResource extends Resource
                 Tables\Columns\TextColumn::make('scans_count')->counts('scans')->label('QR')->badge()->color('success')->tooltip(fn(Booking $record): string => $record->scans->pluck('scan_id')->implode(', ')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Actions\EditAction::make(),
+                Actions\DeleteAction::make()
+                    ->visible(fn(Booking $record): bool => $record->order?->paid != PaymentStatus::PAID),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->headerActions([

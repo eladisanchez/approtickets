@@ -9,7 +9,7 @@ use Filament\Support\Facades\FilamentAsset;
 
 class LocationMap extends Widget
 {
-    protected static string $view = 'approtickets::filament.resources.venue-resource.widgets.location-map';
+    protected string $view = 'approtickets::filament.resources.venue-resource.widgets.location-map';
     protected int|string|array $columnSpan = 'full';
 
     public ?Model $record = null;
@@ -102,7 +102,7 @@ class LocationMap extends Widget
             }
         }
 
-        return view(static::$view)
+        return view($this->view)
             ->with('gridItems', $gridItems);
     }
 

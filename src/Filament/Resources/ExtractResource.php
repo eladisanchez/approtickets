@@ -5,9 +5,10 @@ namespace ApproTickets\Filament\Resources;
 use ApproTickets\Filament\Resources\ExtractResource\Pages;
 use ApproTickets\Models\Extract;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Actions;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
@@ -17,14 +18,14 @@ class ExtractResource extends Resource
 {
     protected static ?string $model = Extract::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calculator';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calculator';
     protected static ?string $navigationLabel = 'Extractes';
     protected static ?string $modelLabel = 'extracte';
     protected static ?string $pluralModelLabel = 'extractes';
-    protected static ?string $navigationGroup = 'Vendes';
+    protected static string|\UnitEnum|null $navigationGroup = 'Vendes';
     protected static ?int $navigationSort = 7;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
         return $form
             ->schema([
@@ -84,8 +85,8 @@ class ExtractResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('downloadExcel')
+                Actions\EditAction::make(),
+                Actions\Action::make('downloadExcel')
                     ->label('Excel')
                     ->icon('heroicon-o-document')
                     ->url(function ($record) {
@@ -96,8 +97,8 @@ class ExtractResource extends Resource
                     ->openUrlInNewTab(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])->defaultSort('created_at', 'desc');
     }

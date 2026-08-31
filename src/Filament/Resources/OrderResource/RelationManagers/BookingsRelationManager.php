@@ -3,9 +3,10 @@
 namespace ApproTickets\Filament\Resources\OrderResource\RelationManagers;
 
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Actions;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -17,7 +18,7 @@ class BookingsRelationManager extends RelationManager
     protected static ?string $pluralLabel = 'Entrades';
     protected static ?string $title = 'Entrades';
 
-    public function form(Form $form): Form
+    public function form(Schema $form): Schema
     {
         return $form
             ->schema([
@@ -84,15 +85,15 @@ class BookingsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()->label('Afegir producte a la comanda'),
+                Actions\CreateAction::make()->label('Afegir producte a la comanda'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->modalHeading('Editar entrada'),
-                Tables\Actions\DeleteAction::make(),
+                Actions\EditAction::make()->modalHeading('Editar entrada'),
+                Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

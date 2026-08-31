@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use ApproTickets\Enums\PaymentStatus;
 
 class Booking extends Model
 {
@@ -24,6 +25,10 @@ class Booking extends Model
 	protected static function booted()
 	{
 		static::deleting(function ($booking) {
+			if ($booking->order?->paid == PaymentStatus::PAID) {
+				return false;
+			}
+
 			if ($booking->packBookings()->exists()) {
 				$booking->packBookings()->delete();
 			}

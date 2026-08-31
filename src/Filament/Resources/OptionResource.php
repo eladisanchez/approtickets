@@ -6,14 +6,15 @@ use ApproTickets\Filament\Resources\OptionResource\Pages;
 use ApproTickets\Filament\Resources\OptionResource\RelationManagers;
 use ApproTickets\Models\Option;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Actions;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Get;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Tables\Columns\Layout\Stack;
 use ApproTickets\Enums\OptionType;
 
@@ -21,13 +22,13 @@ class OptionResource extends Resource
 {
     protected static ?string $model = Option::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-wrench-screwdriver';
     protected static ?string $navigationLabel = 'Opcions';
     protected static ?string $modelLabel = 'opció';
     protected static ?string $pluralModelLabel = 'opcions';
     protected static ?int $navigationSort = 9;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
 
         $fields = [
@@ -85,11 +86,11 @@ class OptionResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Actions\EditAction::make(),
             ])
             ->bulkActions([
-                // Tables\Actions\BulkActionGroup::make([
-                //     Tables\Actions\DeleteBulkAction::make(),
+                // Actions\BulkActionGroup::make([
+                //     Actions\DeleteBulkAction::make(),
                 // ]),
             ]);
     }

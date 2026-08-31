@@ -3,9 +3,10 @@
 namespace ApproTickets\Filament\Resources\OrderResource\RelationManagers;
 
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Actions;
 use Filament\Tables\Table;
 use ApproTickets\Models\Refund;
 use ApproTickets\Http\Controllers\RefundController;
@@ -18,7 +19,7 @@ class RefundsRelationManager extends RelationManager
     protected static ?string $pluralLabel = 'Devolucions';
     protected static ?string $title = 'Devolucions';
 
-    public function form(Form $form): Form
+    public function form(Schema $form): Schema
     {
         return $form
             ->schema([
@@ -51,14 +52,14 @@ class RefundsRelationManager extends RelationManager
                     ->suffix(' €')
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()->label('Crear devolució')->modalHeading('Crear devolució')
+                Actions\CreateAction::make()->label('Crear devolució')->modalHeading('Crear devolució')
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                Actions\EditAction::make()
                     ->hidden(function ($record) {
                         return $record->refunded_at;
                     })->modalHeading('Editar devolució'),
-                Tables\Actions\Action::make('url')
+                Actions\Action::make('url')
                     ->label('Enllaç')
                     ->icon('heroicon-o-link')
                     ->url(function (Refund $record) {
@@ -73,7 +74,7 @@ class RefundsRelationManager extends RelationManager
                     ->hidden(function ($record) {
                         return $record->refunded_at;
                     }),
-                Tables\Actions\Action::make('request')
+                Actions\Action::make('request')
                     ->label('Efectuar devolució')
                     ->icon('heroicon-o-forward')
                     ->action(function (Refund $record) {

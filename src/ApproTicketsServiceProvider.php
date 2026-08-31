@@ -21,7 +21,6 @@ use ApproTickets\Console\Commands\TestMailCommand;
 use ApproTickets\Console\Commands\SendMailsCommand;
 use ApproTickets\Console\Commands\GeneratePdfCommand;
 use Filament\Support\Colors\Color;
-use Filament\SpatieLaravelTranslatablePlugin;
 use Illuminate\Http\Resources\Json\JsonResource;
 use ApproTickets\Http\Middleware\HandleInertiaRequests;
 use Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter;
@@ -136,9 +135,7 @@ class ApproTicketsServiceProvider extends ServiceProvider
             ->databaseNotificationsPolling('30s')
             //->maxContentWidth(MaxWidth::Full)
             ->passwordReset()
-            ->plugins([
-                SpatieLaravelTranslatablePlugin::make()->defaultLocales(config('approtickets.locales')),
-            ]);
+            ->plugins([]);
     }
 
     public function register()

@@ -8,13 +8,14 @@ use ApproTickets\Filament\Resources\OrderResource\RelationManagers;
 use ApproTickets\Models\Order;
 use ApproTickets\Http\Controllers\RefundController;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Actions;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Tables\Actions\ActionGroup;
+use Filament\Actions\ActionGroup;
 use Illuminate\Support\HtmlString;
 use Filament\Notifications\Notification;
 use ApproTickets\Enums\PaymentStatus;
@@ -25,14 +26,14 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
     protected static ?string $navigationLabel = 'Comandes';
     protected static ?string $modelLabel = 'comanda';
     protected static ?string $pluralModelLabel = 'comandes';
-    protected static ?string $navigationGroup = 'Vendes';
+    protected static string|\UnitEnum|null $navigationGroup = 'Vendes';
     protected static ?int $navigationSort = 5;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
         return $form
             ->schema([
@@ -93,8 +94,8 @@ class OrderResource extends Resource
             ])
             ->actions([
                 ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\Action::make('downloadPdf')
+                    Actions\EditAction::make(),
+                    Actions\Action::make('downloadPdf')
                         ->label('PDF')
                         ->icon('heroicon-o-document')
                         ->url(function ($record) {
@@ -104,7 +105,7 @@ class OrderResource extends Resource
                             ]);
                         })
                         ->openUrlInNewTab(),
-                    Tables\Actions\Action::make('resend')
+                    Actions\Action::make('resend')
                         ->label('Reenviar email')
                         ->icon('heroicon-o-envelope')
                         ->action(function (Order $record) {
@@ -121,7 +122,7 @@ class OrderResource extends Resource
                                     ->send();
                             }
                         }),
-                    Tables\Actions\Action::make('payment')
+                    Actions\Action::make('payment')
                         ->label('Enllaç pagament')
                         ->icon('heroicon-o-credit-card')
                         ->modalHeading('Enllaç de pagament')
@@ -129,7 +130,7 @@ class OrderResource extends Resource
                             'id' => $record->id
                         ]) . '?' . $record->session))
                         ->visible(fn(Order $record): bool => $record->paid == PaymentStatus::UNPAID),
-                    Tables\Actions\Action::make('refund')
+                    Actions\Action::make('refund')
                         ->label('Devolució')
                         ->icon('heroicon-o-arrow-left-circle')
                         ->requiresConfirmation()
@@ -173,12 +174,14 @@ class OrderResource extends Resource
                             // }
                         })
                         ->visible(fn(Order $record): bool => $record->paid && $record->payment === PaymentMethods::Card),
-                    Tables\Actions\RestoreAction::make()
+                    Actions\RestoreAction::make(),
+                    Actions\DeleteAction::make()
+                        ->visible(fn(Order $record): bool => $record->paid != PaymentStatus::PAID),
                 ])
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->modifyQueryUsing(fn(Builder $query) => $query->orderBy('created_at', 'DESC'))

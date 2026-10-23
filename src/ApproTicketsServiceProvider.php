@@ -117,7 +117,7 @@ class ApproTicketsServiceProvider extends ServiceProvider
     {
         Livewire::setUpdateRoute(function ($handle) {
             return \Illuminate\Support\Facades\Route::post('/livewire/update', $handle)
-                ->middleware('throttle:60,1');
+                ->middleware(['web', 'throttle:60,1']);
         });
     }
 

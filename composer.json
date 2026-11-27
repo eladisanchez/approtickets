@@ -3,9 +3,9 @@
   "description": "Common package for Appro Tickets",
   "type": "library",
   "require": {
-    "php": "^8.2",
+    "php": "^8.4",
     "illuminate/support": "^11.0",
-    "barryvdh/laravel-dompdf": "^2.2",
+    "barryvdh/laravel-dompdf": "^3.1",
     "filament/filament": "^3.2",
     "intervention/image": "^3.6",
     "intervention/image-laravel": "^1.2",

@@ -183,13 +183,18 @@
                         </p>
 
                         <p>
+                            <label for="email_confirmation">{{ trans('textos.email_confirmation') }}</label>
+                            <input type="text" name="email_confirmation" id="email_confirmation" value="{{ old('email_confirmation') }}">
+                        </p>
+
+                        <p>
                             <label for="phone">{{ trans('textos.telefon') }}</label>
                             <input type="text" name="phone" id="phone" value="{{ old('phone') }}">
                         </p>
 
                         <p>
                             <label for="cp">{{ trans('textos.cp') }}</label>
-                            <input type="text" name="cp" id="cp" value="{{ old('cp') }}">
+                            <input type="text" name="cp" id="cp" value="{{ old('cp') }}" maxlength="5" inputmode="numeric" autocomplete="postal-code">
                         </p>
 
                         <p>

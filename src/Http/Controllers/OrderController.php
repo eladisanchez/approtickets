@@ -67,14 +67,14 @@ class OrderController extends BaseController
 			'conditions' => 'accepted',
 			'name' => 'required|string|max:255',
 			'phone' => 'required|string|max:20',
-			'email' => 'required|email|max:255',
-			'cp' => 'nullable|string|max:10',
+			'email' => 'required|email|max:255|confirmed',
+			'cp' => 'nullable|string|max:5',
 			'observations' => 'nullable|string|max:1000',
 		] : [
 			'conditions' => 'accepted',
 			'name' => 'required|string|max:255',
 			'email' => 'required|email|max:255',
-			'cp' => 'nullable|string|max:10',
+			'cp' => 'nullable|string|max:5',
 			'observations' => 'nullable|string|max:1000',
 		];
 

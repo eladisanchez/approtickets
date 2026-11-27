@@ -464,7 +464,16 @@ class ProductResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make()->hidden(auth()->user()->isAdmin()),
+                Tables\Actions\ViewAction::make()
+                    ->hidden(auth()->user()->isAdmin())
+                    // attributesToArray() returns translatable fields as locale arrays;
+                    // resolve them to the current locale so disabled fields can render strings.
+                    ->mutateRecordDataUsing(function (array $data, Product $record): array {
+                        foreach ($record->getTranslatableAttributes() as $attribute) {
+                            $data[$attribute] = $record->getTranslation($attribute, app()->getLocale());
+                        }
+                        return $data;
+                    }),
                 Tables\Actions\Action::make('open')
                     ->label('Obre')
                     ->icon('heroicon-o-arrow-top-right-on-square')
